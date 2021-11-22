@@ -1,0 +1,212 @@
+{
+	"name": "todotodo",
+	"displayName": "TodoTodo",
+	"description": "An extension for somthing to do.",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.61.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "todo_item",
+					"title": "TodoItem",
+					"icon": "resources/icon/icon_platform.svg"
+				}
+			]
+		},
+		"views": {
+			"todo_item": [
+				{
+					"id": "todo_tree",
+					"name": "待办事项",
+					"visibility": "visible"
+				},
+				{
+					"id": "done_tree",
+					"name": "已办事项",
+					"visibility": "collapsed"
+				},
+				{
+					"id": "fail_tree",
+					"name": "未办事项",
+					"visibility": "collapsed"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "todo_tree",
+				"contents": "暂时没有待办事项，芜湖起飞！\n[$(add) 新增待办事项](command:todo.add)"
+			},
+			{
+				"view": "done_tree",
+				"contents": "暂时没有已办事项，加油冲冲冲！"
+			},
+			{
+				"view": "fail_tree",
+				"contents": "暂时没有失效事项，不错加油！"
+			}
+		],
+		"commands": [
+			{
+				"command": "page.show",
+				"title": "事项主页",
+				"icon": "$(window)",
+				"category": "待办事项"
+			},
+			{
+				"command": "list.delete",
+				"title": "删除清单",
+				"icon": "$(trash)"
+			},
+			{
+				"command": "todo.refresh",
+				"title": "刷新列表",
+				"icon": "$(refresh)",
+				"shortTitle": "RefreshTree",
+				"category": "待办事项"
+			},
+			{
+				"command": "todo.add",
+				"title": "新增待办事项",
+				"icon": "$(add)",
+				"category": "待办事项"
+			},
+			{
+				"command": "todo.edit",
+				"title": "修改事项",
+				"icon": "$(edit)"
+			},
+			{
+				"command": "todo.accomplish",
+				"title": "已完成",
+				"icon": "$(pass)"
+			},
+			{
+				"command": "todo.fail",
+				"title": "未完成",
+				"icon": "$(error)"
+			},
+			{
+				"command": "todo.delete",
+				"title": "删除事项",
+				"icon": "$(trash)"
+			},
+			{
+				"command": "done.clear",
+				"title": "清空已办事项",
+				"icon": "$(clear-all)",
+				"category": "已办事项"
+			},
+			{
+				"command": "done.redo",
+				"title": "重做事项",
+				"icon": "$(redo)"
+			},
+			{
+				"command": "fail.restart",
+				"title": "重启事项",
+				"icon": "$(reply)"
+			},
+			{
+				"command": "fail.restart_all",
+				"title": "重启全部未办事项",
+				"icon": "$(clock)"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "page.show",
+					"group": "navigation",
+					"when": "view == todo_tree"
+				},
+				{
+					"command": "todo.refresh",
+					"group": "navigation",
+					"when": "view == todo_tree"
+				},
+				{
+					"command": "todo.add",
+					"group": "navigation",
+					"when": "view == todo_tree"
+				},
+				{
+					"command": "done.clear",
+					"group": "navigation",
+					"when": "view == done_tree"
+				},
+				{
+					"command": "fail.restart_all",
+					"group": "navigation",
+					"when": "view == fail_tree"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "list.delete",
+					"when": "viewItem == todo_list"
+				},
+				{
+					"command": "todo.edit",
+					"when": "viewItem == todo_item"
+				},
+				{
+					"command": "todo.delete",
+					"when": "viewItem == todo_item"
+				},
+				{
+					"command": "todo.accomplish",
+					"group": "inline",
+					"when": "viewItem == todo_item"
+				},
+				{
+					"command": "todo.fail",
+					"group": "inline",
+					"when": "viewItem == todo_item"
+				},
+				{
+					"command": "done.redo",
+					"group": "inline",
+					"when": "viewItem == done_item"
+				},
+				{
+					"command": "fail.restart",
+					"group": "inline",
+					"when": "viewItem == fail_item"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.61.0",
+		"@types/glob": "^7.1.4",
+		"@types/mocha": "^9.0.0",
+		"@types/node": "14.17.27",
+		"@typescript-eslint/eslint-plugin": "^5.1.0",
+		"@typescript-eslint/parser": "^5.1.0",
+		"eslint": "^8.1.0",
+		"glob": "^7.1.7",
+		"mocha": "^9.1.3",
+		"typescript": "^4.4.4",
+		"@vscode/test-electron": "^1.6.2"
+	},
+	"type": "commonjs"
+}

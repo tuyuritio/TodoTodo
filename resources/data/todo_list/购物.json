@@ -1,0 +1,10 @@
+{
+	"type": "购物",
+	"list": [
+		{
+			"label": "沐浴露",
+			"status": "todo",
+			"priority": 0
+		}
+	]
+}

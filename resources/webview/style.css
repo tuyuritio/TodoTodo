@@ -1,0 +1,131 @@
+/* Global */
+
+* {
+    margin: 0px;
+    border: none;
+    padding: 0px;
+
+    user-select: none;
+}
+
+:focus {
+    outline-color: var(--vscode-focusBorder) !important;
+}
+
+/* specified */
+
+hr {
+    height: 2px;
+
+    margin: 4px 0px;
+
+    background-color: var(--vscode-activityBar-background);
+}
+
+/* Common */
+
+body {
+    display: flex;
+
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+section {
+    display: flex;
+
+    flex-direction: column;
+
+    margin: 20px 10px;
+    padding: 20px;
+
+    background-color: var(--vscode-sideBar-background);
+}
+
+section.list {
+    min-width: 240px;
+}
+
+section.log {
+    min-width: 400px;
+}
+
+label {
+    display: flex;
+
+    flex-wrap: wrap;
+    align-items: center;
+
+    width: 100%;
+    max-width: 250px;
+
+    margin: 5px;
+}
+
+span {
+    width: 40px;
+
+    margin: 3px 0px;
+}
+
+input, select, textarea {
+    height: var(--vscode-input-height);
+    width: 165px;
+
+    margin: 3px 0px;
+    padding: 3px 4px;
+
+    color: var(--vscode-input-foreground);
+
+    background-color: var(--vscode-input-background);
+}
+
+input#time {
+    width: 107px;
+}
+
+textarea {
+    height: 15px;
+    min-width: 165px;
+    max-width: 165px;
+    min-height: 15px;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+select {
+    width: 115px;
+}
+
+select#weekly {
+    width: 50px;
+}
+
+option:first-child {
+    color: var(--vscode-input-placeholderForeground);
+}
+
+button {
+    width: 213px;
+
+    margin: 5px;
+    padding: 6px;
+
+    outline: 1px solid transparent;
+
+    color: var(--vscode-button-foreground);
+
+    text-align: center;
+
+    background: var(--vscode-button-background);
+    outline-offset: 2px !important;
+}
+
+button:hover {
+    background: var(--vscode-button-hoverBackground);
+    cursor: pointer;
+}
+
+.hide {
+    visibility: hidden;
+}

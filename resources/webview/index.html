@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src csp_source; img-src csp_source https:; script-src csp_source;">
+
+	<link rel="stylesheet" href="style_path">
+	<script src="script_path"></script>
+	<title>Editor</title>
+</head>
+
+<body>
+	<!-- 事项编辑器 -->
+	<section>
+		<h3>编辑事项</h3>
+		<hr>
+
+		<!-- 类别 -->
+		<label><span>类别：</span>
+			<select id="type">
+				<option>==事项类别==</option>
+				<option id="other">其它</option>
+			</select>
+		</label>
+		<label id="other_label"><span class="hide">类别：</span><input type="text" placeholder="事项类别(必填)" id="other_type"></label>
+
+		<!-- 事项名称 -->
+		<label><span>事项：</span><input type="text" placeholder="事项名称(必填)" id="label"></label>
+
+		<!-- 目标地点 -->
+		<label><span>地点：</span><input type="text" placeholder="目标地点" id="place"></label>
+
+		<!-- 目标邮箱 -->
+		<label><span>邮箱：</span><input type="text" placeholder="目标邮箱" id="mail"></label>
+
+		<!-- 事项细节 -->
+		<label><span>详情：</span><textarea placeholder="事项细节" id="detail"></textarea></label>
+
+		<!-- 事项优先级 -->
+		<label><span>级别：</span>
+			<select id="priority">
+				<option>0</option>
+			</select>
+		</label>
+
+		<!-- 事项周期 -->
+		<label><span>周期：</span>
+			<select id="cycle">
+				<option>长期</option>
+				<option>单次</option>
+				<option>每日</option>
+				<option>每周</option>
+			</select>
+			<select id="weekly">
+				<option>一</option>
+				<option>二</option>
+				<option>三</option>
+				<option>四</option>
+				<option>五</option>
+				<option>六</option>
+				<option>日</option>
+			</select>
+		</label>
+		<label id="once"><span>截至：</span><input type="datetime-local" id="datetime"></label>
+		<label id="daily"><span>截至：</span><input type="time" id="time"></label>
+
+		<!-- 确定 -->
+		<button id="confirm">确定</button>
+
+		<!-- 删除 -->
+		<button id="delete">删除</button>
+	</section>
+
+	<!-- 事项清单 -->
+	<section class="list">
+		<h3>事项清单</h3>
+		<hr>
+	</section>
+
+	<!-- 事项日志 -->
+	<section class="log">
+		<h3>清单日志</h3>
+		<hr>
+	</section>
+</body>
+
+</html>
