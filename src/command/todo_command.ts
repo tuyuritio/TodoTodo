@@ -3,12 +3,6 @@ import * as vscode from 'vscode';
 import * as file from '../operator/file_operator';
 import * as date from '../operator/date_operator';
 
-export async function add() {
-}
-
-export function edit() {
-}
-
 /**
  * 完成事项
  * @param item 事项对象

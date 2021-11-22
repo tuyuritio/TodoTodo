@@ -44,6 +44,39 @@ export class command_manager {
 		this.process.show();
 	}
 
+	/**
+	 * 新增事项
+	 */
+	Add(): void {
+		// // todo.AddItem();
+		// this.page.add().then(() => {
+		// 	this.Refresh();
+		// });
+
+		// // this.Refresh();
+	}
+
+	/**
+	 * 编辑事项
+	 * @param item 被点击的事项对象
+	 */
+	Edit(item: any): void {
+		this.ShowPage();
+
+		let data = {
+			type: item.type,
+			index: item.index,
+			label: item.label,
+			priority: item.priority,
+			cycle: item.cycle,
+			time: item.time,
+			place: item.place,
+			mail: item.mail,
+			detail: item.detail
+		};
+		this.page.postMessage("edit", data);
+	}
+
 	/* 清单管理 */
 	/**
 	 * 删除清单
@@ -100,26 +133,6 @@ export class command_manager {
 		todo.shut(item);
 
 		this.Refresh();
-	}
-
-	/**
-	 * 新增事项
-	 */
-	Add(): void {
-		// todo.AddItem();
-		todo.add().then(() => {
-			this.Refresh();
-		});
-
-		// this.Refresh();
-	}
-
-	/**
-	 * 删除事项
-	 * @param item 被点击的事项对象
-	 */
-	Edit(item: any): void {
-
 	}
 
 	/**

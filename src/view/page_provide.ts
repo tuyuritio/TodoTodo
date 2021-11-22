@@ -12,6 +12,9 @@ class option implements vscode.WebviewOptions, vscode.WebviewPanelOptions {
 class provider {
 	panel: vscode.WebviewPanel;
 
+	/**
+	 * 构造函数
+	 */
 	constructor() {
 		this.panel = vscode.window.createWebviewPanel("todo_page", "Todo Page", vscode.ViewColumn.One, new option);
 		this.panel.iconPath = vscode.Uri.file(file.getIconPath("icon_page"));
@@ -22,6 +25,43 @@ class provider {
 		html = html.replace(/csp_source/g, this.panel.webview.cspSource);
 
 		this.panel.webview.html = html;
+		this.initializePage();
+	}
+
+	// 整合？
+	postMessage(command: string, data: any) {
+		let message = {
+			command: command,
+			data: data
+		}
+
+		this.panel.webview.postMessage(message);
+	}
+
+	initializePage() {
+		let data = file.getList();
+
+		let types: string[] = [];
+		let maximum_priority = 0;
+		for (let index = 0; index < data.length; index++) {
+			types.push(data[index].type);
+
+			for (let i = 0; i < data[index].list.length; i++) {
+				let item_data = data[index].list[i];
+				if (item_data.priority > maximum_priority) {
+					maximum_priority = item_data.priority;
+				}
+			}
+		}
+
+		types.splice(types.indexOf("普通"), 1);
+
+		let page_data = {
+			types: types,
+			maximum_priority: maximum_priority
+		}
+
+		this.postMessage("initialize", page_data);
 	}
 }
 
@@ -34,3 +74,4 @@ export function createPage() {
 
 	return new provider();
 }
+

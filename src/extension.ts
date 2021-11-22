@@ -28,14 +28,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// 注册page命令
 	context.subscriptions.push(vscode.commands.registerCommand("page.show", () => command.ShowPage()));
+	context.subscriptions.push(vscode.commands.registerCommand("page.add", () => command.Add()));
+	context.subscriptions.push(vscode.commands.registerCommand("page.edit", (item) => command.Edit(item)));
 
 	// 注册list命令
 	context.subscriptions.push(vscode.commands.registerCommand("list.delete", (item) => command.DeleteList(item)));
 
 	// 注册todo_tree命令
 	context.subscriptions.push(vscode.commands.registerCommand("todo.refresh", () => command.Refresh()));					// 作用于全局刷新
-	context.subscriptions.push(vscode.commands.registerCommand("todo.add", () => command.Add()));
-	context.subscriptions.push(vscode.commands.registerCommand("todo.edit", (item) => command.Edit(item)));
 	context.subscriptions.push(vscode.commands.registerCommand("todo.accomplish", (item) => command.Accomplish(item)));
 	context.subscriptions.push(vscode.commands.registerCommand("todo.fail", (item) => command.Shut(item)));
 	context.subscriptions.push(vscode.commands.registerCommand("todo.delete", (item) => command.Delete(item)));

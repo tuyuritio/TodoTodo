@@ -22,11 +22,11 @@ export function getRecentItem() {
 
 				if (deadline < expected_time) {
 					let item = {
-						"type": data[i].type,
-						"index": j,
-						"label": item_data.label,
-						"time": item_data.time,
-						"cycle": item_data.cycle
+						type: data[i].type,
+						index: j,
+						label: item_data.label,
+						time: item_data.time,
+						cycle: item_data.cycle
 					}
 					items.push(item);
 				}
