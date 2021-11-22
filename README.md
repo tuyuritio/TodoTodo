@@ -1,20 +1,12 @@
-# todotodo README
+# TodoTodo - 待办事项
 
-This is the README for your extension "todotodo". After writing up a brief description, we recommend including the following sections.
+## 简介
 
-## Features
+在侧边栏显示待办事项。
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## 扩展设置
 
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## 版本说明
 
 ## Extension Settings
 
@@ -66,5 +58,3 @@ Ensure that you've read through the extensions guidelines and follow the best pr
 
 * [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
 * [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
