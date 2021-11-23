@@ -1,7 +1,8 @@
 {
 	"name": "todotodo",
 	"displayName": "TodoTodo",
-	"description": "An extension for somthing to do.",
+	"description": "VSCode Sidebar Todo",
+	"icon": "https://gitee.com/tatsukana/todo-todo/tree/main/resources/icon/icon.png",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.61.0"
