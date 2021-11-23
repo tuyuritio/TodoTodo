@@ -2,16 +2,6 @@
 import * as vscode from 'vscode';
 import { command_manager } from './command_manage';
 
-/**
- * 立即执行一个函数后按间隔时间执行
- * @param Function 需要执行的函数
- * @param second 循环间隔的秒数
- */
-function Circulate(Function: () => void, second: number) {
-	Function();
-	setInterval(() => Function(), second * 1000);
-}
-
 /* 激活扩展 */
 export function activate(context: vscode.ExtensionContext) {
 	// 使用控制台来输出诊断信息（console.log）和错误（console.error）。
@@ -38,6 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// 创建命令管理器
 	let command: command_manager = new command_manager();
+	extra_command = command;
 
 	// 检测事项
 	command.Refresh(showEmptyList);
@@ -69,4 +60,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 /* 停用扩展 */
 export function deactivate() {
+}
+
+/* 强制刷新 */
+let extra_command: command_manager;
+export function REFRESH() {
+	extra_command.Refresh(extra_command.show_empty);
 }

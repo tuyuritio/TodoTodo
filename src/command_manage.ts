@@ -7,9 +7,6 @@ import * as todo from './command/todo_command';
 import * as done from './command/done_command';
 import * as fail from './command/fail_command';
 
-export namespace view {
-}
-
 /* 命令管理 */
 export class command_manager {
 	/* 声明视图 */
@@ -20,7 +17,7 @@ export class command_manager {
 	private page?: any;
 
 	/* 声明配置 */
-	private show_empty: boolean = false;
+	show_empty: boolean = false;
 
 	/* 初始化 */
 	/**

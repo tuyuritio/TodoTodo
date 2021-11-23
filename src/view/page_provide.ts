@@ -1,6 +1,7 @@
 /* 模块调用 */
 import * as vscode from 'vscode';
 import * as file from '../operator/file_operator';
+import {REFRESH} from '../extension';
 
 /* Page选项 */
 class option implements vscode.WebviewOptions, vscode.WebviewPanelOptions {
@@ -44,6 +45,7 @@ class provider {
 						deleteOld(message.data.old_item);
 					}
 					createNew(message.data.new_item);
+					REFRESH();
 					break;
 
 				case "clearLog":
