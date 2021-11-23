@@ -11,6 +11,7 @@ class option implements vscode.WebviewOptions, vscode.WebviewPanelOptions {
 /* Page提供器 */
 class provider {
 	panel: vscode.WebviewPanel;
+	visible: boolean;
 
 	/**
 	 * 构造函数
@@ -23,6 +24,9 @@ class provider {
 		html = html.replace("style_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("CSS", true))).toString());
 		html = html.replace("script_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", true))).toString());
 		html = html.replace("item_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("Item", true))).toString());
+		html = html.replace("close_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("close"))).toString());
+		html = html.replace("up_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-up"))).toString());
+		html = html.replace("down_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-down"))).toString());
 		html = html.replace(/csp_source/g, this.panel.webview.cspSource);
 
 		this.panel.webview.html = html;
@@ -42,9 +46,13 @@ class provider {
 					break;
 			}
 		})
+
+		this.panel.onDidDispose(() => { this.visible = false });
+
+		this.visible = true;
 	}
 
-	postToPage(command: string, data?: any) {
+	postToPage(command: string, data?: any): void {
 		let message = {
 			command: command,
 			data: data
@@ -53,7 +61,7 @@ class provider {
 		this.panel.webview.postMessage(message);
 	}
 
-	initializePage() {
+	initializePage(): void {
 		let data = file.getList();
 
 		let types: string[] = [];
@@ -78,13 +86,17 @@ class provider {
 
 		this.postToPage("initialize", page_data);
 	}
+
+	is_visible(): boolean {
+		return this.visible;
+	}
 }
 
 /**
  * 创建Page视图
  * @returns Page提供器
  */
-export function createPage() {
+export function createPage(): provider {
 	return new provider();
 }
 
@@ -92,13 +104,13 @@ export function createPage() {
  * 删除原有事项
  * @param item 原有事项对象
  */
-function deleteOld(item: any) {
+function deleteOld(item: any): void {
 	let data = file.getList(item.type);
 	data.list.splice(item.index, 1);
 	file.writeList(item.type, data);
 }
 
-function createNew(item: any) {
+function createNew(item: any): void {
 	let data = file.getList(item.type);
 
 	let cycle = item.cycle != "" ? item.cycle : undefined;

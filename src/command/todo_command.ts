@@ -42,21 +42,31 @@ export function shut(item: any) {
 /**
  * 删除事项
  * @param item 事项对象
+ * @param if_remind 是否确认删除
  * @returns Promise<boolean>
  */
-export async function deleteItem(item: any): Promise<boolean> {				// 跟delete重名了，我也很无奈
-	return vscode.window.showInformationMessage("确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消").then((action) => {
-		if (action == "确认") {
-			let data = file.getList(item.type);
-			data.list.splice(item.index, 1);
+export async function deleteItem(item: any, if_remind: boolean): Promise<boolean> {				// 跟delete重名了，我也很无奈
+	if (if_remind) {
+		return vscode.window.showInformationMessage("确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消").then((action) => {
+			if (action == "确认") {
+				let data = file.getList(item.type);
+				data.list.splice(item.index, 1);
 
-			file.writeList(item.type, data);
+				file.writeList(item.type, data);
 
-			return true;
-		} else {
-			return false;
-		}
-	});
+				return true;
+			} else {
+				return false;
+			}
+		});
+	} else {
+		let data = file.getList(item.type);
+		data.list.splice(item.index, 1);
+
+		file.writeList(item.type, data);
+
+		return true;
+	}
 }
 
 /**

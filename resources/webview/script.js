@@ -2,12 +2,15 @@
 let vscode = acquireVsCodeApi();
 
 /* 全局变量 */
+let is_show_detail = false;
+
 let editing_type;
 let editing_index;
 let types = [];
 
 /* 窗口加载 */
 window.onload = function () {
+	editor.style.display = "none";
 	// 初始状态设置
 	setElements();
 	initialize();
@@ -20,6 +23,11 @@ window.onload = function () {
 
 	// 确认编辑事项
 	complete_button.addEventListener("click", () => edit());
+
+	// 关闭事项编辑器
+	close_editor.addEventListener("click", () => { editor.style.display = "none" });
+
+	show_detail.addEventListener("click", () => show_detail_panel())
 
 	// 自适应高度
 	textarea.addEventListener("input", () => adaptiveHeight());
@@ -58,6 +66,7 @@ function get(id) {
  * 设置文档标签
  */
 function setElements() {
+	editor = get("editor");
 	editor_title = get("editor_title");
 	select_type = get("select_type");
 	label = get("label");
@@ -75,8 +84,13 @@ function setElements() {
 	weekly = get("weekly");
 	select_time = get("select_time");
 	datetime = get("datetime");
-	delete_button = get("delete_button");
 	weekly = get("weekly");
+	close_editor = get("close_editor");
+	show_detail = get("show_detail");
+	detail_panel = get("detail_panel");
+	action_text = get("action_text");
+	arrow_down = get("arrow_down");
+	arrow_up = get("arrow_up");
 }
 
 /**
@@ -144,6 +158,27 @@ function chooseCycle(event) {
 }
 
 /**
+ * 显示细节面板
+ */
+function show_detail_panel() {
+	is_show_detail = !is_show_detail;
+	if (is_show_detail) {
+		action_text.innerHTML = "收起";
+		arrow_down.style.display = "none";
+		arrow_up.style.display = "inline";
+
+		detail_panel.style.display="flex";
+		adaptiveHeight();
+	} else {
+		action_text.innerHTML = "展开";
+		arrow_down.style.display = "inline";
+		arrow_up.style.display = "none";
+
+		detail_panel.style.display = "none";
+	}
+}
+
+/**
  * 文本框自适应高度
  */
 function adaptiveHeight() {
@@ -155,10 +190,11 @@ function adaptiveHeight() {
  * 设置新建编辑器
  */
 function readyAdd() {
+	editor.style.display = "flex";
+
 	label.focus();
 	initialize();
 	editor_title.innerHTML = "新建事项";
-	delete_button.style.display = "none";
 
 	let current_time = new Date();
 	datetime.value = current_time.getFullYear() + "-" + (current_time.getMonth() + 1).toString().padStart(2, "0") + "-" + current_time.getDate().toString().padStart(2, "0") + "T" + current_time.getHours().toString().padStart(2, "0") + ":" + current_time.getMinutes().toString().padStart(2, "0");
@@ -169,9 +205,10 @@ function readyAdd() {
  * 设置修改编辑器
  */
 function readyEdit() {
+	editor.style.display = "flex";
+
 	label.focus();
 	editor_title.innerHTML = "编辑事项";
-	delete_button.style.display = "block";
 }
 
 /**

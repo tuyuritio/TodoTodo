@@ -18,18 +18,9 @@
 			"priority": 0
 		},
 		{
-			"label": "单次事项",
+			"label": "测试事项",
 			"status": "todo",
-			"time": "2021/12/20-18:00",
 			"priority": 0
-		},
-		{
-			"label": "每日事项",
-			"status": "todo",
-			"cycle": "daily",
-			"time": "2021/12/20-18:00",
-			"priority": 0,
-			"place": "地点"
 		},
 		{
 			"label": "每周事项",

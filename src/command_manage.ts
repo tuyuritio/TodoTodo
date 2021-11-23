@@ -45,9 +45,20 @@ export class command_manager {
 	}
 
 	/**
+	* 显示主页
+	*/
+	ShowPage(): void {
+		if (!this.page || !this.page.is_visible()) {
+			this.page = page_provide.createPage();
+		}
+	}
+
+	/**
 	 * 新增事项
 	 */
 	Add(): void {
+		this.ShowPage();
+
 		this.page.postToPage("add");
 	}
 
@@ -56,7 +67,7 @@ export class command_manager {
 	 * @param item 被点击的事项对象
 	 */
 	Edit(item: any): void {
-		// this.ShowPage();
+		this.ShowPage();
 
 		let data = {
 			type: item.type,
@@ -75,10 +86,12 @@ export class command_manager {
 	/* 清单管理 */
 	/**
 	 * 删除清单
-	 * @param item 被点击的清单对象
+	 * @param item 清单对象
+	 * @param if_remind 是否确认删除
+	 * @param move 删除清单的方法 - "move"则移动到普通清单；"remove"则直接删除。
 	 */
-	DeleteList(item: any): void {
-		list.deleteList(item).then((if_delete) => {
+	DeleteList(item: any, if_remind: boolean, move: string): void {
+		list.deleteList(item, if_remind, move).then((if_delete) => {
 			if (if_delete) {
 				this.Refresh();
 			}
@@ -133,22 +146,14 @@ export class command_manager {
 	/**
 	 * 删除事项
 	 * @param item 被点击的事项对象
+	 * @param if_remind 是否确认删除
 	 */
-	Delete(item: any): void {
-		todo.deleteItem(item).then((if_delete) => {
+	Delete(item: any, if_remind: boolean): void {
+		todo.deleteItem(item, if_remind).then((if_delete) => {
 			if (if_delete) {
 				this.Refresh();
 			}
 		});
-	}
-
-	/**
-	 * 显示主页
-	 */
-	ShowPage(): void {
-		// if (!this.page || !this.page.is_visible()) {
-		this.page = page_provide.createPage();
-		// }
 	}
 
 	/* done命令管理 */

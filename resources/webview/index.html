@@ -14,8 +14,11 @@
 
 <body>
 	<!-- 事项编辑器 -->
-	<section>
-		<h3 id="editor_title">编辑事项</h3>
+	<section id="editor">
+		<div>
+			<h3 id="editor_title">编辑事项</h3>
+			<img src="close_path" id="close_editor">
+		</div>
 		<hr>
 
 		<!-- 类别 -->
@@ -51,27 +54,29 @@
 		<label id="once"><span>截至：</span><input type="datetime-local" id="datetime"></label>
 		<label id="daily"><span>截至：</span><input type="time" id="select_time"></label>
 
-		<!-- 事项优先级 -->
-		<label><span>级别：</span>
-			<select id="priority">
-				<option id="maximum">0</option>
-			</select>
-		</label>
+		<!-- 展开/收起 -->
+		<button id="show_detail"><span id="action_text">展开</span><img src="down_path" id="arrow_down"><img src="up_path" id="arrow_up"></button>
 
-		<!-- 目标地点 -->
-		<label><span>地点：</span><input type="text" placeholder="目标地点" id="place"></label>
+		<section id="detail_panel">
+			<!-- 事项优先级 -->
+			<label><span>级别：</span>
+				<select id="priority">
+					<option id="maximum">0</option>
+				</select>
+			</label>
 
-		<!-- 目标邮箱 -->
-		<label><span>邮箱：</span><input type="text" placeholder="目标邮箱" id="mail"></label>
+			<!-- 目标地点 -->
+			<label><span>地点：</span><input type="text" placeholder="目标地点" id="place"></label>
 
-		<!-- 事项细节 -->
-		<label><span>详情：</span><textarea placeholder="事项细节" id="detail"></textarea></label>
+			<!-- 目标邮箱 -->
+			<label><span>邮箱：</span><input type="text" placeholder="目标邮箱" id="mail"></label>
+
+			<!-- 事项细节 -->
+			<label><span>详情：</span><textarea placeholder="事项细节" id="detail"></textarea></label>
+		</section>
 
 		<!-- 确定 -->
 		<button id="complete_button">确定</button>
-
-		<!-- 删除 -->
-		<button id="delete_button">删除</button>
 	</section>
 
 	<!-- 事项清单 -->

@@ -14,17 +14,52 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"configuration": [
+			{
+				"title": "TodoTodo",
+				"properties": {
+					"todotodo.delete.item.remind": {
+						"type": "boolean",
+						"default": true,
+						"description": "在删除事项时显示确认对话框。"
+					},
+					"todotodo.delete.list.remind": {
+						"type": "boolean",
+						"default": true,
+						"description": "在删除清单时显示确认对话框。"
+					},
+					"todotodo.delete.list.method": {
+						"type": "string",
+						"default": "move",
+						"enum": [
+							"move",
+							"remove"
+						],
+						"enumDescriptions": [
+							"移动至默认清单。",
+							"全部删除。"
+						],
+						"description": "删除清单时，原有事项的处理方法。"
+					},
+					"todotodo.show.emptyList": {
+						"type": "boolean",
+						"default": false,
+						"description": "是否显示空清单。"
+					}
+				}
+			}
+		],
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "todo_item",
-					"title": "TodoItem",
+					"id": "todo_bar",
+					"title": "TodoTodo",
 					"icon": "resources/icon/icon_platform.svg"
 				}
 			]
 		},
 		"views": {
-			"todo_item": [
+			"todo_bar": [
 				{
 					"id": "todo_tree",
 					"name": "待办事项",

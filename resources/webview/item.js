@@ -96,10 +96,10 @@ function cover(item) {
  */
 function edit() {
 	// 编辑时间
-	let new_cycle;
-	let new_time;
 	let current_time = new Date();
+	let new_time;
 	let time_string;
+	let new_cycle;
 
 	switch (cycle.options[cycle.selectedIndex].text) {
 		case "长期":
@@ -138,10 +138,21 @@ function edit() {
 			break;
 	}
 
-	// 默认类别
+	// 编辑类别
 	let new_type = select_type.options[select_type.selectedIndex].text;
 	if (new_type == "==事项类别==") {
 		new_type = "普通";
+	} else if (new_type == "其它") {
+		new_type = input_type.value;
+	}
+
+	// 检测必填项
+	let space_label = label.value.replaceAll(" ", "");
+	let space_type = input_type.value.replaceAll(" ", "");
+
+	if (space_label == "" || new_type == "其它" && space_type == "") {
+		postToExtension("warning", "请输入必填项！");
+		return;
 	}
 
 	let new_item = {
@@ -154,7 +165,6 @@ function edit() {
 		mail: mail.value,
 		detail: textarea.value
 	};
-
 
 	let data = {
 		old_item: {				// 将要删除的原有事项

@@ -22,6 +22,12 @@ hr {
     background-color: var(--vscode-activityBar-background);
 }
 
+h3 {
+    display: inline;
+
+    height: 20px;
+}
+
 /* Common */
 
 body {
@@ -29,6 +35,16 @@ body {
 
     flex-direction: row;
     flex-wrap: wrap;
+}
+
+img {
+    float: right;
+
+    width: 20px;
+}
+
+img:hover {
+    cursor: pointer;
 }
 
 section {
@@ -42,6 +58,17 @@ section {
     background-color: var(--vscode-sideBar-background);
 }
 
+section#editor {
+    display: none;
+}
+
+section#detail_panel {
+    display: none;
+
+    margin: 0px;
+    padding: 0px;
+}
+
 section.list {
     min-width: 240px;
 }
@@ -53,13 +80,12 @@ section.log {
 label {
     display: flex;
 
-    min-height: 30px;
-
     flex-wrap: wrap;
     align-items: center;
 
     width: 100%;
     max-width: 250px;
+    min-height: 30px;
 
     margin: 5px;
 }
@@ -71,8 +97,8 @@ span {
 }
 
 input, select, textarea {
-    height: var(--vscode-input-height);
     width: 170px;
+    height: var(--vscode-input-height);
 
     margin: 3px 0px;
     padding: 3px 4px;
@@ -82,13 +108,14 @@ input, select, textarea {
     background-color: var(--vscode-input-background);
 }
 
-input#time {
+input#select_time {
     width: 107px;
 }
 
 textarea {
-    resize: none;
     font-family: inherit;
+
+    resize: none;
 }
 
 select {
@@ -110,18 +137,46 @@ button {
     padding: 6px;
 
     outline: 1px solid transparent;
+    outline-offset: 2px;
 
     color: var(--vscode-button-foreground);
 
     text-align: center;
 
     background: var(--vscode-button-background);
-    outline-offset: 2px !important;
 }
 
 button:hover {
     background: var(--vscode-button-hoverBackground);
     cursor: pointer;
+}
+
+button#show_detail {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 216px;
+
+    padding: 0px;
+
+    outline-color: var(--vscode-input-background);
+    outline-offset: 0px;
+
+    color: var(--vscode-input-foreground);
+
+    background-color: var(--vscode-sideBar-background);
+
+    align-self: center;
+}
+
+button#show_detail img {
+    float: none;
+}
+
+button#show_detail img#arrow_up {
+    display: none;
 }
 
 .hide {
