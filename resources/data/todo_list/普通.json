@@ -20,23 +20,23 @@
 		{
 			"label": "单次事项",
 			"status": "todo",
-			"priority": 0,
-			"time": "2021/12/20-18:00"
+			"time": "2021/12/20-18:00",
+			"priority": 0
 		},
 		{
 			"label": "每日事项",
 			"status": "todo",
-			"priority": 0,
 			"cycle": "daily",
 			"time": "2021/12/20-18:00",
+			"priority": 0,
 			"place": "地点"
 		},
 		{
 			"label": "每周事项",
 			"status": "todo",
-			"priority": 0,
 			"cycle": "weekly",
-			"time": "2021/12/22-18:00"
+			"time": "2021/12/22-18:00",
+			"priority": 0
 		}
 	]
 }

@@ -19,7 +19,7 @@
 
 		<!-- 类别 -->
 		<label><span>类别：</span>
-			<select id="type">
+			<select id="select_type">
 				<option>==事项类别==</option>
 				<option id="other">其它</option>
 			</select>
@@ -28,22 +28,6 @@
 
 		<!-- 事项名称 -->
 		<label><span>事项：</span><input type="text" placeholder="事项名称(必填)" id="label"></label>
-
-		<!-- 目标地点 -->
-		<label><span>地点：</span><input type="text" placeholder="目标地点" id="place"></label>
-
-		<!-- 目标邮箱 -->
-		<label><span>邮箱：</span><input type="text" placeholder="目标邮箱" id="mail"></label>
-
-		<!-- 事项细节 -->
-		<label><span>详情：</span><textarea placeholder="事项细节" id="detail"></textarea></label>
-
-		<!-- 事项优先级 -->
-		<label><span>级别：</span>
-			<select id="priority">
-				<option id="maximum">0</option>
-			</select>
-		</label>
 
 		<!-- 事项周期 -->
 		<label><span>周期：</span>
@@ -66,8 +50,24 @@
 		<label id="once"><span>截至：</span><input type="datetime-local" id="datetime"></label>
 		<label id="daily"><span>截至：</span><input type="time" id="time"></label>
 
+		<!-- 事项优先级 -->
+		<label><span>级别：</span>
+			<select id="priority">
+				<option id="maximum">0</option>
+			</select>
+		</label>
+
+		<!-- 目标地点 -->
+		<label><span>地点：</span><input type="text" placeholder="目标地点" id="place"></label>
+
+		<!-- 目标邮箱 -->
+		<label><span>邮箱：</span><input type="text" placeholder="目标邮箱" id="mail"></label>
+
+		<!-- 事项细节 -->
+		<label><span>详情：</span><textarea placeholder="事项细节" id="detail"></textarea></label>
+
 		<!-- 确定 -->
-		<button id="confirm">确定</button>
+		<button id="complete">确定</button>
 
 		<!-- 删除 -->
 		<button id="delete">删除</button>

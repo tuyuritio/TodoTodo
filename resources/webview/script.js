@@ -9,22 +9,23 @@ let types = [];
 /* 窗口加载 */
 window.onload = function () {
 	// 初始状态设置
-	document.getElementById("other_label").style.display = "none";
-	document.getElementById("once").style.display = "none";
-	document.getElementById("daily").style.display = "none";
-	document.getElementById("weekly").style.display = "none";
+	setElements();
+	other_label.style.display = "none";
+	once.style.display = "none";
+	daily.style.display = "none";
+	weekly.style.display = "none";
 
 	// 事项类型
-	let type = document.getElementById("type");
-	type.addEventListener("change", (event) => chooseType(event));
+	select_type.addEventListener("change", (event) => chooseType(event));
 
 	// 周期
-	let cycle = document.getElementById("cycle");
 	cycle.addEventListener("change", (event) => chooseCycle(event));
 
 	// 确认编辑事项
-	let confirm = document.getElementById("confirm");
-	confirm.addEventListener("click", () => edit());
+	complete.addEventListener("click", () => edit());
+
+	// 自适应高度
+	textarea.addEventListener("input", () => adaptiveHeight());
 
 	// 扩展命令
 	window.addEventListener("message", (event) => {
@@ -43,23 +44,48 @@ window.onload = function () {
 }
 
 /**
+ * 获取标签对象
+ * @param id 标签ID
+ * @returns 标签对象
+ */
+function get(id) {
+	return document.getElementById(id);
+}
+
+/**
+ * 设置文档标签
+ */
+function setElements() {
+	select_type = get("select_type");
+	label = get("label");
+	cycle = get("cycle");
+	complete = get("complete");
+	textarea = get("detail");
+	other = get("other");
+	priority = get("priority");
+	maximum = get("maximum");
+	input_type = get("other_type");
+	place = get("place");
+	mail = get("mail");
+	once = get("once");
+	daily = get("daily");
+	weekly = get("weekly");
+	time = get("time");
+	datetime = get("datetime");
+}
+
+/**
  * 加载选项
  */
 function loadOption(data) {
 	types = data.types;
 
-	let type = document.getElementById("type");
-	let other = document.getElementById("other");
-
 	for (let index = 0; index < data.types.length; index++) {
 		let new_option = document.createElement("option");
 		new_option.innerHTML = data.types[index];
-		type.insertBefore(new_option, other);
+		select_type.insertBefore(new_option, other);
 	}
 
-
-	let priority = document.getElementById("priority");
-	let maximum = document.getElementById("maximum");
 	maximum.innerHTML = data.maximum_priority + 1;
 
 	for (let index = 0; index <= data.maximum_priority; index++) {
@@ -67,7 +93,7 @@ function loadOption(data) {
 		new_option.innerHTML = index;
 		priority.insertBefore(new_option, maximum);
 	}
-	document.getElementById("priority").selectedIndex = 0;
+	priority.selectedIndex = 0;
 }
 
 /**
@@ -77,11 +103,10 @@ function loadOption(data) {
 function chooseType(event) {
 	let type = event.target.options[event.target.selectedIndex].text;
 
-	let input_type = document.getElementById("other_label");
 	if (type == "其它") {
-		input_type.style.display = "flex";
+		other_label.style.display = "flex";
 	} else {
-		input_type.style.display = "none";
+		other_label.style.display = "none";
 	}
 }
 
@@ -92,9 +117,6 @@ function chooseType(event) {
 function chooseCycle(event) {
 	let cycle = event.target.options[event.target.selectedIndex].text;
 
-	let once = document.getElementById("once");
-	let daily = document.getElementById("daily");
-	let weekly = document.getElementById("weekly");
 	if (cycle == "单次") {
 		once.style.display = "flex";
 		daily.style.display = "none";
@@ -115,10 +137,55 @@ function chooseCycle(event) {
 }
 
 /**
+ * 文本框自适应高度
+ */
+function adaptiveHeight() {
+	textarea.style.height = "18px";
+	textarea.style.height = textarea.scrollHeight - 6 + "px";
+}
+
+/**
  * 确认编辑事项
  */
-function edit() {
+function edit(is_new = false) {
+	if (is_new) {
+		editing_type = select_type.options[select_type.selectedIndex].text;
+	}
 
+	console.log(datetime.value);
+	// datetime: 2021-11-23T09:50
+	// time: 09:50
+
+	let new_cycle;
+	let new_time;
+	switch (cycle.options[cycle.selectedIndex].text) {
+		case "长期":
+			break;
+
+		case "单次":
+			new_time = datetime.value;
+			break;
+
+		case "每日":
+			new_cycle = "daily";
+			new_time = time.value;
+
+			break;
+
+		case "每周":
+			new_cycle = "weekly";
+			new_time = time.value;
+			break;
+	}
+
+	let new_item = {
+		label: label.value,
+		priority: parseInt(priority.options[priority.selectedIndex].text),
+		place: place.value,
+		mail: mail.value,
+		detail: textarea.value,
+		cycle: new_cycle
+	}
 }
 
 function cover(item) {
@@ -126,40 +193,37 @@ function cover(item) {
 	editing_index = item.index;
 
 	if (item.type == "普通") {
-		document.getElementById("type").selectedIndex = 0;
+		select_type.selectedIndex = 0;
 	} else {
-		document.getElementById("type").selectedIndex = types.indexOf(item.type) + 1;
+		select_type.selectedIndex = types.indexOf(item.type) + 1;
 	}
 
-	document.getElementById("label").value = item.label;
+	label.value = item.label;
 
 	if (item.place) {
-		document.getElementById("place").value = item.place;
+		place.value = item.place;
 	} else {
-		document.getElementById("place").value = "";
+		place.value = "";
 	}
 
 	if (item.mail) {
-		document.getElementById("mail").value = item.mail;
+		mail.value = item.mail;
 	} else {
-		document.getElementById("mail").value = "";
+		mail.value = "";
 	}
 
 	if (item.detail) {
-		document.getElementById("detail").value = item.detail;
+		textarea.value = item.detail;
+		textarea.style.height = textarea.scrollHeight - 6 + "px";
 	} else {
-		document.getElementById("detail").value = "";
+		textarea.value = "";
 	}
 
-	document.getElementById("priority").selectedIndex = item.priority;
-
-	let once = document.getElementById("once");
-	let daily = document.getElementById("daily");
-	let weekly = document.getElementById("weekly");
+	priority.selectedIndex = item.priority;
 
 	if (item.cycle) {
 		if (item.cycle == "daily") {
-			document.getElementById("cycle").selectedIndex = 2;
+			cycle.selectedIndex = 2;
 
 			once.style.display = "none";
 			daily.style.display = "flex";
@@ -167,7 +231,7 @@ function cover(item) {
 		}
 
 		if (item.cycle == "weekly") {
-			document.getElementById("cycle").selectedIndex = 3;
+			cycle.selectedIndex = 3;
 
 			once.style.display = "none";
 			daily.style.display = "flex";
@@ -175,13 +239,13 @@ function cover(item) {
 		}
 	} else {
 		if (item.time) {
-			document.getElementById("cycle").selectedIndex = 1;
+			cycle.selectedIndex = 1;
 
 			once.style.display = "flex";
 			daily.style.display = "none";
 			weekly.style.display = "none";
 		} else {
-			document.getElementById("cycle").selectedIndex = 0;
+			cycle.selectedIndex = 0;
 
 			once.style.display = "none";
 			daily.style.display = "none";
