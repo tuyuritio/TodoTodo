@@ -8,13 +8,14 @@
 
 	<link rel="stylesheet" href="style_path">
 	<script src="script_path"></script>
+	<script src="item_path"></script>
 	<title>Editor</title>
 </head>
 
 <body>
 	<!-- 事项编辑器 -->
 	<section>
-		<h3>编辑事项</h3>
+		<h3 id="editor_title">编辑事项</h3>
 		<hr>
 
 		<!-- 类别 -->
@@ -48,7 +49,7 @@
 			</select>
 		</label>
 		<label id="once"><span>截至：</span><input type="datetime-local" id="datetime"></label>
-		<label id="daily"><span>截至：</span><input type="time" id="time"></label>
+		<label id="daily"><span>截至：</span><input type="time" id="select_time"></label>
 
 		<!-- 事项优先级 -->
 		<label><span>级别：</span>
@@ -67,10 +68,10 @@
 		<label><span>详情：</span><textarea placeholder="事项细节" id="detail"></textarea></label>
 
 		<!-- 确定 -->
-		<button id="complete">确定</button>
+		<button id="complete_button">确定</button>
 
 		<!-- 删除 -->
-		<button id="delete">删除</button>
+		<button id="delete_button">删除</button>
 	</section>
 
 	<!-- 事项清单 -->

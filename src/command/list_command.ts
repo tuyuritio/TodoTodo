@@ -35,8 +35,6 @@ export function getRecentItem() {
 	}
 
 	file.writeJSON(file.getJSON("recent", true), items);
-
-	console.log("List(all).Item(recent): Got.");
 }
 
 /**
@@ -62,7 +60,6 @@ export function shutOverdue() {
 
 	if (if_shut) {
 		file.writeJSON(file.getJSON("recent", true), data);
-		console.log("List(all).Item(fail).Status: todo -> fail.");
 	}
 
 
@@ -101,10 +98,8 @@ export function sortItem() {
 			list[pointer + 1] = item;
 		}
 		data[index].list = list;
-		file.writeJSON(file.getList(data[index].type, true), data[index]);
+		file.writeList(data[index].type, data[index]);
 	}
-
-	console.log("List(all).Item(all): Sorted.")
 }
 
 /**
@@ -120,12 +115,10 @@ export async function deleteList(list: any, move: boolean = true) {
 				let default_data = file.getList("普通");
 
 				default_data.list = default_data.list.concat(data);
-				file.writeJSON(file.getList("普通", true), default_data);
+				file.writeList("普通", default_data);
 			}
 
 			file.removeList(list.label);
-
-			console.log("List(" + list.label + "): Deleted.");
 
 			return true;
 		} else {

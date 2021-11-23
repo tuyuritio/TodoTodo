@@ -48,12 +48,7 @@ export class command_manager {
 	 * 新增事项
 	 */
 	Add(): void {
-		// // todo.AddItem();
-		// this.page.add().then(() => {
-		// 	this.Refresh();
-		// });
-
-		// // this.Refresh();
+		this.page.postToPage("add");
 	}
 
 	/**
@@ -61,7 +56,7 @@ export class command_manager {
 	 * @param item 被点击的事项对象
 	 */
 	Edit(item: any): void {
-		this.ShowPage();
+		// this.ShowPage();
 
 		let data = {
 			type: item.type,
@@ -74,7 +69,7 @@ export class command_manager {
 			mail: item.mail,
 			detail: item.detail
 		};
-		this.page.postMessage("edit", data);
+		this.page.postToPage("edit", data);
 	}
 
 	/* 清单管理 */

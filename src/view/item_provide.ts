@@ -188,8 +188,6 @@ class provider implements vscode.TreeDataProvider<item> {
 	 */
 	refresh(): void {
 		this.event_emitter.fire();
-
-		console.log(this.ViewId + ": Refreshed.");
 	}
 };
 
@@ -212,8 +210,6 @@ export function createItemTree(ViewId: string, ItemId: string): provider {
 	}
 
 	vscode.window.createTreeView(ViewId, option);
-
-	console.log(ViewId + ": Created.");
 
 	return item_provider;
 }

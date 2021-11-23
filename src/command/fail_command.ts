@@ -14,9 +14,7 @@ export function restart(item: any) {
 	item_data.status = "todo";
 	data.list.push(item_data);
 
-	file.writeJSON(file.getList(item.type, true), data);
-
-	console.log("List(" + item.type + ").Item(" + item.label + ").Status: fail -> todo.");
+	file.writeList(item.type, data);
 }
 
 /**
@@ -38,10 +36,8 @@ export async function restartAll() {
 						list_data.list.push(item_data);
 					}
 				}
-				file.writeJSON(file.getList(list_data.type, true), list_data);
+				file.writeList(list_data.type, list_data);
 			}
-
-			console.log("List(all).Item(fail): Restarted.");
 
 			return true;
 		} else {

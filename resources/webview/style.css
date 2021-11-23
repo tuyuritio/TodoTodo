@@ -72,7 +72,7 @@ span {
 
 input, select, textarea {
     height: var(--vscode-input-height);
-    width: 165px;
+    width: 170px;
 
     margin: 3px 0px;
     padding: 3px 4px;
@@ -87,8 +87,6 @@ input#time {
 }
 
 textarea {
-    /* padding: 0px; */
-    height: 18px;
     resize: none;
     font-family: inherit;
 }
@@ -106,7 +104,7 @@ option:first-child {
 }
 
 button {
-    width: 213px;
+    width: 218px;
 
     margin: 5px;
     padding: 6px;

@@ -2,18 +2,15 @@
 let vscode = acquireVsCodeApi();
 
 /* 全局变量 */
-let editing_type = "";
-let editing_index = 0;
+let editing_type;
+let editing_index;
 let types = [];
 
 /* 窗口加载 */
 window.onload = function () {
 	// 初始状态设置
 	setElements();
-	other_label.style.display = "none";
-	once.style.display = "none";
-	daily.style.display = "none";
-	weekly.style.display = "none";
+	initialize();
 
 	// 事项类型
 	select_type.addEventListener("change", (event) => chooseType(event));
@@ -22,7 +19,7 @@ window.onload = function () {
 	cycle.addEventListener("change", (event) => chooseCycle(event));
 
 	// 确认编辑事项
-	complete.addEventListener("click", () => edit());
+	complete_button.addEventListener("click", () => edit());
 
 	// 自适应高度
 	textarea.addEventListener("input", () => adaptiveHeight());
@@ -32,7 +29,12 @@ window.onload = function () {
 		let message = event.data;
 
 		switch (message.command) {
+			case "add":
+				readyAdd();
+				break;
+
 			case "edit":
+				readyEdit();
 				cover(message.data);
 				break;
 
@@ -56,10 +58,11 @@ function get(id) {
  * 设置文档标签
  */
 function setElements() {
+	editor_title = get("editor_title");
 	select_type = get("select_type");
 	label = get("label");
 	cycle = get("cycle");
-	complete = get("complete");
+	complete_button = get("complete_button");
 	textarea = get("detail");
 	other = get("other");
 	priority = get("priority");
@@ -70,30 +73,34 @@ function setElements() {
 	once = get("once");
 	daily = get("daily");
 	weekly = get("weekly");
-	time = get("time");
+	select_time = get("select_time");
 	datetime = get("datetime");
+	delete_button = get("delete_button");
+	weekly = get("weekly");
 }
 
 /**
- * 加载选项
+ * 初始化编辑器
  */
-function loadOption(data) {
-	types = data.types;
+function initialize() {
+	editing_type = "";
+	editing_index = 0;
 
-	for (let index = 0; index < data.types.length; index++) {
-		let new_option = document.createElement("option");
-		new_option.innerHTML = data.types[index];
-		select_type.insertBefore(new_option, other);
-	}
-
-	maximum.innerHTML = data.maximum_priority + 1;
-
-	for (let index = 0; index <= data.maximum_priority; index++) {
-		let new_option = document.createElement("option");
-		new_option.innerHTML = index;
-		priority.insertBefore(new_option, maximum);
-	}
+	select_type.selectedIndex = 0;
+	cycle.selectedIndex = 0;
 	priority.selectedIndex = 0;
+
+	label.value = "";
+	place.value = "";
+	mail.value = "";
+	detail.value = "";
+
+	other_label.style.display = "none";
+	once.style.display = "none";
+	daily.style.display = "none";
+	weekly.style.display = "none";
+
+	textarea.style.height = "18px";
 }
 
 /**
@@ -145,111 +152,63 @@ function adaptiveHeight() {
 }
 
 /**
- * 确认编辑事项
+ * 设置新建编辑器
  */
-function edit(is_new = false) {
-	if (is_new) {
-		editing_type = select_type.options[select_type.selectedIndex].text;
-	}
+function readyAdd() {
+	label.focus();
+	initialize();
+	editor_title.innerHTML = "新建事项";
+	delete_button.style.display = "none";
 
-	console.log(datetime.value);
-	// datetime: 2021-11-23T09:50
-	// time: 09:50
-
-	let new_cycle;
-	let new_time;
-	switch (cycle.options[cycle.selectedIndex].text) {
-		case "长期":
-			break;
-
-		case "单次":
-			new_time = datetime.value;
-			break;
-
-		case "每日":
-			new_cycle = "daily";
-			new_time = time.value;
-
-			break;
-
-		case "每周":
-			new_cycle = "weekly";
-			new_time = time.value;
-			break;
-	}
-
-	let new_item = {
-		label: label.value,
-		priority: parseInt(priority.options[priority.selectedIndex].text),
-		place: place.value,
-		mail: mail.value,
-		detail: textarea.value,
-		cycle: new_cycle
-	}
+	let current_time = new Date();
+	datetime.value = current_time.getFullYear() + "-" + (current_time.getMonth() + 1).toString().padStart(2, "0") + "-" + current_time.getDate().toString().padStart(2, "0") + "T" + current_time.getHours().toString().padStart(2, "0") + ":" + current_time.getMinutes().toString().padStart(2, "0");
+	select_time.value = current_time.getHours().toString().padStart(2, "0") + ":" + current_time.getMinutes().toString().padStart(2, "0");
 }
 
-function cover(item) {
-	editing_type = item.type;
-	editing_index = item.index;
+/**
+ * 设置修改编辑器
+ */
+function readyEdit() {
+	label.focus();
+	editor_title.innerHTML = "编辑事项";
+	delete_button.style.display = "block";
+}
 
-	if (item.type == "普通") {
-		select_type.selectedIndex = 0;
-	} else {
-		select_type.selectedIndex = types.indexOf(item.type) + 1;
+/**
+ * 与扩展通信
+ * @param command 命令文本
+ * @param data 通信数据
+ */
+function postToExtension(command, data) {
+	let message = {
+		command: command,
+		data: data
 	}
 
-	label.value = item.label;
+	vscode.postMessage(message);
+}
 
-	if (item.place) {
-		place.value = item.place;
-	} else {
-		place.value = "";
-	}
+/* 时间辅助 */
+/**
+ * 将时间字符串"YYYY/MM/DD-hh:mm"转换为Date对象
+ * @param time 时间文本
+ * @returns Date对象
+ */
+function toDate(time) {
+	let year = Number(time.substr(0, 4));
+	let month = Number(time.substr(5, 2));
+	let day = Number(time.substr(8, 2));
+	let hour = Number(time.substr(11, 2));
+	let minute = Number(time.substr(14, 2));
 
-	if (item.mail) {
-		mail.value = item.mail;
-	} else {
-		mail.value = "";
-	}
+	return new Date(year, month - 1, day, hour, minute);
+}
 
-	if (item.detail) {
-		textarea.value = item.detail;
-		textarea.style.height = textarea.scrollHeight - 6 + "px";
-	} else {
-		textarea.value = "";
-	}
-
-	priority.selectedIndex = item.priority;
-
-	if (item.cycle) {
-		if (item.cycle == "daily") {
-			cycle.selectedIndex = 2;
-
-			once.style.display = "none";
-			daily.style.display = "flex";
-			weekly.style.display = "none";
-		}
-
-		if (item.cycle == "weekly") {
-			cycle.selectedIndex = 3;
-
-			once.style.display = "none";
-			daily.style.display = "flex";
-			weekly.style.display = "flex";
-		}
-	} else {
-		if (item.time) {
-			cycle.selectedIndex = 1;
-
-			once.style.display = "flex";
-			daily.style.display = "none";
-			weekly.style.display = "none";
-		} else {
-			cycle.selectedIndex = 0;
-
-			once.style.display = "none";
-			daily.style.display = "none";
-			weekly.style.display = "none";
-		}
-	}
+/**
+ * 将Date对象转换为时间字符串"YYYY/MM/DD-hh:mm"
+ * @param time Date对象
+ * @returns 时间文本
+ */
+function toString(time) {
+	return time.getFullYear() + "/" + (time.getMonth() + 1).toString().padStart(2, "0") + "/" + time.getDate().toString().padStart(2, "0") + "-" + time.getHours().toString().padStart(2, "0") + ":" + time.getMinutes().toString().padStart(2, "0");
 }

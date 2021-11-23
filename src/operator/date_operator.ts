@@ -10,7 +10,7 @@ export function toDate(time: string) {
 	let hour = Number(time.substr(11, 2));
 	let minute = Number(time.substr(14, 2));
 
-	return new Date(year, month - 1, day, hour, minute)
+	return new Date(year, month - 1, day, hour, minute);
 }
 
 /**

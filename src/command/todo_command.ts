@@ -18,9 +18,7 @@ export function accomplish(item: any) {
 	data.list[item.index].time = date.toString(new Date());
 	delete data.list[item.index].cycle;
 
-	file.writeJSON(file.getList(item.type, true), data);
-
-	console.log("List(" + item.type + ").Item(" + item.label + ").Status: todo -> done.");
+	file.writeList(item.type, data);
 }
 
 /**
@@ -38,9 +36,7 @@ export function shut(item: any) {
 	delete data.list[item.index].cycle;
 	delete data.list[item.index].time;
 
-	file.writeJSON(file.getList(item.type, true), data);
-
-	console.log("List(" + item.type + ").Item(" + item.label + ").Status: todo -> fail.");
+	file.writeList(item.type, data);
 }
 
 /**
@@ -54,9 +50,7 @@ export async function deleteItem(item: any): Promise<boolean> {				// è·Ÿdeleteé
 			let data = file.getList(item.type);
 			data.list.splice(item.index, 1);
 
-			file.writeJSON(file.getList(item.type, true), data);
-
-			console.log("List(" + item.type + ").Item(" + item.label + ").Status: Deleted.");
+			file.writeList(item.type, data);
 
 			return true;
 		} else {
@@ -104,7 +98,5 @@ export function newCycle(cycle_item: any) {
 	new_item.time = date.toString(cycle_time);
 	data.list.push(new_item);
 
-	file.writeJSON(file.getList(cycle_item.type, true), data);
-
-	console.log("List(" + cycle_item.type + ").Item(" + cycle_item.label + "): Add new cycle item.");
+	file.writeList(cycle_item.type, data);
 }

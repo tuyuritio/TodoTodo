@@ -40,9 +40,8 @@ export function writeJSON(file_path: string, data: any): void {
 }
 
 /**
- * 获取清单内容 | 获取清单内容列表 | 获取清单路径
- * 若不存在则创建清单文件
- * @param list 清单名称
+ * 获取清单内容 | 获取清单路径 | 获取清单内容列表
+ * @param list 清单名称 - 若不存在则会创建清单文件
  * @param is_path 是否获取路径 - true则获取路径；false则获取内容。- **默认：** false
  * @returns 清单内容 | 清单内容列表 | 清单路径
  */
@@ -51,17 +50,16 @@ export function getList(list?: string, is_path: boolean = false): any {
 
 	if (list) {
 		directory_path = path.join(directory_path, list + ".json");
-		if (fs.existsSync(directory_path)) {
-			if (!is_path) {
-				return JSON.parse(fs.readFileSync(directory_path, "utf8"));
-			}
-		} else {
+		if (!fs.existsSync(directory_path)) {
 			let structure = { "type": list, "list": [] };
-
 			writeJSON(directory_path, structure);
 		}
 
-		return directory_path;
+		if (!is_path) {
+			return JSON.parse(fs.readFileSync(directory_path, "utf8"));
+		} else {
+			return directory_path;
+		}
 	} else {
 		let lists = [];
 		let count: number = 0;
@@ -79,6 +77,15 @@ export function getList(list?: string, is_path: boolean = false): any {
 }
 
 /**
+ * 向清单中写入覆盖数据
+ * @param list 清单名称
+ * @param data 被写入数据
+ */
+export function writeList(list: string, data: any) {
+	writeJSON(getList(list, true), data);
+}
+
+/**
  * 删除清单文件
  * @param list 清单名称
  */
@@ -87,27 +94,8 @@ export function removeList(list: string) {
 }
 
 /**
- * 获取新事项文件目录路径
- * @returns 新事项文件目录路径
- */
-export function newItem(): string {
-	let file_path = path.join(toData(), "new_item.json");
-	let initial_data = { "index": 0, "label": "事项标题", "type": "事项类别", "time": "yyyy/mm/dd-hh:mm:ss", "priority": 0, "status": "todo" };
-
-	writeJSON(file_path, initial_data);
-	return file_path;
-}
-
-/**
- * 删除新事项文件
- */
-export function removeNew(): void {
-	fs.unlinkSync(path.join(toData(), "new_item.json"));
-}
-
-/**
  * 获取Web资源 | 获取web资源路径
- * @param type 资源类型 - 可选值为 **"HTML"** 、 **"CSS"** 、 **"JS"**
+ * @param type 资源类型 - 可选值为 **"HTML"** 、 **"CSS"** 、 **"JS"** 、 **"Item"**
  * @param is_path 是否获取路径 - true则获取路径；false则获取资源。- **默认：** false
  * @returns JSON文件内容
  */
@@ -136,6 +124,12 @@ export function getWeb(type?: string, is_path: boolean = false): string {
 				return path.join(directory_path, "script.js");
 			} else {
 				return fs.readFileSync(path.join(directory_path, "script.js"), "utf8");
+			}
+		case "Item":
+			if (is_path) {
+				return path.join(directory_path, "item.js");
+			} else {
+				return fs.readFileSync(path.join(directory_path, "item.js"), "utf8");
 			}
 		default:
 			return directory_path;

@@ -16,10 +16,8 @@ export async function clear() {
 						list_data.list.splice(i, 1);
 					}
 				}
-				file.writeJSON(file.getList(list_data.type, true), list_data);
+				file.writeList(list_data.type, list_data);
 			}
-
-			console.log("List(all).Item(done): Deleted.");
 
 			return true;
 		} else {
@@ -41,7 +39,5 @@ export function redo(item: any): void {
 	delete item_data.time;
 	data.list.push(item_data);
 
-	file.writeJSON(file.getList(item.type, true), data);
-
-	console.log("List(" + item.type + ").Item(" + item.label + ").Status: done -> todo.");
+	file.writeList(item.type, data);
 }
