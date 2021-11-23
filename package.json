@@ -9,6 +9,7 @@
 	"categories": [
 		"Other"
 	],
+	"publisher": "KinoshitaTatsukana",
 	"repository": "https://gitee.com/tatsukana/todo-todo",
 	"activationEvents": [
 		"onStartupFinished"
