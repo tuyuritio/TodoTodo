@@ -1,34 +1,4 @@
 {
 	"type": "普通",
-	"list": [
-		{
-			"label": "父项事项",
-			"group": [
-				{
-					"label": "子项事项",
-					"status": "todo",
-					"priority": 0
-				}
-			],
-			"priority": 0
-		},
-		{
-			"label": "测试事项",
-			"status": "todo",
-			"priority": 0
-		},
-		{
-			"label": "长期事项",
-			"status": "done",
-			"priority": 1,
-			"time": "2021/11/24-02:07"
-		},
-		{
-			"label": "每周事项",
-			"status": "todo",
-			"cycle": "weekly",
-			"time": "2021/12/22-18:00",
-			"priority": 0
-		}
-	]
+	"list": []
 }

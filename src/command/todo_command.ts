@@ -39,6 +39,8 @@ export function shut(item: any) {
 	delete data.list[item.index].time;
 
 	file.writeList(item.type, data);
+
+	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已失效。");
 }
 
 /**
@@ -56,6 +58,8 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 
 				file.writeList(item.type, data);
 
+				file.log("事项 \"" + item.label + "(" + item.type + ")\" 已删除。");
+
 				return true;
 			} else {
 				return false;
@@ -66,6 +70,8 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 		data.list.splice(item.index, 1);
 
 		file.writeList(item.type, data);
+
+		file.log("事项 \"" + item.label + "(" + item.type + ")\" 已删除。");
 
 		return true;
 	}
@@ -111,4 +117,6 @@ export function newCycle(cycle_item: any) {
 	data.list.push(new_item);
 
 	file.writeList(cycle_item.type, data);
+
+	file.log("循环事项 \"" + cycle_item.label + "(" + cycle_item.type + ")\" 已追加。");
 }

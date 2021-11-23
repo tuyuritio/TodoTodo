@@ -110,25 +110,27 @@ export function sortItem() {
  * @returns Promise<boolean>
  */
 export async function deleteList(list: any, if_remind: boolean, move: string): Promise<boolean> {
-	if(if_remind){
+	if (if_remind) {
 		return vscode.window.showInformationMessage("确认删除清单 \"" + list.label + "\" 吗？", "确认", "取消").then((action) => {
 			if (action == "确认") {
 				if (move == "move") {
 					let data = file.getList(list.label).list;
 					let default_data = file.getList("普通");
-	
+
 					default_data.list = default_data.list.concat(data);
 					file.writeList("普通", default_data);
 				}
-	
+
 				file.removeList(list.label);
+
+				file.log("清单 \"" + list.label + "\" 已删除。");
 
 				return true;
 			} else {
 				return false;
 			}
 		});
-	}else{
+	} else {
 		if (move == "move") {
 			let data = file.getList(list.label).list;
 			let default_data = file.getList("普通");
@@ -138,6 +140,8 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 		}
 
 		file.removeList(list.label);
+
+		file.log("清单 \"" + list.label + "\" 已删除。");
 
 		return true;
 	}

@@ -147,4 +147,6 @@ function createNew(item: any): void {
 
 	data.list.push(item_data);
 	file.writeList(item.type, data);
+
+	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已编辑。");
 }

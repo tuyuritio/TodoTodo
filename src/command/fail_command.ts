@@ -15,6 +15,8 @@ export function restart(item: any) {
 	data.list.push(item_data);
 
 	file.writeList(item.type, data);
+
+	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已重启。");
 }
 
 /**
@@ -38,6 +40,8 @@ export async function restartAll() {
 				}
 				file.writeList(list_data.type, list_data);
 			}
+
+			file.log("已重启所有失效事项。")
 
 			return true;
 		} else {

@@ -3,6 +3,24 @@ import * as vscode from 'vscode';
 import * as file from '../operator/file_operator';
 
 /**
+ * 重做事项
+ * @param item 事项对象
+ */
+export function redo(item: any): void {
+	let data = file.getList(item.type);
+	let item_data = data.list[item.index];
+	data.list.splice(item.index, 1);
+
+	item_data.status = "todo";
+	delete item_data.time;
+	data.list.push(item_data);
+
+	file.writeList(item.type, data);
+
+	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已重做。");
+}
+
+/**
  * 清空已办事项
  */
 export async function clear() {
@@ -19,25 +37,11 @@ export async function clear() {
 				file.writeList(list_data.type, list_data);
 			}
 
+			file.log("已清除所有已办事项。");
+
 			return true;
 		} else {
 			return false;
 		}
 	});
-}
-
-/**
- * 重做事项
- * @param item 事项对象
- */
-export function redo(item: any): void {
-	let data = file.getList(item.type);
-	let item_data = data.list[item.index];
-	data.list.splice(item.index, 1);
-
-	item_data.status = "todo";
-	delete item_data.time;
-	data.list.push(item_data);
-
-	file.writeList(item.type, data);
 }

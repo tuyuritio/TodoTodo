@@ -53,6 +53,8 @@ export function getList(list?: string, is_path: boolean = false): any {
 		if (!fs.existsSync(directory_path)) {
 			let structure = { "type": list, "list": [] };
 			writeJSON(directory_path, structure);
+
+			log("清单 \"" + list + "\" 已建立。");
 		}
 
 		if (!is_path) {
