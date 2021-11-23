@@ -19,6 +19,9 @@ export class command_manager {
 	private process;
 	private page?: any;
 
+	/* 声明配置 */
+	private show_empty: boolean = false;
+
 	/* 初始化 */
 	/**
 	 * 创建todo_tree视图、done_tree视图、fail_tree视图、进程视图
@@ -34,11 +37,17 @@ export class command_manager {
 	/**
 	 * 刷新全局视图
 	 */
-	Refresh(): void {
+	Refresh(if_show_empty_list: boolean): void {
+		this.show_empty = if_show_empty_list;
+
+		if (this.page && this.page.is_visible()) {
+			this.page.showLog();
+		}
+
 		list.getRecentItem();
 		list.sortItem();
 
-		this.todo_tree.refresh();
+		this.todo_tree.refresh(this.show_empty);
 		this.done_tree.refresh();
 		this.fail_tree.refresh();
 		this.process.show();
@@ -50,6 +59,7 @@ export class command_manager {
 	ShowPage(): void {
 		if (!this.page || !this.page.is_visible()) {
 			this.page = page_provide.createPage();
+			this.page.showLog();
 		}
 	}
 
@@ -93,7 +103,7 @@ export class command_manager {
 	DeleteList(item: any, if_remind: boolean, move: string): void {
 		list.deleteList(item, if_remind, move).then((if_delete) => {
 			if (if_delete) {
-				this.Refresh();
+				this.Refresh(this.show_empty);
 			}
 		});
 	}
@@ -118,7 +128,7 @@ export class command_manager {
 	ShutOverdue(): void {
 		let if_fail = list.shutOverdue();
 		if (if_fail) {
-			this.Refresh();
+			this.Refresh(this.show_empty);
 		}
 	}
 
@@ -130,7 +140,7 @@ export class command_manager {
 	Accomplish(item: any): void {
 		todo.accomplish(item);
 
-		this.Refresh();
+		this.Refresh(this.show_empty);
 	}
 
 	/**
@@ -140,7 +150,7 @@ export class command_manager {
 	Shut(item: any): void {
 		todo.shut(item);
 
-		this.Refresh();
+		this.Refresh(this.show_empty);
 	}
 
 	/**
@@ -151,7 +161,7 @@ export class command_manager {
 	Delete(item: any, if_remind: boolean): void {
 		todo.deleteItem(item, if_remind).then((if_delete) => {
 			if (if_delete) {
-				this.Refresh();
+				this.Refresh(this.show_empty);
 			}
 		});
 	}
@@ -164,7 +174,7 @@ export class command_manager {
 	Redo(item: any): void {
 		done.redo(item);
 
-		this.Refresh();
+		this.Refresh(this.show_empty);
 	}
 
 	/**
@@ -173,7 +183,7 @@ export class command_manager {
 	Clear(): void {
 		done.clear().then((if_clear) => {
 			if (if_clear) {
-				this.Refresh();
+				this.Refresh(this.show_empty);
 			}
 		});
 	}
@@ -186,7 +196,7 @@ export class command_manager {
 	Restart(item: any): void {
 		fail.restart(item);
 
-		this.Refresh();
+		this.Refresh(this.show_empty);
 	}
 
 	/**
@@ -195,7 +205,7 @@ export class command_manager {
 	RestartAll(): void {
 		fail.restartAll().then((if_restart) => {
 			if (if_restart) {
-				this.Refresh();
+				this.Refresh(this.show_empty);
 			}
 		});
 	}

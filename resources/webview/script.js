@@ -15,11 +15,17 @@ window.onload = function () {
 	setElements();
 	initialize();
 
-	// 事项类型
+	// 事项类型选择
 	select_type.addEventListener("change", (event) => chooseType(event));
 
-	// 周期
+	// 周期选择
 	cycle.addEventListener("change", (event) => chooseCycle(event));
+
+	// 清空日志
+	clear_log.addEventListener("click", () => {
+		clearLog();
+		postToExtension("clearLog");
+	});
 
 	// 确认编辑事项
 	complete_button.addEventListener("click", () => edit());
@@ -27,7 +33,8 @@ window.onload = function () {
 	// 关闭事项编辑器
 	close_editor.addEventListener("click", () => { editor.style.display = "none" });
 
-	show_detail.addEventListener("click", () => show_detail_panel())
+	// 展开/收起详情编辑面板
+	show_detail.addEventListener("click", () => show_detail_panel());
 
 	// 自适应高度
 	textarea.addEventListener("input", () => adaptiveHeight());
@@ -37,6 +44,10 @@ window.onload = function () {
 		let message = event.data;
 
 		switch (message.command) {
+			case "initialize":
+				loadOption(message.data);
+				break;
+
 			case "add":
 				readyAdd();
 				break;
@@ -46,8 +57,9 @@ window.onload = function () {
 				cover(message.data);
 				break;
 
-			case "initialize":
-				loadOption(message.data);
+			case "log":
+				clearLog();
+				showLog(message.data);
 				break;
 		}
 	});
@@ -91,6 +103,8 @@ function setElements() {
 	action_text = get("action_text");
 	arrow_down = get("arrow_down");
 	arrow_up = get("arrow_up");
+	log_list = get("log_list");
+	clear_log = get("clear_log");
 }
 
 /**
@@ -167,7 +181,7 @@ function show_detail_panel() {
 		arrow_down.style.display = "none";
 		arrow_up.style.display = "inline";
 
-		detail_panel.style.display="flex";
+		detail_panel.style.display = "flex";
 		adaptiveHeight();
 	} else {
 		action_text.innerHTML = "展开";
@@ -209,6 +223,38 @@ function readyEdit() {
 
 	label.focus();
 	editor_title.innerHTML = "编辑事项";
+}
+
+/**
+ * 显示日志
+ * @param log_data 日志数据
+ */
+function showLog(log_data) {
+	for (let index = 0; index < log_data.length; index++) {
+		let new_list_item = document.createElement("li");
+
+		let time_information = document.createElement("span");
+		time_information.setAttribute("class", "time_information");
+		time_information.innerHTML = log_data[index].time + " :   ";
+
+		let log_information = document.createElement("span");
+		log_information.setAttribute("class", "log_information");
+		log_information.innerHTML = log_data[index].information;
+
+		new_list_item.appendChild(time_information);
+		new_list_item.appendChild(log_information);
+
+		log_list.appendChild(new_list_item);
+	}
+}
+
+/**
+ * 清空日志
+ */
+function clearLog() {
+	while (log_list.firstElementChild) {
+		log_list.removeChild(log_list.firstElementChild);
+	}
 }
 
 /**

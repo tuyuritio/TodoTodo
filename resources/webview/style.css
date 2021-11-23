@@ -33,7 +33,7 @@ h3 {
 body {
     display: flex;
 
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
 }
 
@@ -60,6 +60,8 @@ section {
 
 section#editor {
     display: none;
+
+    width: 222px;
 }
 
 section#detail_panel {
@@ -69,12 +71,18 @@ section#detail_panel {
     padding: 0px;
 }
 
-section.list {
-    min-width: 240px;
+section#log {
+    max-width: 600px;
+    min-height: 400px;
 }
 
-section.log {
-    min-width: 400px;
+section#log ul {
+    padding-left: 20px;
+}
+
+section#log ul li span.time_information {
+    font-size: 10px;
+    font-weight: bold;
 }
 
 label {

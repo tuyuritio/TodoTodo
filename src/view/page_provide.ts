@@ -25,6 +25,7 @@ class provider {
 		html = html.replace("script_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", true))).toString());
 		html = html.replace("item_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("Item", true))).toString());
 		html = html.replace("close_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("close"))).toString());
+		html = html.replace("clear_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("clear-all"))).toString());
 		html = html.replace("up_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-up"))).toString());
 		html = html.replace("down_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-down"))).toString());
 		html = html.replace(/csp_source/g, this.panel.webview.cspSource);
@@ -43,6 +44,10 @@ class provider {
 						deleteOld(message.data.old_item);
 					}
 					createNew(message.data.new_item);
+					break;
+
+				case "clearLog":
+					file.clearLog();
 					break;
 			}
 		})
@@ -87,6 +92,10 @@ class provider {
 		this.postToPage("initialize", page_data);
 	}
 
+	showLog() {
+		this.postToPage("log", file.getJSON("log"));
+	}
+
 	is_visible(): boolean {
 		return this.visible;
 	}
@@ -110,6 +119,10 @@ function deleteOld(item: any): void {
 	file.writeList(item.type, data);
 }
 
+/**
+ * 新建事项
+ * @param item 事项对象
+ */
 function createNew(item: any): void {
 	let data = file.getList(item.type);
 

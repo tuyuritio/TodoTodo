@@ -33,14 +33,14 @@ export function activate(context: vscode.ExtensionContext) {
 		deleteListMethod = configuration.delete.list.method;
 		showEmptyList = configuration.show.emptyList;
 
-		command.Refresh();
+		command.Refresh(showEmptyList);
 	})
 
 	// 创建命令管理器
 	let command: command_manager = new command_manager();
 
 	// 检测事项
-	command.Refresh();
+	command.Refresh(showEmptyList);
 	setInterval(() => command.GetRecentItem(), 24 * 60 * 60 * 1000);
 	setInterval(() => command.ShutOverdue(), 1000);
 
@@ -53,10 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand("list.delete", (item) => command.DeleteList(item, remindDeleteList, deleteListMethod)));
 
 	// 注册todo_tree命令
-	context.subscriptions.push(vscode.commands.registerCommand("todo.refresh", () => command.Refresh()));					// 作用于全局刷新
+	context.subscriptions.push(vscode.commands.registerCommand("todo.refresh", () => command.Refresh(showEmptyList)));					// 作用于全局刷新
 	context.subscriptions.push(vscode.commands.registerCommand("todo.accomplish", (item) => command.Accomplish(item)));
 	context.subscriptions.push(vscode.commands.registerCommand("todo.fail", (item) => command.Shut(item)));
-	context.subscriptions.push(vscode.commands.registerCommand("todo.delete", (item) => command.Delete(item,remindDeleteItem)));
+	context.subscriptions.push(vscode.commands.registerCommand("todo.delete", (item) => command.Delete(item, remindDeleteItem)));
 
 	// 注册done_tree命令
 	context.subscriptions.push(vscode.commands.registerCommand("done.clear", () => command.Clear()));

@@ -82,7 +82,7 @@ class item extends vscode.TreeItem {
 
 			this.tooltip = tips;
 
-			if(this.time){
+			if (this.time) {
 				if (date.isRecent(this.time)) {
 					this.description = this.time.substr(11, 5);
 				} else {
@@ -97,6 +97,7 @@ class item extends vscode.TreeItem {
 class provider implements vscode.TreeDataProvider<item> {
 	ViewId: string;
 	ItemId: string;
+	ShowEmpty: boolean = false;
 
 	/**
 	 * 构造方法
@@ -160,7 +161,7 @@ class provider implements vscode.TreeDataProvider<item> {
 					}
 				}
 
-				if (this.ViewId == "todo_tree" && count_todo != 0) {
+				if (this.ViewId == "todo_tree" && count_todo != 0 || this.ShowEmpty) {
 					items[count++] = new item(data[i].type, "todo_list", data[i].type, vscode.TreeItemCollapsibleState.Expanded);
 				}
 			}
@@ -186,7 +187,9 @@ class provider implements vscode.TreeDataProvider<item> {
 	/**
 	 * 刷新元素视图
 	 */
-	refresh(): void {
+	refresh(if_show_empty_list: boolean = false): void {
+		this.ShowEmpty = if_show_empty_list;
+
 		this.event_emitter.fire();
 	}
 };

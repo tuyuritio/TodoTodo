@@ -19,6 +19,8 @@ export function accomplish(item: any) {
 	delete data.list[item.index].cycle;
 
 	file.writeList(item.type, data);
+
+	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已完成。");
 }
 
 /**

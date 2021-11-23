@@ -1,3 +1,5 @@
+import * as file from './file_operator';
+
 /**
  * 将时间字符串"YYYY/MM/DD-hh:mm"转换为Date对象
  * @param time 时间文本

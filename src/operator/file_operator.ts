@@ -16,7 +16,7 @@ function toData(): string {
 
 /**
  * 获取JSON文件内容 | 获取JSON文件路径
- * @param type 内容类型 - 可选值为 **"recent"**
+ * @param type 内容类型 - 可选值为 **"recent"** 、 **"log"**
  * @param is_path 是否获取内容 - true则获取路径；false则获取内容。- **默认：** false
  * @returns JSON文件内容 | JSON文件路径
  */
@@ -147,4 +147,28 @@ export function getIconPath(icon_name: string): string {
 		directory_path = path.join(directory_path, "..");
 	}
 	return path.join(directory_path, "resources", "icon", icon_name + ".svg");
+}
+
+/**
+ * 写入日志信息
+ * @param information 日志信息
+ */
+export function log(information: string) {
+	let data = getJSON("log");
+	let time = new Date();
+
+	let new_log = {
+		time: time.getFullYear() + "/" + (time.getMonth() + 1) + "/" + time.getDate().toString().padStart(2, "0") + "-" + time.getHours().toString().padStart(2, "0") + ":" + time.getMinutes().toString().padStart(2, "0") + ":" + time.getSeconds().toString().padStart(2, "0"),
+		information: information
+	}
+
+	data.push(new_log);
+	writeJSON(getJSON("log", true), data);
+}
+
+/**
+ * 清空日志文件
+ */
+export function clearLog() {
+	writeJSON(getJSON("log", true), []);
 }
