@@ -44,6 +44,8 @@ class item extends vscode.TreeItem {
 		this.place = place;
 		this.mail = mail;
 		this.detail = detail;
+
+		this.tooltip = "完成时间: " + this.time + "\n";
 	}
 };
 
