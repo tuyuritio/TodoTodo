@@ -30,11 +30,7 @@ class progress_provider {
 		let count: number = 0;
 
 		for (let i = 0; i < data.length; i++) {
-			for (let j = 0; j < data[i].list.length; j++) {
-				if (data[i].list[j].status == "todo") {
-					count++;
-				}
-			}
+			count += data[i].list.length;
 		}
 
 		return count;

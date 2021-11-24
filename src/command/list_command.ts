@@ -1,9 +1,9 @@
 /* 模块调用 */
 import * as vscode from 'vscode';
 import * as file from '../operator/file_operator';
-import * as time from '../operator/date_operator';
+import * as date from '../operator/date_operator';
 import * as todo from './todo_command';
-import { INITIALIZEPAGE} from '../extension';
+import { INITIALIZEPAGE } from '../extension';
 
 /**
  * 检索已经逾期或未来24小时内将要逾期的事项
@@ -18,8 +18,8 @@ export function getRecentItem() {
 		for (let j = 0; j < data[i].list.length; j++) {
 			let item_data = data[i].list[j];
 
-			if (item_data.status == "todo" && item_data.time) {
-				let deadline = time.toDate(item_data.time);
+			if (item_data.time) {
+				let deadline = date.toDate(item_data.time);
 
 				if (deadline < expected_time) {
 					let item = {
@@ -48,7 +48,7 @@ export function shutOverdue() {
 	let current_time = new Date();
 
 	for (let index = 0; index < data.length; index++) {
-		if (time.toDate(data[index].time) < current_time) {
+		if (date.toDate(data[index].time) < current_time) {
 			if_shut = true;
 
 			todo.shut(data[index]);
@@ -79,17 +79,22 @@ export function sortItem() {
 			let pointer = i - 1;
 			let item = list[i];
 
-			while (pointer >= 0) {
-				if (!list[pointer].time || !item.time) {
-					if (item.time) break;													// 长期事项优先
-					if (!list[pointer].time) {												// 同为长期事项
+			// 有序则break
+			// list[pointer]在前，item在后
+			while (pointer >= 0) {																		// 插入排序
+				if (!list[pointer].time && item.time || list[pointer].time && !item.time) {				// 长期不等
+					if (!list[pointer].time) break;
+				} else {
+					if (list[pointer].time && item.time) {												// 同非长期
+						if (date.toDate(list[pointer].time) != date.toDate(item.time)) {				// 时间不同
+							if (date.toDate(list[pointer].time) <= date.toDate(item.time)) break;		// Todo升序
+						} else {
+							if (list[pointer].priority >= item.priority) break;
+						}
+					} else {																			// 同长期
 						if (list[pointer].priority >= item.priority) break;
 					}
-				} else if (time.toDate(list[pointer].time) != time.toDate(item.time)) {
-					if (time.toDate(list[pointer].time) <= time.toDate(item.time)) break;	// 早期事项优先
-				} else if (list[pointer].priority >= item.priority) {
-					break;																	// 高优先级优先
-				};
+				}
 
 				list[pointer + 1] = list[pointer];
 				pointer--;

@@ -70,17 +70,20 @@
 				{
 					"id": "todo_tree",
 					"name": "待办事项",
-					"visibility": "visible"
+					"visibility": "visible",
+					"icon": "resources/icon/icon_item.svg"
 				},
 				{
 					"id": "done_tree",
 					"name": "已办事项",
-					"visibility": "collapsed"
+					"visibility": "visible",
+					"icon": "resources/icon/icon_item.svg"
 				},
 				{
 					"id": "fail_tree",
 					"name": "未办事项",
-					"visibility": "collapsed"
+					"visibility": "collapsed",
+					"icon": "resources/icon/icon_item.svg"
 				}
 			]
 		},

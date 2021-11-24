@@ -140,7 +140,6 @@ function createNew(item: any): void {
 
 	let item_data = {
 		label: item.label,
-		status: "todo",
 		priority: item.priority,
 		cycle: cycle,
 		time: time,

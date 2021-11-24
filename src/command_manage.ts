@@ -1,5 +1,7 @@
 /* 模块调用 */
-import * as item_provide from './view/item_provide';
+import * as todo_provide from './view/todo_provide';
+import * as done_provide from './view/done_provide';
+import * as fail_provide from './view/fail_provide';
 import * as process_provide from './view/process_provide';
 import * as page_provide from './view/page_provide';
 import * as list from './command/list_command';
@@ -24,10 +26,10 @@ export class command_manager {
 	 * 创建todo_tree视图、done_tree视图、fail_tree视图、进程视图
 	 */
 	constructor() {
-		this.todo_tree = item_provide.createItemTree("todo_tree", "todo_item");	// 创建todo_tree视图
-		this.done_tree = item_provide.createItemTree("done_tree", "done_item");	// 创建done_tree视图
-		this.fail_tree = item_provide.createItemTree("fail_tree", "fail_item");	// 创建fail_tree视图
-		this.process = process_provide.CreateProgress();						// 创建进程视图
+		this.todo_tree = todo_provide.createItemTree();	// 创建todo_tree视图
+		this.done_tree = done_provide.createItemTree();	// 创建done_tree视图
+		this.fail_tree = fail_provide.createItemTree();	// 创建fail_tree视图
+		this.process = process_provide.CreateProgress();// 创建进程视图
 	}
 
 	/* 视图管理 */

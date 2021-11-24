@@ -7,15 +7,17 @@ import * as file from '../operator/file_operator';
  * @param item 事项对象
  */
 export function redo(item: any): void {
-	let data = file.getList(item.type);
-	let item_data = data.list[item.index];
-	data.list.splice(item.index, 1);
+	let done_data = file.getJSON("done");
+	let item_data = done_data[item.index];
+	done_data.splice(item.index, 1);
+	file.writeJSON(file.getJSON("done", true), done_data);
 
-	item_data.status = "todo";
 	delete item_data.time;
-	data.list.push(item_data);
+	delete item_data.type;
 
-	file.writeList(item.type, data);
+	let todo_data = file.getList(item.type);
+	todo_data.list.push(item_data);
+	file.writeList(item.type, todo_data);
 
 	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已重做。");
 }
@@ -26,17 +28,7 @@ export function redo(item: any): void {
 export async function clear() {
 	return vscode.window.showInformationMessage("确认清空已办事项吗？", "确认", "取消").then((action) => {
 		if (action == "确认") {
-			let data = file.getList();
-			for (let index = 0; index < data.length; index++) {
-				console.log("")
-				let list_data = data[index];
-				for (let i = 0; i < list_data.list.length; i++) {
-					if (list_data.list[i].status == "done") {
-						list_data.list.splice(i, 1);
-					}
-				}
-				file.writeList(list_data.type, list_data);
-			}
+			file.writeJSON(file.getJSON("done", true), []);
 
 			file.log("已清除所有已办事项。");
 

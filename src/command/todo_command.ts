@@ -12,13 +12,19 @@ export function accomplish(item: any) {
 		newCycle(item);
 	}
 
-	let data = file.getList(item.type);
+	let todo_data = file.getList(item.type);
+	let item_data = todo_data.list[item.index];
 
-	data.list[item.index].status = "done";
-	data.list[item.index].time = date.toString(new Date());
-	delete data.list[item.index].cycle;
+	todo_data.list.splice(item.index, 1);
+	file.writeList(item.type, todo_data);
 
-	file.writeList(item.type, data);
+	item_data.type = item.type;
+	item_data.time = date.toString(new Date());
+	delete item_data.cycle;
+
+	let done_data = file.getJSON("done");
+	done_data.unshift(item_data);
+	file.writeJSON(file.getJSON("done", true), done_data);
 
 	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已完成。");
 }
@@ -32,13 +38,19 @@ export function shut(item: any) {
 		newCycle(item);
 	}
 
-	let data = file.getList(item.type);
+	let todo_data = file.getList(item.type);
+	let item_data = todo_data.list[item.index];
 
-	data.list[item.index].status = "fail";
-	delete data.list[item.index].cycle;
-	delete data.list[item.index].time;
+	todo_data.list.splice(item.index, 1);
+	file.writeList(item.type, todo_data);
 
-	file.writeList(item.type, data);
+	item_data.type = item.type;
+	delete item_data.time;
+	delete item_data.cycle;
+
+	let fail_data = file.getJSON("fail");
+	fail_data.unshift(item_data);
+	file.writeJSON(file.getJSON("fail", true), fail_data);
 
 	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已失效。");
 }
@@ -110,13 +122,13 @@ export function newCycle(cycle_item: any) {
 		}
 	}
 
-	let data = file.getList(cycle_item.type);
+	let todo_data = file.getList(cycle_item.type);
 
-	let new_item = data.list[cycle_item.index];
+	let new_item = todo_data.list[cycle_item.index];
 	new_item.time = date.toString(cycle_time);
-	data.list.push(new_item);
+	todo_data.list.push(new_item);
 
-	file.writeList(cycle_item.type, data);
+	file.writeList(cycle_item.type, todo_data);
 
 	file.log("循环事项 \"" + cycle_item.label + "(" + cycle_item.type + ")\" 已追加。");
 }

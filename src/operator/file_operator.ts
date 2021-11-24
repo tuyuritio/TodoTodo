@@ -17,29 +17,49 @@ export function floderExists() {
  * @returns JSON文件目录路径
  */
 function toData(is_list: boolean = true): string {
-	if (is_list) {
-		let configuration = vscode.workspace.getConfiguration("todotodo");
-		let listPath;
-		if (configuration.listPath) {
-			listPath = configuration.listPath;
+	let configuration = vscode.workspace.getConfiguration("todotodo");
+	let listPath = configuration.listPath;
 
-			if (!fs.existsSync(path.join(listPath, "普通.json"))) {
-				let structure = { "type": "普通", "list": [] };
-				writeJSON(path.join(listPath, "普通.json"), structure);
-			}
-		} else {
-			listPath = path.join(__dirname, "..", "..", "TodoListData");
+	if (!listPath) {
+		listPath = path.join(__dirname, "..", "..", "TodoTodoData");
+	}
+
+	if (is_list) {
+		if (!fs.existsSync(path.join(listPath, "ListData"))) {
+			fs.mkdirSync(path.join(listPath, "ListData"));
 		}
 
-		return listPath;
+		if (!fs.existsSync(path.join(listPath, "ListData", "普通.json"))) {
+			let structure = { "type": "普通", "list": [] };
+			writeJSON(path.join(listPath, "普通.json"), structure);
+		}
+
+		listPath = path.join(listPath, "ListData");
 	} else {
-		return path.join(__dirname, "..", "..", "resources", "data");
+		if (!fs.existsSync(path.join(listPath, "log.json"))) {
+			writeJSON(path.join(listPath, "log.json"), []);
+		}
+
+		if (!fs.existsSync(path.join(listPath, "recent.json"))) {
+			let structure: any = [];
+			writeJSON(path.join(listPath, "recent.json"), []);
+		}
+
+		if (!fs.existsSync(path.join(listPath, "done.json"))) {
+			writeJSON(path.join(listPath, "done.json"), []);
+		}
+
+		if (!fs.existsSync(path.join(listPath, "fail.json"))) {
+			writeJSON(path.join(listPath, "fail.json"), []);
+		}
 	}
+
+	return listPath;
 }
 
 /**
  * 获取JSON文件内容 | 获取JSON文件路径
- * @param type 内容类型 - 可选值为 **"recent"** 、 **"log"**
+ * @param type 内容类型 - 可选值为 **"recent"** 、 **"log"** 、 **"done"** 、 **"fail"**
  * @param is_path 是否获取内容 - true则获取路径；false则获取内容。- **默认：** false
  * @returns JSON文件内容 | JSON文件路径
  */
@@ -79,7 +99,7 @@ export function getList(list?: string, is_path: boolean = false): any {
 
 			log("清单 \"" + list + "\" 已建立。");
 		}
-		
+
 		if (!is_path) {
 			return JSON.parse(fs.readFileSync(directory_path, "utf8"));
 		} else {
