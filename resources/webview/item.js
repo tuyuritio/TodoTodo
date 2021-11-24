@@ -35,6 +35,7 @@ function cover(item) {
 	}
 
 	label.value = item.label;
+	priority.selectedIndex = item.priority;
 
 	if (item.place) {
 		place.value = item.place;
@@ -59,34 +60,36 @@ function cover(item) {
 
 	if (item.cycle) {
 		if (item.cycle == "daily") {
+			cycle.selectedIndex = 2;
 			once.style.display = "none";
 			daily.style.display = "flex";
 			weekly.style.display = "none";
 
-			cycle.selectedIndex = 2;
 			select_time.value = item.time.substr(11, 5);
 		}
 
 		if (item.cycle == "weekly") {
+			cycle.selectedIndex = 3;
 			once.style.display = "none";
 			daily.style.display = "flex";
 			weekly.style.display = "flex";
 
-			cycle.selectedIndex = 3;
+			weekly.selectedIndex = (toDate(item.time).getDay() + 6) % 7;
+			select_time.value = item.time.substr(11, 5);
 		}
 	} else {
 		if (item.time) {
+			cycle.selectedIndex = 1;
 			once.style.display = "flex";
 			daily.style.display = "none";
 			weekly.style.display = "none";
 
-			cycle.selectedIndex = 1;
+			datetime.value = item.time.replace("-", "T").replaceAll("/", "-");
 		} else {
+			cycle.selectedIndex = 0;
 			once.style.display = "none";
 			daily.style.display = "none";
 			weekly.style.display = "none";
-
-			cycle.selectedIndex = 0;
 		}
 	}
 }
@@ -130,7 +133,7 @@ function edit() {
 			new_cycle = "weekly";
 			let week_day = weekly.selectedIndex;
 
-			new_time = new Date(current_time.getFullYear(), current_time.getMonth, current_time.getDate() - (current_time.getDay() + 6) % 7 + week_day, parseInt(time.value.substr(0, 2)), parseInt(time.value.substr(3, 2)));
+			new_time = new Date(current_time.getFullYear(), current_time.getMonth, current_time.getDate() - (current_time.getDay() + 6) % 7 + week_day, parseInt(select_time.value.substr(0, 2)), parseInt(select_time.value.substr(3, 2)));
 			while (new_time < current_time) {
 				new_time.setDate(new_time.getDate() + 7);
 			}

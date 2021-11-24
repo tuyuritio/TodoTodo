@@ -211,6 +211,7 @@ function readyAdd() {
 	editor_title.innerHTML = "新建事项";
 
 	let current_time = new Date();
+	weekly.selectedIndex = (current_time.getDay() + 6) % 7;
 	datetime.value = current_time.getFullYear() + "-" + (current_time.getMonth() + 1).toString().padStart(2, "0") + "-" + current_time.getDate().toString().padStart(2, "0") + "T" + current_time.getHours().toString().padStart(2, "0") + ":" + current_time.getMinutes().toString().padStart(2, "0");
 	select_time.value = current_time.getHours().toString().padStart(2, "0") + ":" + current_time.getMinutes().toString().padStart(2, "0");
 }
