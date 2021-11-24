@@ -1,7 +1,7 @@
 /* 模块调用 */
 import * as vscode from 'vscode';
 import * as file from '../operator/file_operator';
-import {REFRESH} from '../extension';
+import { REFRESH } from '../extension';
 
 /* Page选项 */
 class option implements vscode.WebviewOptions, vscode.WebviewPanelOptions {
@@ -92,6 +92,10 @@ class provider {
 		}
 
 		this.postToPage("initialize", page_data);
+	}
+
+	close() {
+		this.panel.dispose();
 	}
 
 	showLog() {

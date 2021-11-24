@@ -61,6 +61,15 @@ export class command_manager {
 	}
 
 	/**
+	 * 关闭主页
+	 */
+	ClosePage(): void {
+		if (this.page) {
+			this.page.close();
+		}
+	}
+
+	/**
 	 * 新增事项
 	 */
 	Add(): void {

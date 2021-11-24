@@ -180,4 +180,6 @@ function edit() {
 	};
 
 	postToExtension("add", data);
+
+	closeEditor();
 }

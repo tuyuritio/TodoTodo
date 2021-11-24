@@ -31,7 +31,7 @@ window.onload = function () {
 	complete_button.addEventListener("click", () => edit());
 
 	// 关闭事项编辑器
-	close_editor.addEventListener("click", () => { editor.style.display = "none" });
+	close_editor.addEventListener("click", () => closeEditor());
 
 	// 展开/收起详情编辑面板
 	show_detail.addEventListener("click", () => show_detail_panel());
@@ -198,6 +198,13 @@ function show_detail_panel() {
 function adaptiveHeight() {
 	textarea.style.height = "18px";
 	textarea.style.height = textarea.scrollHeight - 6 + "px";
+}
+
+/**
+ * 关闭编辑器
+ */
+function closeEditor() {
+	editor.style.display = "none";
 }
 
 /**

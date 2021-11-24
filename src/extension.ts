@@ -79,3 +79,12 @@ let extra_command: command_manager;
 export function REFRESH() {
 	extra_command.Refresh(extra_command.show_empty);
 }
+
+/* 强制开关网页 */
+export function CLOSEPAGE() {
+	extra_command.ClosePage();
+}
+
+export function ADD() {
+	extra_command.Add();
+}
