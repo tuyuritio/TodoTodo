@@ -61,12 +61,10 @@ export class command_manager {
 	}
 
 	/**
-	 * 关闭主页
+	 * 初始化主页
 	 */
-	ClosePage(): void {
-		if (this.page) {
-			this.page.close();
-		}
+	InitializePage(): void {
+		this.page.initializePage();
 	}
 
 	/**

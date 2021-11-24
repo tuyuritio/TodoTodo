@@ -181,5 +181,7 @@ function edit() {
 
 	postToExtension("add", data);
 
-	closeEditor();
+	if (editing_type != "") {
+		closeEditor();
+	}
 }

@@ -1,7 +1,7 @@
 /* 模块调用 */
 import * as vscode from 'vscode';
 import * as file from '../operator/file_operator';
-import { REFRESH } from '../extension';
+import { INITIALIZEPAGE, REFRESH } from '../extension';
 
 /* Page选项 */
 class option implements vscode.WebviewOptions, vscode.WebviewPanelOptions {
@@ -153,4 +153,6 @@ function createNew(item: any): void {
 	file.writeList(item.type, data);
 
 	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已编辑。");
+
+	INITIALIZEPAGE();
 }

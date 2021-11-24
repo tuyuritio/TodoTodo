@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import * as file from '../operator/file_operator';
 import * as time from '../operator/date_operator';
 import * as todo from './todo_command';
+import { INITIALIZEPAGE} from '../extension';
 
 /**
  * 检索已经逾期或未来24小时内将要逾期的事项
@@ -61,7 +62,6 @@ export function shutOverdue() {
 	if (if_shut) {
 		file.writeJSON(file.getJSON("recent", true), data);
 	}
-
 
 	return if_shut;
 }
@@ -130,6 +130,7 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 
 				file.log("清单 \"" + list.label + "\" 已删除。");
 
+				INITIALIZEPAGE();
 				return true;
 			} else {
 				return false;
@@ -148,6 +149,8 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 
 		file.log("清单 \"" + list.label + "\" 已删除。");
 
+		INITIALIZEPAGE();
 		return true;
 	}
+
 }

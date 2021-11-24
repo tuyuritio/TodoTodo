@@ -2,7 +2,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { ADD, CLOSEPAGE } from '../extension';
 
 /**
  * 判断路径是否存在
@@ -79,12 +78,8 @@ export function getList(list?: string, is_path: boolean = false): any {
 			writeJSON(directory_path, structure);
 
 			log("清单 \"" + list + "\" 已建立。");
-
-			
-			CLOSEPAGE();
-			ADD();
 		}
-
+		
 		if (!is_path) {
 			return JSON.parse(fs.readFileSync(directory_path, "utf8"));
 		} else {
