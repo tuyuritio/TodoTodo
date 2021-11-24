@@ -110,6 +110,11 @@ export function sortItem() {
  * @returns Promise<boolean>
  */
 export async function deleteList(list: any, if_remind: boolean, move: string): Promise<boolean> {
+	if (list.label == "普通") {
+		vscode.window.showWarningMessage("默认清单无法删除！");
+		return false;
+	}
+
 	if (if_remind) {
 		return vscode.window.showInformationMessage("确认删除清单 \"" + list.label + "\" 吗？", "确认", "取消").then((action) => {
 			if (action == "确认") {

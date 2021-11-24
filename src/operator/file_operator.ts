@@ -1,17 +1,40 @@
 /* 模块调用 */
+import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 
 /**
- * 获取JSON文件总目录路径
- * @returns JSON文件总目录路径
+ * 判断路径是否存在
+ * @returns 路径是否存在
  */
-function toData(): string {
-	let directory_path = __dirname;
-	while (!fs.existsSync(path.join(directory_path, "resources"))) {
-		directory_path = path.join(directory_path, "..");
+export function floderExists() {
+	return fs.existsSync(toData());
+}
+
+/**
+ * 获取JSON文件目录路径
+ * @param is_list 是否为清单目录
+ * @returns JSON文件目录路径
+ */
+function toData(is_list: boolean = true): string {
+	if (is_list) {
+		let configuration = vscode.workspace.getConfiguration("todotodo");
+		let listPath;
+		if (configuration.listPath) {
+			listPath = configuration.listPath;
+
+			if (!fs.existsSync(path.join(listPath, "普通.json"))) {
+				let structure = { "type": "普通", "list": [] };
+				writeJSON(path.join(listPath, "普通.json"), structure);
+			}
+		} else {
+			listPath = path.join(__dirname, "..", "..", "TodoListData");
+		}
+
+		return listPath;
+	} else {
+		return path.join(__dirname, "..", "..", "resources", "data");
 	}
-	return path.join(directory_path, "resources", "data");
 }
 
 /**
@@ -21,7 +44,7 @@ function toData(): string {
  * @returns JSON文件内容 | JSON文件路径
  */
 export function getJSON(type: string, is_path: boolean = false): any {
-	let file_path = path.join(toData(), type + ".json");
+	let file_path = path.join(toData(false), type + ".json");
 
 	if (is_path) {
 		return file_path;
@@ -46,7 +69,7 @@ export function writeJSON(file_path: string, data: any): void {
  * @returns 清单内容 | 清单内容列表 | 清单路径
  */
 export function getList(list?: string, is_path: boolean = false): any {
-	let directory_path = path.join(toData(), "todo_list");
+	let directory_path = toData();
 
 	if (list) {
 		directory_path = path.join(directory_path, list + ".json");
@@ -92,7 +115,7 @@ export function writeList(list: string, data: any) {
  * @param list 清单名称
  */
 export function removeList(list: string) {
-	fs.unlinkSync(path.join(toData(), "todo_list", list + ".json"));
+	fs.unlinkSync(path.join(toData(), list + ".json"));
 }
 
 /**

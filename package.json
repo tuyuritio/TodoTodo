@@ -48,6 +48,10 @@
 						"type": "boolean",
 						"default": false,
 						"description": "是否显示空清单。"
+					},
+					"todotodo.listPath": {
+						"type": "string",
+						"description": "清单文件目录路径（绝对路径）。\n若为空则使用默认路径。"
 					}
 				}
 			}

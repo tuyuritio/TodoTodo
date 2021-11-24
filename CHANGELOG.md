@@ -1,9 +1,37 @@
-# Change Log
+# 更新日志
 
-All notable changes to the "todotodo" extension will be documented in this file.
+## [0.0.1] - 2021/11/24
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+### 新增
 
-## [Unreleased]
+- 正式发布扩展
 
-- Initial release
+## [0.0.2] - 2021/11/24
+
+### 新增
+
+- 新增扩展图标
+
+## [0.0.3] - 2021/11/24
+
+### 修改
+
+- 删除残余测试数据
+
+## [0.0.4] - 2021/11/24
+
+### 新增
+
+- 新增自定义清单文件路径（暂不支持异常路径处理）
+
+<!-- 
+# 模板
+
+## [版本号] - 更新日期
+
+### 新增
+
+### 修改
+
+### 移除
+-->

@@ -28,6 +28,7 @@ export async function clear() {
 		if (action == "确认") {
 			let data = file.getList();
 			for (let index = 0; index < data.length; index++) {
+				console.log("")
 				let list_data = data[index];
 				for (let i = 0; i < list_data.list.length; i++) {
 					if (list_data.list[i].status == "done") {

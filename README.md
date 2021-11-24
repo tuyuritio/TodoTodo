@@ -12,6 +12,7 @@
 - `todotodo.delete.list.remind`: 在删除清单时显示确认对话框。
 - `todotodo.delete.list.method`: 删除清单时，原有事项的处理方法。
 - `todotodo.show.emptyList`: 是否显示空清单。
+- `todotodo.listPath`: 清单文件目录路径（绝对路径）。
 
 ## 版本说明
 
@@ -19,13 +20,6 @@
 
 - 正式发布扩展
 
-### 0.0.2
+### 0.0.4
 
-- 新增扩展图标
-
-### 0.0.3
-
-- 修复残余数据
-
-<!-- * [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/) -->
+- 新增自定义清单文件路径（暂不支持异常路径处理）
