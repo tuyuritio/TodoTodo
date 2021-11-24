@@ -122,22 +122,24 @@ function edit() {
 		case "每日":
 			new_cycle = "daily";
 
-			new_time = new Date(current_time.getFullYear(), current_time.getMonth, current_time.getDate(), parseInt(time.value.substr(0, 2)), parseInt(time.value.substr(3, 2)));
+			new_time = new Date(current_time.getFullYear(), current_time.getMonth(), current_time.getDate(), parseInt(time.value.substr(0, 2)), parseInt(time.value.substr(3, 2)));
 			while (new_time < current_time) {
 				new_time.setDate(new_time.getDate() + 1);
 			}
 
+			time_string = toString(new_time);
 			break;
 
 		case "每周":
 			new_cycle = "weekly";
 			let week_day = weekly.selectedIndex;
 
-			new_time = new Date(current_time.getFullYear(), current_time.getMonth, current_time.getDate() - (current_time.getDay() + 6) % 7 + week_day, parseInt(select_time.value.substr(0, 2)), parseInt(select_time.value.substr(3, 2)));
+			new_time = new Date(current_time.getFullYear(), current_time.getMonth(), current_time.getDate() - (current_time.getDay() + 6) % 7 + week_day, parseInt(select_time.value.substr(0, 2)), parseInt(select_time.value.substr(3, 2)));
 			while (new_time < current_time) {
 				new_time.setDate(new_time.getDate() + 7);
 			}
 
+			time_string = toString(new_time);
 			break;
 	}
 
