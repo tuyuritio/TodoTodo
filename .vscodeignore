@@ -10,3 +10,4 @@ vsc-extension-quickstart.md
 **/*.ts
 TodoListData/**
 !TodoListData/普通.json
+PersonalAccessToken.ini
