@@ -139,7 +139,7 @@ option:first-child {
 }
 
 button {
-    width: 218px;
+    width: 224px;
 
     margin: 5px;
     padding: 6px;
@@ -151,6 +151,7 @@ button {
 
     text-align: center;
 
+    align-self: center;
     background: var(--vscode-button-background);
 }
 
@@ -165,7 +166,7 @@ button#show_detail {
     justify-content: center;
     align-items: center;
 
-    width: 216px;
+    width: 222px;
 
     padding: 0px;
 
@@ -175,8 +176,6 @@ button#show_detail {
     color: var(--vscode-input-foreground);
 
     background-color: var(--vscode-sideBar-background);
-
-    align-self: center;
 }
 
 button#show_detail img {
