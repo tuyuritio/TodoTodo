@@ -20,7 +20,7 @@ function toData(is_list: boolean = true): string {
 	let configuration = vscode.workspace.getConfiguration("todotodo");
 	let listPath = configuration.listPath;
 
-	if (!listPath) {
+	if (!listPath || !fs.existsSync(listPath)) {
 		listPath = path.join(__dirname, "..", "..", "TodoTodoData");
 	}
 
@@ -31,7 +31,7 @@ function toData(is_list: boolean = true): string {
 
 		if (!fs.existsSync(path.join(listPath, "ListData", "普通.json"))) {
 			let structure = { "type": "普通", "list": [] };
-			writeJSON(path.join(listPath, "普通.json"), structure);
+			writeJSON(path.join(listPath, "ListData", "普通.json"), structure);
 		}
 
 		listPath = path.join(listPath, "ListData");
@@ -207,7 +207,7 @@ export function log(information: string) {
 		information: information
 	}
 
-	data.push(new_log);
+	data.unshift(new_log);
 	writeJSON(getJSON("log", true), data);
 }
 

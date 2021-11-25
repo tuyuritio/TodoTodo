@@ -2,9 +2,16 @@
 
 ## 简介
 
-在侧边栏显示待办事项。
+作为新生代农民工，一款内置于VSCode的Todo工具或许能改善一点生活质量。
 
-> Gitee地址：[https://gitee.com/tatsukana/todo-todo](https://gitee.com/tatsukana/todo-todo)
+这款插件能在侧边栏显示待办事项，尽量减少对日常编码工作的影响。
+
+## 功能
+
+- 通过Webview新建或编辑事项。
+- 带截止时间事项的逾期提醒。
+- 通过不同的清单来规划事项。
+- 通过Webview显示日志，对事项的操作一目了然。
 
 ## Todo结构
 
@@ -36,7 +43,12 @@
 - `todotodo.show.emptyList`: 是否显示空清单。
 - `todotodo.listPath`: 清单文件目录路径（绝对路径）。
 
-## 最近更新
+**:warning:建议修改清单路径，默认路径将在更新时被清除！:warning:**
 
-### 0.0.1 - 2021.11.24
-- 新增：发布扩展
+## 更多信息
+
+项目开始时间: **2021.11.01-03:18**
+
+> Gitee地址：[https://gitee.com/tatsukana/todo-todo](https://gitee.com/tatsukana/todo-todo)
+> <br>
+> 如有其它需求或者BUG希望大家可以在ISSUE中提出！

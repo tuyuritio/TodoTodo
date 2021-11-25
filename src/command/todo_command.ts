@@ -101,8 +101,8 @@ export function newCycle(cycle_item: any) {
 		let today = new Date();
 		today.setHours(0, 0, 0, 0);
 
-		if (cycle_time < today) {
-			while (cycle_time < current_time) {
+		if (date.toNumber(cycle_time) < date.toNumber(today)) {
+			while (date.toNumber(cycle_time) < date.toNumber(current_time)) {
 				cycle_time.setDate(cycle_time.getDate() + 1);
 			}
 		} else {
@@ -113,8 +113,8 @@ export function newCycle(cycle_item: any) {
 		this_week.setDate(this_week.getDate() - (this_week.getDay() + 6) % 7);
 		this_week.setHours(0, 0, 0, 0);
 
-		if (cycle_time < this_week) {
-			while (cycle_time < current_time) {
+		if (date.toNumber(cycle_time) < date.toNumber(this_week)) {
+			while (date.toNumber(cycle_time) < date.toNumber(current_time)) {
 				cycle_time.setDate(cycle_time.getDate() + 7);
 			}
 		} else {

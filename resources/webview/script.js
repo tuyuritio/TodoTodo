@@ -296,6 +296,31 @@ function toDate(time) {
 }
 
 /**
+ * 将"YYYY/MM/DD-hh:mm"转换为数字 | 将Date对象转换为数字
+ * @param time Date文本 | Date对象
+ * @returns Milliseconds
+ */
+function toNumber(time) {
+	let time_object= new Date();
+
+	if (typeof time == "string") {
+		let year = Number(time.substr(0, 4));
+		let month = Number(time.substr(5, 2));
+		let day = Number(time.substr(8, 2));
+		let hour = Number(time.substr(11, 2));
+		let minute = Number(time.substr(14, 2));
+
+		time_object = new Date(year, month - 1, day, hour, minute);
+	}
+
+	if (time instanceof Date) {
+		time_object = time;
+	}
+
+	return time_object.valueOf();
+}
+
+/**
  * 将Date对象转换为时间字符串"YYYY/MM/DD-hh:mm"
  * @param time Date对象
  * @returns 时间文本

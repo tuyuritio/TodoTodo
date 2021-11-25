@@ -15,7 +15,7 @@ class progress_provider {
 		if (left == 0) {
 			this.progress.text = "您已完成所有事项！";
 		} else {
-			this.progress.text = "剩余待办事项：" + this.count_todo() + "件";
+			this.progress.text = "剩余待办：" + this.count_todo() + "件";
 		}
 
 		this.progress.show();

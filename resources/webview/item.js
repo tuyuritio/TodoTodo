@@ -3,6 +3,9 @@
  */
 function loadOption(data) {
 	types = data.types;
+	while (other.previousElementSibling.innerHTML != "==事项类别==") {
+		select_type.removeChile(other.previousElementSibling.innerHTML);
+	}
 
 	for (let index = 0; index < data.types.length; index++) {
 		let new_option = document.createElement("option");
@@ -11,6 +14,9 @@ function loadOption(data) {
 	}
 
 	maximum.innerHTML = data.maximum_priority + 1;
+	while (priority.firstElementChild.id != "maximum") {
+		priority.removeChile(priority.firstElementChild);
+	}
 
 	for (let index = 0; index <= data.maximum_priority; index++) {
 		let new_option = document.createElement("option");
@@ -22,7 +28,7 @@ function loadOption(data) {
 
 /**
  * 覆盖文本数据
- * @param item 事项对象 
+ * @param item 事项对象
  */
 function cover(item) {
 	editing_type = item.type;
@@ -112,7 +118,7 @@ function edit() {
 			time_string = datetime.value.replaceAll("-", "/").replace("T", "-");
 
 			// 检测输入时间是否逾期
-			if (toDate(time_string) < current_time) {
+			if (toNumber(time_string) < toNumber(current_time)) {
 				postToExtension("warning", "请选择一个未来的时间！");
 				return;
 			}

@@ -21,7 +21,7 @@ export function getRecentItem() {
 			if (item_data.time) {
 				let deadline = date.toDate(item_data.time);
 
-				if (deadline < expected_time) {
+				if (date.toNumber(deadline) < date.toNumber(expected_time)) {
 					let item = {
 						type: data[i].type,
 						index: j,
@@ -48,7 +48,7 @@ export function shutOverdue() {
 	let current_time = new Date();
 
 	for (let index = 0; index < data.length; index++) {
-		if (date.toDate(data[index].time) < current_time) {
+		if (date.toNumber(data[index].time) < date.toNumber(current_time)) {
 			if_shut = true;
 
 			todo.shut(data[index]);
@@ -86,8 +86,8 @@ export function sortItem() {
 					if (!list[pointer].time) break;
 				} else {
 					if (list[pointer].time && item.time) {												// 同非长期
-						if (date.toDate(list[pointer].time) != date.toDate(item.time)) {				// 时间不同
-							if (date.toDate(list[pointer].time) <= date.toDate(item.time)) break;		// Todo升序
+						if (date.toNumber(list[pointer].time) != date.toNumber(item.time)) {				// 时间不同
+							if (date.toNumber(list[pointer].time) < date.toNumber(item.time)) break;		// Todo升序
 						} else {
 							if (list[pointer].priority >= item.priority) break;
 						}
@@ -157,5 +157,4 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 		INITIALIZEPAGE();
 		return true;
 	}
-
 }
