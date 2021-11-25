@@ -3,7 +3,7 @@
 	"displayName": "TodoTodo",
 	"description": "VSCode Sidebar Todo",
 	"icon": "resources/icon/icon.png",
-	"version": "0.0.1",
+	"version": "0.0.5",
 	"engines": {
 		"vscode": "^1.61.0"
 	},
