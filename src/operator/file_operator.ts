@@ -21,6 +21,10 @@ function toData(is_list: boolean = true): string {
 	let listPath = configuration.listPath;
 
 	if (!listPath || !fs.existsSync(listPath)) {
+		if (!fs.existsSync(listPath)) {
+			vscode.window.showErrorMessage("自定义清单文件目录路径无效，请检查！\n（现已使用默认路径，请及时更换！）");
+		}
+
 		listPath = path.join(__dirname, "..", "..", "TodoTodoData");
 	}
 
