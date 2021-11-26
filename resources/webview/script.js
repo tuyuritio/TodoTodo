@@ -32,7 +32,10 @@ window.onload = function () {
 	complete_button.addEventListener("click", () => edit());
 
 	// 关闭事项编辑器
-	close_editor.addEventListener("click", () => closeEditor());
+	close_editor.addEventListener("click", () => close("editor"));
+
+	// 关闭事项详情
+	close_item.addEventListener("click", () => close("item"));
 
 	// 展开/收起详情编辑面板
 	show_detail.addEventListener("click", () => show_detail_panel());
@@ -58,6 +61,10 @@ window.onload = function () {
 				cover(message.data);
 				break;
 
+			case "information":
+				information(message.data);
+				break;
+
 			case "log":
 				clearLog();
 				showLog(message.data);
@@ -79,33 +86,48 @@ function get(id) {
  * 设置文档标签
  */
 function setElements() {
-	editor = get("editor");
-	editor_title = get("editor_title");
-	select_type = get("select_type");
-	label = get("label");
-	cycle = get("cycle");
-	complete_button = get("complete_button");
-	textarea = get("detail");
-	other = get("other");
-	priority = get("priority");
-	maximum = get("maximum");
-	input_type = get("other_type");
-	place = get("place");
-	mail = get("mail");
-	once = get("once");
-	daily = get("daily");
-	weekly = get("weekly");
-	select_time = get("select_time");
-	datetime = get("datetime");
-	weekly = get("weekly");
-	close_editor = get("close_editor");
-	show_detail = get("show_detail");
-	detail_panel = get("detail_panel");
 	action_text = get("action_text");
 	arrow_down = get("arrow_down");
 	arrow_up = get("arrow_up");
-	log_list = get("log_list");
 	clear_log = get("clear_log");
+	close_editor = get("close_editor");
+	complete_button = get("complete_button");
+	cycle = get("cycle");
+	daily = get("daily");
+	datetime = get("datetime");
+	detail_panel = get("detail_panel");
+	particulars_value = get("particulars_value");
+	editor = get("editor");
+	editor_title = get("editor_title");
+	input_type = get("other_type");
+	item_information = get("item_information");
+	item_label = get("item_label");
+	item_type = get("item_type");
+	item_priority = get("item_priority");
+	item_place = get("item_place");
+	item_mail = get("item_mail");
+	item_particulars = get("item_particulars");
+	item_time = get("item_time");
+	label = get("label");
+	label_value = get("label_value");
+	log_list = get("log_list");
+	mail = get("mail");
+	mail_value = get("mail_value");
+	maximum = get("maximum");
+	once = get("once");
+	other = get("other");
+	place = get("place");
+	place_value = get("place_value");
+	priority = get("priority");
+	priority_value = get("priority_value");
+	select_time = get("select_time");
+	select_type = get("select_type");
+	show_detail = get("show_detail");
+	time_type = get("time_type");
+	time_value = get("time_value");
+	textarea = get("particulars");
+	type_value = get("type_value");
+	weekly = get("weekly");
 }
 
 /**
@@ -123,7 +145,7 @@ function initialize() {
 	label.value = "";
 	place.value = "";
 	mail.value = "";
-	detail.value = "";
+	particulars.value = "";
 
 	other_label.style.display = "none";
 	once.style.display = "none";
@@ -205,8 +227,17 @@ function adaptiveHeight() {
 /**
  * 关闭编辑器
  */
-function closeEditor() {
-	editor.style.display = "none";
+function close(panel) {
+	switch (panel) {
+		case "editor":
+			editor.style.display = "none";
+			break;
+
+		case "item":
+			item_information.style.display = "none";
+			break;
+	}
+
 }
 
 /**

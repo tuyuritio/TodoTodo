@@ -1,18 +1,15 @@
 /* 模块调用 */
 import * as vscode from "vscode";
 import * as package_set from "./package_set";
-import * as todo_provide from "./view/todo_provide";
-import * as done_provide from "./view/done_provide";
-import * as fail_provide from "./view/fail_provide";
-import * as progress_provide from "./view/progress_provide";
-import * as page_provide from "./view/page_provide";
+import * as todo_tree from "./view/todo_tree";
+import * as done_tree from "./view/done_tree";
+import * as fail_tree from "./view/fail_tree";
+import * as progress_bar from "./view/progress_bar";
+import * as page_view from "./view/page_view";
 import * as list_command from "./command/list_command";
 import * as todo_command from "./command/todo_command";
 import * as done_command from "./command/done_command";
 import * as fail_command from "./command/fail_command";
-
-/* 全局变量 */
-let extension_context: vscode.ExtensionContext;			// 扩展上下文
 
 /* 初始化扩展 */
 /**
@@ -22,10 +19,10 @@ export function initialize(context: vscode.ExtensionContext): void {
 	extension_context = context;						// 建立上下文
 	commands.register();
 
-	view.todo_tree = todo_provide.createItemTree();		// 创建todo_tree视图
-	view.done_tree = done_provide.createItemTree();		// 创建done_tree视图
-	view.fail_tree = fail_provide.createItemTree();		// 创建fail_tree视图
-	view.progress = progress_provide.CreateProgress();	// 创建进度视图
+	view.todo_tree = todo_tree.createItemTree();		// 创建todo_tree视图
+	view.done_tree = done_tree.createItemTree();		// 创建done_tree视图
+	view.fail_tree = fail_tree.createItemTree();		// 创建fail_tree视图
+	view.progress = progress_bar.CreateProgress();	// 创建进度视图
 }
 
 /* 扩展配置参数 */
@@ -52,23 +49,26 @@ export class configurations {
 		});
 	}
 }
-let configuration = new configurations();
+
+/* 全局变量 */
+let extension_context: vscode.ExtensionContext;			// 扩展上下文
+new configurations();									// 扩展配置
 
 /* 视图管理 */
 export class view {
-	static todo_tree: todo_provide.provider;
-	static done_tree: done_provide.provider;
-	static fail_tree: fail_provide.provider;
-	static progress: progress_provide.progress_provider;
-	static page_provider: page_provide.provider;
+	static todo_tree: todo_tree.provider;
+	static done_tree: done_tree.provider;
+	static fail_tree: fail_tree.provider;
+	static progress: progress_bar.progress_provider;
+	static page_view: page_view.provider;
 
 	/**
 	 * 刷新全局视图
 	 */
 	static refresh(): void {
-		if (view.page_provider && view.page_provider.is_visible()) {
-			view.page_provider.showLog();
-			view.page_provider.initializePage();
+		if (view.page_view && view.page_view.is_visible()) {
+			view.page_view.showLog();
+			view.page_view.initializePage();
 		}
 
 		list_command.getRecentItem();
@@ -83,8 +83,8 @@ export class view {
 
 /* 命令注册管理 */
 export namespace commands {
-	function set(command: string, action: (data?: any) => any): void {
-		extension_context.subscriptions.push(vscode.commands.registerCommand(command, (data) => action(data)));
+	function set(command: string, action: (...data: any) => any): void {
+		extension_context.subscriptions.push(vscode.commands.registerCommand(command, (...data) => action(...data)));
 	}
 
 	export function register(): void {
@@ -92,6 +92,7 @@ export namespace commands {
 		set("page.show", () => page.show());
 		set("page.add", () => page.add(configurations.pageEditorAddAfterAction));
 		set("page.edit", (item) => page.edit(item));
+		set("page.particulars", (item, status) => page.particulars(item, status));
 
 		// 注册list命令
 		set("list.delete", (item) => list.deleteList(item, configurations.listAllDeleteRemind, configurations.listAllItemDeleteMethod));
@@ -120,9 +121,9 @@ export namespace page {
 	* 显示主页
 	*/
 	export function show(): void {
-		if (!view.page_provider || !view.page_provider.is_visible()) {
-			view.page_provider = page_provide.createPage();
-			view.page_provider.showLog();
+		if (!view.page_view || !view.page_view.is_visible()) {
+			view.page_view = page_view.createPage();
+			view.page_view.showLog();
 		}
 	}
 
@@ -130,8 +131,8 @@ export namespace page {
 	 * 初始化主页
 	 */
 	export function initialize(): void {
-		if (view.page_provider) {
-			view.page_provider.initializePage();
+		if (view.page_view) {
+			view.page_view.initializePage();
 		}
 	}
 
@@ -141,7 +142,7 @@ export namespace page {
 	export function add(action: string): void {
 		show();
 
-		view.page_provider.postToPage("add", action);
+		view.page_view.postToPage("add", action);
 	}
 
 	/**
@@ -160,9 +161,32 @@ export namespace page {
 			time: item.time,
 			place: item.place,
 			mail: item.mail,
-			detail: item.detail
+			particulars: item.particulars
 		};
-		view.page_provider.postToPage("edit", data);
+		view.page_view.postToPage("edit", data);
+	}
+
+	/**
+	 * 显示事项信息
+	 * @param item 事项对象
+	 * @param status 事项状态
+	 */
+	export function particulars(item: any, status: string) {
+		show();
+
+		let data = {
+			type: item.type,
+			index: item.index,
+			label: item.label,
+			priority: item.priority,
+			cycle: item.cycle,
+			time: item.time,
+			place: item.place,
+			mail: item.mail,
+			particulars: item.particulars,
+			status: status
+		};
+		view.page_view.postToPage("information", data);
 	}
 }
 

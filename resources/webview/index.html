@@ -72,7 +72,7 @@
 			<label><span>邮箱：</span><input type="text" placeholder="目标邮箱" id="mail"></label>
 
 			<!-- 事项细节 -->
-			<label><span>详情：</span><textarea placeholder="事项细节" id="detail"></textarea></label>
+			<label><span>详情：</span><textarea placeholder="事项细节" id="particulars"></textarea></label>
 		</section>
 
 		<!-- 确定 -->
@@ -81,19 +81,19 @@
 
 	<section id="item_information">
 		<div>
-			<h3>事项详情</h3>
+			<h3>事项信息</h3>
 			<img src="close_path" id="close_item">
 		</div>
 		<hr>
 
-		<p><span>事项名称：</span></p>
-		<p><span>事项类别：</span></p>
-		<p><span>优先层级：</span></p>
-		<p><span>目标地点：</span></p>
-		<p><span>目标邮箱：</span></p>
-		<p><span>事项细节：</span></p>
-		<p><span>事项周期：</span></p>
-		<p><span>事项时间：</span></p>
+		<p id="item_label"><span>事项名称</span><span id="label_value" class="value"></span></p>
+		<p id="item_type"><span>事项类别</span><span id="type_value" class="value"></span></p>
+		<p id="item_status"><span>事项状态</span><span id="status_value" class="value"></span></p>
+		<p id="item_priority"><span>优先层级</span><span id="priority_value" class="value"></span></p>
+		<p id="item_place"><span>目标地点</span><span id="place_value" class="value"></span></p>
+		<p id="item_mail"><span>目标邮箱</span><span id="mail_value" class="value"></span></p>
+		<p id="item_particulars"><span>事项细节</span><span id="particulars_value" class="value"></span></p>
+		<p id="item_time"><span id="time_type">事项时间</span><span id="time_value" class="value"></span></p>
 	</section>
 
 	<!-- 事项日志 -->

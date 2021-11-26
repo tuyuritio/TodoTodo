@@ -12,7 +12,7 @@ class item extends vscode.TreeItem {
 	time: string | undefined;
 	place: string | undefined;
 	mail: string | undefined;
-	detail: string | undefined;
+	particulars: string | undefined;
 
 	/**
 	 * 构造方法
@@ -36,16 +36,22 @@ class item extends vscode.TreeItem {
 	 * @param time 截止时间
 	 * @param place 目标地点
 	 */
-	set(index: number, priority: number, time: string, place: string, mail: string, detail: string): void {
+	set(index: number, priority: number, time: string, place: string, mail: string, particulars: string): void {
 		this.index = index;
 		this.priority = priority;
 
 		this.time = time;
 		this.place = place;
 		this.mail = mail;
-		this.detail = detail;
+		this.particulars = particulars;
 
 		this.tooltip = "完成时间: " + this.time + "\n";
+
+		this.command = {
+			command: "page.particulars",
+			title: "显示详情",
+			arguments: [this, "done"]
+		};
 	}
 };
 
@@ -70,7 +76,7 @@ export class provider implements vscode.TreeDataProvider<item> {
 		let items: item[] = [];
 		for (let index = 0; index < data.length; index++) {
 			items[index] = new item(data[index].label, data[index].type);
-			items[index].set(index, data[index].priority, data[index].time, data[index].place, data[index].mail, data[index].detail);
+			items[index].set(index, data[index].priority, data[index].time, data[index].place, data[index].mail, data[index].particulars);
 		}
 
 		return items;

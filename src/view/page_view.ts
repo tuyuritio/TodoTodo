@@ -136,7 +136,7 @@ function createNew(item: any): void {
 	let time = item.time != "" ? item.time : undefined;
 	let place = item.place != "" ? item.place : undefined;
 	let mail = item.mail != "" ? item.mail : undefined;
-	let detail = item.detail != "" ? item.detail : undefined;
+	let particulars = item.particulars != "" ? item.particulars : undefined;
 
 	let item_data = {
 		label: item.label,
@@ -145,7 +145,7 @@ function createNew(item: any): void {
 		time: time,
 		place: place,
 		mail: mail,
-		detail: detail
+		particulars: particulars
 	};
 
 	data.list.push(item_data);

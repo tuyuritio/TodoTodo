@@ -55,8 +55,8 @@ function cover(item) {
 		mail.value = "";
 	}
 
-	if (item.detail) {
-		textarea.value = item.detail;
+	if (item.particulars) {
+		textarea.value = item.particulars;
 	} else {
 		textarea.value = "";
 	}
@@ -128,7 +128,7 @@ function edit() {
 		case "每日":
 			new_cycle = "daily";
 
-			new_time = new Date(current_time.getFullYear(), current_time.getMonth(), current_time.getDate(), parseInt(time.value.substr(0, 2)), parseInt(time.value.substr(3, 2)));
+			new_time = new Date(current_time.getFullYear(), current_time.getMonth(), current_time.getDate(), parseInt(select_time.value.substr(0, 2)), parseInt(select_time.value.substr(3, 2)));
 			while (new_time < current_time) {
 				new_time.setDate(new_time.getDate() + 1);
 			}
@@ -174,7 +174,7 @@ function edit() {
 		time: time_string,
 		place: place.value,
 		mail: mail.value,
-		detail: textarea.value
+		particulars: textarea.value
 	};
 
 	let data = {
@@ -205,5 +205,92 @@ function edit() {
 			default:
 				break;
 		}
+	}
+}
+
+/**
+ * 显示事项信息
+ * @param item 事项对象
+ */
+function information(item) {
+	item_information.style.display = "flex";
+
+	label_value.innerHTML = item.label;
+	type_value.innerHTML = item.type;
+	priority_value.innerHTML = item.priority;
+
+	item_time.style.display = "flex";
+	if (item.cycle) {
+
+		let time_text = "";
+
+		switch (item.cycle) {
+			case "daily":
+				time_text += "每日" + item.time.substr(11, 5);
+				break;
+
+			case "weekly":
+				let week_days = "一二三四五六日";
+
+				time_text += "每周"
+				time_text += week_days.charAt((toDate(item.time).getDay() + 6) % 7);
+				time_text += item.time.substr(11, 5);
+
+				break;
+		}
+
+		time_value.innerHTML = time_text;
+	} else if (item.time) {
+		time_value.innerHTML = item.time;
+	} else {
+		item_time.style.display = "none";
+	}
+
+	if (item.place) {
+		item_place.style.display = "flex";
+
+		place_value.innerHTML = item.place;
+	} else {
+		item_place.style.display = "none";
+	}
+
+	if (item.mail) {
+		item_mail.style.display = "flex";
+
+		mail_value.innerHTML = item.mail;
+	} else {
+		item_mail.style.display = "none";
+	}
+
+	if (item.particulars) {
+		item_particulars.style.display = "flex";
+		particulars_value.innerHTML = item.particulars.replaceAll("\n", "<br>");
+	} else {
+		item_particulars.style.display = "none";
+	}
+
+	if (item.status) {
+		item_status.style.display = "flex";
+
+		let status_text = "";
+		switch (item.status) {
+			case "todo":
+				status_text = "待办";
+				time_type.innerHTML = "截止时间";
+				break;
+
+			case "done":
+				status_text = "已办";
+				time_type.innerHTML = "完成时间";
+				break;
+
+			case "fail":
+				status_text = "失效";
+				break;
+		}
+
+		status_value.innerHTML = status_text;
+	} else {
+		item_status.style.display = "none";
 	}
 }

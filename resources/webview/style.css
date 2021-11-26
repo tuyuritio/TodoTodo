@@ -182,7 +182,8 @@ button#show_detail img#arrow_up {
 /* log */
 
 section#log {
-    min-width: 600px;
+    width: 600px;
+    max-width: 600px;
     min-height: 400px;
 }
 
@@ -202,4 +203,35 @@ section#item_information {
     display: none;
 
     min-width: 222px;
+}
+
+section#item_information p {
+    display: flex;
+
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;        /* 设置条目标题垂直居中或者置顶 */
+
+    line-height: 20px;
+}
+
+section#item_information p span {
+    display: inline-block;
+
+    margin: 5px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--vscode-activityBar-background);
+    padding: 3px;
+
+    flex-shrink: 0;
+}
+
+section#item_information p span.value {
+    word-wrap: normal;
+
+    border-right-color: var(--vscode-sideBar-background);
+    border-top-color: var(--vscode-sideBar-background);
+    flex-shrink: unset;
+    word-break: break-all;
 }

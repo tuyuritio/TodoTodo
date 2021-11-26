@@ -13,7 +13,7 @@ class item extends vscode.TreeItem {
 	time: string | undefined;
 	place: string | undefined;
 	mail: string | undefined;
-	detail: string | undefined;
+	particulars: string | undefined;
 
 	/**
 	 * 构造方法
@@ -39,7 +39,7 @@ class item extends vscode.TreeItem {
 	 * @param time 截止时间
 	 * @param place 目标地点
 	 */
-	set(index: number, priority: number, cycle: string, time: string, place: string, mail: string, detail: string): void {
+	set(index: number, priority: number, cycle: string, time: string, place: string, mail: string, particulars: string): void {
 		this.index = index;
 		this.priority = priority;
 
@@ -47,7 +47,7 @@ class item extends vscode.TreeItem {
 		this.time = time;
 		this.place = place;
 		this.mail = mail;
-		this.detail = detail;
+		this.particulars = particulars;
 
 		this.iconPath = new vscode.ThemeIcon("note");
 
@@ -56,14 +56,14 @@ class item extends vscode.TreeItem {
 			tips += "截止时间: " + this.time + "\n";
 
 			if (date.isRecent(this.time)) {
-				this.description = this.time.substr(11, 5);
 				this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
+				if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {
+					this.description = this.time.substr(11, 5);
+				}
 			} else {
-				this.description = this.time.substr(0, 10);
-			}
-
-			if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {
-
+				if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {
+					this.description = this.time.substr(0, 10);
+				}
 			}
 		} else {
 			this.iconPath = new vscode.ThemeIcon("info");
@@ -77,8 +77,8 @@ class item extends vscode.TreeItem {
 			tips += "目标邮箱: " + this.mail + "\n";
 		}
 
-		if (this.detail) {
-			tips += this.detail + "\n";
+		if (this.particulars) {
+			tips += this.particulars + "\n";
 		}
 
 		this.tooltip = tips;
@@ -86,6 +86,12 @@ class item extends vscode.TreeItem {
 		if (this.contextValue == "gaze_item") {
 			this.iconPath = vscode.Uri.file(file.getIconPath(this.iconPath.id, true));
 		}
+
+		this.command = {
+			command: "page.particulars",
+			title: "显示详情",
+			arguments: [this, "todo"]
+		};
 	}
 };
 
@@ -118,7 +124,7 @@ export class provider implements vscode.TreeDataProvider<item> {
 						let item_data = data[i].list[index];
 						let item_id = item_data.gaze ? "gaze_item" : "todo_item";
 						items[index] = new item(item_data.label, item_id, data[i].type);
-						items[index].set(index, item_data.priority, item_data.cycle, item_data.time, item_data.place, item_data.mail, item_data.detail);
+						items[index].set(index, item_data.priority, item_data.cycle, item_data.time, item_data.place, item_data.mail, item_data.particulars);
 					}
 				}
 			}
