@@ -1,4 +1,5 @@
 /* 模块调用 */
+import { type } from "os";
 import * as vscode from "vscode";
 import * as command from "../command_manage";
 import * as file from "../operator/file_operator";
@@ -32,7 +33,7 @@ export class provider {
 		html = html.replace(/csp_source/g, this.panel.webview.cspSource);
 
 		this.panel.webview.html = html;
-		this.initializePage();
+		this.initialize();
 
 		this.panel.webview.onDidReceiveMessage((message) => {
 			switch (message.command) {
@@ -46,6 +47,14 @@ export class provider {
 					}
 					createNew(message.data.new_item);
 					command.view.refresh();
+					break;
+
+				case "list":
+					editList(message.data);
+					break;
+
+				case "delete":
+					deleteList(message.data);
 					break;
 
 				case "clearLog":
@@ -68,30 +77,47 @@ export class provider {
 		this.panel.webview.postMessage(message);
 	}
 
-	initializePage(): void {
+	initialize(): void {
 		let data = file.getList();
 
-		let types: string[] = [];
-		let maximum_priority = 0;
+		let default_index: number = -1;
+		let types: { type: string, priority: number }[] = [];
+		let list_maximum_priority = 0;
+		let item_maximum_priority = 0;
 		for (let index = 0; index < data.length; index++) {
-			types.push(data[index].type);
+			types.push({ type: data[index].type, priority: data[index].priority });
 
+			// 计算清单最大优先层级
+			if (data[index].priority > list_maximum_priority) {
+				list_maximum_priority = data[index].priority;
+			}
+
+			// 计算事项最大优先层级
 			for (let i = 0; i < data[index].list.length; i++) {
 				let item_data = data[index].list[i];
-				if (item_data.priority > maximum_priority) {
-					maximum_priority = item_data.priority;
+				if (item_data.priority > item_maximum_priority) {
+					item_maximum_priority = item_data.priority;
 				}
+			}
+
+			if (types[index].type == "普通") {
+				default_index = index;
 			}
 		}
 
-		types.splice(types.indexOf("普通"), 1);
+		types.splice(default_index, 1);
 
 		let page_data = {
 			types: types,
-			maximum_priority: maximum_priority
+			item_maximum_priority: item_maximum_priority,
+			list_maximum_priority: list_maximum_priority
 		}
 
 		this.postToPage("initialize", page_data);
+	}
+
+	list() {
+		this.postToPage("list");
 	}
 
 	close() {
@@ -154,4 +180,48 @@ function createNew(item: any): void {
 	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已编辑。");
 
 	command.page.initialize();
+}
+
+/**
+ * 编辑清单
+ * @param data 清单对象
+ */
+function editList(list: any) {
+	if (list.new.priority != list.old.priority) {
+		let data = file.getList(list.old.type);
+		data.priority = list.new.priority;
+		file.writeList(list.old.type, data);
+	}
+
+	if (list.new.type != list.old.type) {
+		let data = file.getList();
+		let if_same = false;
+		for (let index = 0; index < data.length; index++) {
+			if (index != list.index + 1 && list.new.type == data[index].type) {
+				vscode.window.showWarningMessage("存在同名清单，请重新输入！");
+				if_same = true;
+				break;
+			}
+		}
+
+		if (!if_same) {
+			file.renameList(list.old.type, list.new.type);
+		}
+	}
+
+	command.view.refresh();
+}
+
+/**
+ * 删除清单
+ * @param index 清单编号
+ */
+function deleteList(index: number) {
+	let data = file.getList();
+	let list = {
+		label: data[index].type,
+		type: data[index].type
+	}
+
+	vscode.commands.executeCommand("list.delete", list)
 }

@@ -22,10 +22,11 @@ class item extends vscode.TreeItem {
 	 * @param type 事项类别
 	 * @param collapsibleState 折叠状态 - **默认：** `非折叠`
 	 */
-	constructor(label: string, ItemId: string, type: string, collapsibleState: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None) {
+	constructor(label: string, ItemId: string, type: string, priority: number, collapsibleState: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None) {
 		super(label, collapsibleState);
 
 		this.type = type;
+		this.priority = priority;
 		this.contextValue = ItemId;
 
 		this.iconPath = new vscode.ThemeIcon("list-unordered");
@@ -39,9 +40,8 @@ class item extends vscode.TreeItem {
 	 * @param time 截止时间
 	 * @param place 目标地点
 	 */
-	set(index: number, priority: number, cycle: string, time: string, place: string, mail: string, particulars: string): void {
+	set(index: number, cycle: string, time: string, place: string, mail: string, particulars: string): void {
 		this.index = index;
-		this.priority = priority;
 
 		this.cycle = cycle;
 		this.time = time;
@@ -123,30 +123,35 @@ export class provider implements vscode.TreeDataProvider<item> {
 					for (let index = 0; index < data[i].list.length; index++) {
 						let item_data = data[i].list[index];
 						let item_id = item_data.gaze ? "gaze_item" : "todo_item";
-						items[index] = new item(item_data.label, item_id, data[i].type);
-						items[index].set(index, item_data.priority, item_data.cycle, item_data.time, item_data.place, item_data.mail, item_data.particulars);
+						items[index] = new item(item_data.label, item_id, data[i].type, item_data.priority);
+						items[index].set(index, item_data.cycle, item_data.time, item_data.place, item_data.mail, item_data.particulars);
 					}
 				}
 			}
 		} else {
 			let count: number = 0;
-			for (let i = 0; i < data.length; i++) {
-				if (data[i].list.length != 0 || this.ShowEmpty) {
-					items[count++] = new item(data[i].type, "todo_list", data[i].type, vscode.TreeItemCollapsibleState.Expanded);
+			for (let index = 0; index < data.length; index++) {
+				if (data[index].list.length != 0 || this.ShowEmpty) {
+					items[count++] = new item(data[index].type, "todo_list", data[index].type, data[index].priority, vscode.TreeItemCollapsibleState.Expanded);
 				}
 			}
 
-			// 普通事项置顶
-			let index = 0;
-			while (index < items.length) {
-				if (items[index].type == "普通") break;
-				index++;
+			for (let index = 1; index < items.length; index++) {
+				let pointer = index - 1;
+				let list = items[index];
+
+				while (pointer >= 0) {
+					if (list.priority != -1) {
+						if (items[pointer].priority == -1) break;
+						if (items[pointer].priority >= list.priority) break;
+					}
+
+					items[pointer + 1] = items[pointer];
+					pointer--;
+				}
+
+				items[pointer + 1] = list;
 			}
-			let default_list = items[index];
-			for (let i = index; i >= 1; i--) {
-				items[i] = items[i - 1];
-			}
-			items[0] = default_list;
 		}
 
 		return items;

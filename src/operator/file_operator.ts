@@ -31,8 +31,8 @@ function toData(is_list: boolean = true): string {
 		}
 
 		if (!fs.existsSync(path.join(list_path, "ListData", "普通.json"))) {
-			let structure = { "type": "普通", "list": [] };
-			writeJSON(path.join(list_path, "ListData", "普通.json"), structure);
+			let default_list = { type: "普通", priority: -1, list: [{ label: "样例事项", priority: 0, cycle: "weekly", time: "2999/01/01/-00:00", place: "在这里记录目标地点", mail: "在这里记录目标邮箱", particulars: "在这里记录事项细节" }] };
+			writeJSON(path.join(list_path, "ListData", "普通.json"), default_list);
 		}
 
 		list_path = path.join(list_path, "ListData");
@@ -93,14 +93,22 @@ export function getList(list?: string, is_path: boolean = false): any {
 
 	if (list) {
 		directory_path = path.join(directory_path, list + ".json");
-		if (!fs.existsSync(directory_path)) {
-			let structure = { "type": list, "list": [] };
-			writeJSON(directory_path, structure);
-
-			log("清单 \"" + list + "\" 已建立。");
-		}
-
 		if (!is_path) {
+
+			if (!fs.existsSync(directory_path)) {
+				let structure = { type: list, priority: 0, list: [] };
+				writeJSON(directory_path, structure);
+
+				log("清单 \"" + list + "\" 已建立。");
+			}
+
+			{	// 兼容0.2.3及更早版本，写入清单priority属性
+				let data = JSON.parse(fs.readFileSync(directory_path, "utf8"));
+				if (!data.priority) {
+					data.priority = 0;
+				}
+				writeList(list, data);
+			}
 			return JSON.parse(fs.readFileSync(directory_path, "utf8"));
 		} else {
 			return directory_path;
@@ -235,4 +243,17 @@ export function getPackage() {
  */
 export function setPackage(data: any) {
 	writeJSON(path.join(__dirname, "..", "..", "package.json"), data);
+}
+
+/**
+ * 重命名清单
+ * @param list 清单名称
+ * @param new_name 新名称
+ */
+export function renameList(list: string, new_name: string) {
+	fs.renameSync(getList(list, true), getList(new_name, true));
+
+	let data = getList(new_name);
+	data.type = new_name;
+	writeList(new_name, data);
 }

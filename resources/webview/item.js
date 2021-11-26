@@ -2,28 +2,77 @@
  * 加载选项
  */
 function loadOption(data) {
-	types = data.types;
+	// 事项类别
 	while (other.previousElementSibling.innerHTML != "==事项类别==") {
 		select_type.removeChild(other.previousElementSibling);
 	}
 
+	types = data.types;
 	for (let index = 0; index < data.types.length; index++) {
 		let new_option = document.createElement("option");
-		new_option.innerHTML = data.types[index];
+		new_option.innerHTML = types[index].type;
 		select_type.insertBefore(new_option, other);
 	}
 
-	maximum.innerHTML = data.maximum_priority + 1;
+	// 优先层级
+	maximum.innerHTML = data.item_maximum_priority + 1;
 	while (priority.firstElementChild.id != "maximum") {
 		priority.removeChild(priority.firstElementChild);
 	}
 
-	for (let index = 0; index <= data.maximum_priority; index++) {
+	for (let index = 0; index <= data.item_maximum_priority; index++) {
 		let new_option = document.createElement("option");
 		new_option.innerHTML = index;
 		priority.insertBefore(new_option, maximum);
 	}
 	priority.selectedIndex = 0;
+
+	// 清单列表
+	while (lists_list.firstElementChild) {
+		lists_list.removeChild(lists_list.firstElementChild);
+	}
+
+	for (let index = 0; index < data.types.length; index++) {
+		let new_list = document.createElement("p");
+
+		let name_label = document.createElement("span");
+		name_label.innerHTML = "名称：";
+
+		let name_input = document.createElement("input");
+		name_input.type = "text";
+		name_input.value = data.types[index].type;
+		name_input.id = "new_type_" + index;
+
+		let priority_label = document.createElement("span");
+		priority_label.innerHTML = "层级：";
+
+		// 获取列表优先层级序列
+		let new_selector = document.createElement("select");
+		for (let i = 0; i <= data.list_maximum_priority + 1; i++) {
+			let new_option = document.createElement("option");
+			new_option.innerHTML = i;
+			new_selector.appendChild(new_option);
+		}
+		new_selector.selectedIndex = data.types[index].priority;
+		new_selector.id = "new_priority_" + index;
+
+		let edit_button = document.createElement("button");
+		edit_button.innerHTML = "编辑";
+		edit_button.addEventListener("click", () => editList(index));
+
+		let delete_button = document.createElement("button");
+		delete_button.innerHTML = "删除";
+		delete_button.addEventListener("click", () => postToExtension("delete", index));
+
+		new_list.appendChild(name_label);
+		new_list.appendChild(name_input);
+		new_list.appendChild(priority_label);
+		new_list.appendChild(new_selector);
+		new_list.appendChild(edit_button);
+		new_list.appendChild(delete_button);
+
+		lists_list.appendChild(new_list);
+	}
 }
 
 /**
@@ -103,7 +152,7 @@ function cover(item) {
 /**
  * 提交编辑事项
  */
-function edit() {
+function editItem() {
 	// 编辑时间
 	let current_time = new Date();
 	let new_time;
@@ -293,4 +342,26 @@ function information(item) {
 	} else {
 		item_status.style.display = "none";
 	}
+}
+
+/**
+ * 提交编辑清单
+ */
+function editList(index) {
+	let new_type = get("new_type_" + index).value;
+	let new_priority = get("new_priority_" + index).selectedIndex;
+
+	let data = {
+		old: {
+			type: types[index].type,
+			priority: types[index].priority
+		},
+		new: {
+			type: new_type,
+			priority: new_priority
+		},
+		index: index
+	}
+
+	postToExtension("list", data);
 }

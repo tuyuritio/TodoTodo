@@ -27,7 +27,8 @@ export function getRecentItem() {
 						index: j,
 						label: item_data.label,
 						time: item_data.time,
-						cycle: item_data.cycle
+						cycle: item_data.cycle,
+						gaze: item_data.gaze
 					}
 					items.push(item);
 				}
@@ -51,8 +52,12 @@ export function shutOverdueItem() {
 		if (date.toNumber(data[index].time) < date.toNumber(current_time)) {
 			if_shut = true;
 
-			todo.shut(data[index]);
-			vscode.window.showWarningMessage("事项 \"" + data[index].label + "\" 已逾期！");
+			if (data[index].gaze) {
+				todo.accomplish(data[index]);
+			} else {
+				todo.shut(data[index]);
+				vscode.window.showWarningMessage("事项 \"" + data[index].label + "\" 已逾期！");
+			}
 
 			data.splice(index, 1);
 			index--;

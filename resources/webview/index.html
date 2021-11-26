@@ -14,10 +14,10 @@
 
 <body>
 	<!-- 事项编辑器 -->
-	<section id="editor">
+	<section id="item_editor">
 		<div>
-			<h3 id="editor_title">编辑事项</h3>
-			<img src="close_path" id="close_editor">
+			<h3 id="item_editor_title">编辑事项</h3>
+			<img src="close_path" id="close_item_editor">
 		</div>
 		<hr>
 
@@ -57,6 +57,7 @@
 		<!-- 展开/收起 -->
 		<button id="show_detail"><span id="action_text">展开</span><img src="down_path" id="arrow_down"><img src="up_path" id="arrow_up"></button>
 
+		<!-- 细节面板 -->
 		<section id="detail_panel">
 			<!-- 优先层级 -->
 			<label><span>层级：</span>
@@ -79,6 +80,27 @@
 		<button id="complete_button">确定</button>
 	</section>
 
+	<!-- 列表编辑器 -->
+	<section id="list_editor">
+		<div>
+			<h3>清单列表</h3>
+			<img src="close_path" id="close_list_editor">
+		</div>
+		<hr>
+
+		<div id="lists_list">
+			<!-- <p id="default_list"><span>名称：</span><input type="text">
+				<span>层级：</span>
+				<select>
+					<option class="maximum_option">0</option>
+				</select>
+				<button>编辑</button>
+				<button>删除</button>
+			</p> -->
+		</div>
+	</section>
+
+	<!-- 事项信息 -->
 	<section id="item_information">
 		<div>
 			<h3>事项信息</h3>

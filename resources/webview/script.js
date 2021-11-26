@@ -11,7 +11,7 @@ let types = [];
 
 /* 窗口加载 */
 window.onload = function () {
-	editor.style.display = "none";
+	item_editor.style.display = "none";
 	// 初始状态设置
 	setElements();
 	initialize();
@@ -24,15 +24,18 @@ window.onload = function () {
 
 	// 清空日志
 	clear_log.addEventListener("click", () => {
-		clearLog();
+		clearAllLog();
 		postToExtension("clearLog");
 	});
 
 	// 确认编辑事项
-	complete_button.addEventListener("click", () => edit());
+	complete_button.addEventListener("click", () => editItem());
+
+	// 关闭清单编辑器
+	close_list_editor.addEventListener("click", () => close("list_editor"));
 
 	// 关闭事项编辑器
-	close_editor.addEventListener("click", () => close("editor"));
+	close_item_editor.addEventListener("click", () => close("item_editor"));
 
 	// 关闭事项详情
 	close_item.addEventListener("click", () => close("item"));
@@ -65,8 +68,12 @@ window.onload = function () {
 				information(message.data);
 				break;
 
+			case "list":
+				readyList();
+				break;
+
 			case "log":
-				clearLog();
+				clearAllLog();
 				showLog(message.data);
 				break;
 		}
@@ -90,15 +97,14 @@ function setElements() {
 	arrow_down = get("arrow_down");
 	arrow_up = get("arrow_up");
 	clear_log = get("clear_log");
-	close_editor = get("close_editor");
+	close_item_editor = get("close_item_editor");
 	complete_button = get("complete_button");
 	cycle = get("cycle");
 	daily = get("daily");
 	datetime = get("datetime");
 	detail_panel = get("detail_panel");
-	particulars_value = get("particulars_value");
-	editor = get("editor");
-	editor_title = get("editor_title");
+	item_editor = get("item_editor");
+	item_editor_title = get("item_editor_title");
 	input_type = get("other_type");
 	item_information = get("item_information");
 	item_label = get("item_label");
@@ -110,12 +116,15 @@ function setElements() {
 	item_time = get("item_time");
 	label = get("label");
 	label_value = get("label_value");
+	list_editor = get("list_editor");
+	lists_list = get("lists_list");
 	log_list = get("log_list");
 	mail = get("mail");
 	mail_value = get("mail_value");
 	maximum = get("maximum");
 	once = get("once");
 	other = get("other");
+	particulars_value = get("particulars_value");
 	place = get("place");
 	place_value = get("place_value");
 	priority = get("priority");
@@ -229,27 +238,30 @@ function adaptiveHeight() {
  */
 function close(panel) {
 	switch (panel) {
-		case "editor":
-			editor.style.display = "none";
+		case "list_editor":
+			list_editor.style.display = "none";
+			break;
+
+		case "item_editor":
+			item_editor.style.display = "none";
 			break;
 
 		case "item":
 			item_information.style.display = "none";
 			break;
 	}
-
 }
 
 /**
  * 设置新建编辑器
  */
 function readyAdd(action) {
-	editor.style.display = "flex";
+	item_editor.style.display = "flex";
 	action_after_add = action;
 
 	label.focus();
 	initialize();
-	editor_title.innerHTML = "新建事项";
+	item_editor_title.innerHTML = "新建事项";
 
 	let current_time = new Date();
 	weekly.selectedIndex = (current_time.getDay() + 6) % 7;
@@ -261,10 +273,17 @@ function readyAdd(action) {
  * 设置修改编辑器
  */
 function readyEdit() {
-	editor.style.display = "flex";
+	item_editor.style.display = "flex";
 
 	label.focus();
-	editor_title.innerHTML = "编辑事项";
+	item_editor_title.innerHTML = "编辑事项";
+}
+
+/**
+ * 设置清单编辑器
+ */
+function readyList() {
+	list_editor.style.display = "flex";
 }
 
 /**
@@ -293,7 +312,7 @@ function showLog(log_data) {
 /**
  * 清空日志
  */
-function clearLog() {
+function clearAllLog() {
 	while (log_list.firstElementChild) {
 		log_list.removeChild(log_list.firstElementChild);
 	}

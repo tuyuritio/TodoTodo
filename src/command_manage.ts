@@ -68,7 +68,7 @@ export class view {
 	static refresh(): void {
 		if (view.page_view && view.page_view.is_visible()) {
 			view.page_view.showLog();
-			view.page_view.initializePage();
+			view.page_view.initialize();
 		}
 
 		list_command.getRecentItem();
@@ -93,6 +93,7 @@ export namespace commands {
 		set("page.add", () => page.add(configurations.pageEditorAddAfterAction));
 		set("page.edit", (item) => page.edit(item));
 		set("page.particulars", (item, status) => page.particulars(item, status));
+		set("page.list", () => page.list());
 
 		// 注册list命令
 		set("list.delete", (item) => list.deleteList(item, configurations.listAllDeleteRemind, configurations.listAllItemDeleteMethod));
@@ -132,7 +133,7 @@ export namespace page {
 	 */
 	export function initialize(): void {
 		if (view.page_view) {
-			view.page_view.initializePage();
+			view.page_view.initialize();
 		}
 	}
 
@@ -188,6 +189,12 @@ export namespace page {
 		};
 		view.page_view.postToPage("information", data);
 	}
+
+	export function list() {
+		show();
+
+		view.page_view.list();
+	}
 }
 
 /* 清单管理 */
@@ -224,8 +231,8 @@ export namespace list {
 	 * 清理逾期事项
 	 */
 	export function shutOverdueItem(): void {
-		let if_fail = list_command.shutOverdueItem();
-		if (if_fail) {
+		let if_shut = list_command.shutOverdueItem();
+		if (if_shut) {
 			view.refresh();
 		}
 	}

@@ -63,77 +63,19 @@ section {
     visibility: hidden;
 }
 
-/* editor */
-
-section#editor {
-    display: none;
-
-    width: 222px;
-}
-
-section#editor section#detail_panel {
-    display: none;
-
-    margin: 0px;
-    padding: 0px;
-}
-
-section#editor label {
-    display: flex;
-
-    flex-wrap: wrap;
-    align-items: center;
-
-    width: 100%;
-    max-width: 250px;
-    min-height: 30px;
-
-    margin: 5px;
-}
-
-section#editor label span {
-    width: 40px;
-
-    margin: 3px 0px;
-}
-
-section#editor label input, select, textarea {
-    width: 170px;
+input, select, textarea {
     height: var(--vscode-input-height);
 
     margin: 3px 0px;
     padding: 3px 4px;
 
+    font-family: inherit;
     color: var(--vscode-input-foreground);
 
     background-color: var(--vscode-input-background);
 }
 
-input#select_time {
-    width: 107px;
-}
-
-textarea {
-    font-family: inherit;
-
-    resize: none;
-}
-
-select {
-    width: 115px;
-}
-
-select#weekly {
-    width: 50px;
-}
-
-option:first-child {
-    color: var(--vscode-input-placeholderForeground);
-}
-
 button {
-    width: 224px;
-
     margin: 5px;
     padding: 6px;
 
@@ -151,6 +93,66 @@ button {
 button:hover {
     background: var(--vscode-button-hoverBackground);
     cursor: pointer;
+}
+
+/* item_editor */
+
+section#item_editor {
+    display: none;
+
+    width: 222px;
+}
+
+section#item_editor section#detail_panel {
+    display: none;
+
+    margin: 0px;
+    padding: 0px;
+}
+
+section#item_editor label {
+    display: flex;
+
+    flex-wrap: wrap;
+    align-items: center;
+
+    width: 100%;
+    max-width: 250px;
+    min-height: 30px;
+
+    margin: 5px;
+}
+
+section#item_editor label span {
+    width: 40px;
+
+    margin: 3px 0px;
+}
+
+section#item_editor label input, select, textarea {
+    width: 170px;
+
+    resize: none;
+}
+
+section#item_editor input#select_time {
+    width: 107px;
+}
+
+section#item_editor select {
+    width: 115px;
+}
+
+section#item_editor select#weekly {
+    width: 50px;
+}
+
+section#item_editor option:first-child {
+    color: var(--vscode-input-placeholderForeground);
+}
+
+section#item_editor button {
+    width: 224px;
 }
 
 button#show_detail {
@@ -234,4 +236,25 @@ section#item_information p span.value {
     border-top-color: var(--vscode-sideBar-background);
     flex-shrink: unset;
     word-break: break-all;
+}
+
+/* list_editor */
+
+section#list_editor {
+    display: none;
+}
+
+section#list_editor input {
+    width: 100px;
+
+    margin-right: 10px;
+}
+
+section#list_editor select {
+    width: 50px;
+}
+
+section#list_editor button {
+    margin-right: 0px;
+    padding: 3px 6px;
 }

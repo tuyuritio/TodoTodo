@@ -150,19 +150,22 @@
 			{
 				"command": "page.show",
 				"title": "事项主页",
-				"icon": "$(window)",
-				"category": "待办事项"
+				"icon": "$(window)"
 			},
 			{
 				"command": "page.add",
 				"title": "新增待办事项",
-				"icon": "$(add)",
-				"category": "待办事项"
+				"icon": "$(add)"
 			},
 			{
 				"command": "page.edit",
 				"title": "修改事项",
 				"icon": "$(edit)"
+			},
+			{
+				"command": "page.list",
+				"title": "清单列表",
+				"icon": "$(notebook)"
 			},
 			{
 				"command": "list.delete",
@@ -227,6 +230,11 @@
 			"view/title": [
 				{
 					"command": "page.show",
+					"group": "navigation",
+					"when": "view == todo_tree"
+				},
+				{
+					"command": "page.list",
 					"group": "navigation",
 					"when": "view == todo_tree"
 				},
