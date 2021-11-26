@@ -1,7 +1,7 @@
 /* 模块调用 */
-import * as vscode from 'vscode';
-import * as file from '../operator/file_operator';
-import { INITIALIZEPAGE, REFRESH } from '../extension';
+import * as vscode from "vscode";
+import * as command from "../command_manage";
+import * as file from "../operator/file_operator";
 
 /* Page选项 */
 class option implements vscode.WebviewOptions, vscode.WebviewPanelOptions {
@@ -10,7 +10,7 @@ class option implements vscode.WebviewOptions, vscode.WebviewPanelOptions {
 }
 
 /* Page提供器 */
-class provider {
+export class provider {
 	panel: vscode.WebviewPanel;
 	visible: boolean;
 
@@ -25,7 +25,7 @@ class provider {
 		html = html.replace("style_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("CSS", true))).toString());
 		html = html.replace("script_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", true))).toString());
 		html = html.replace("item_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("Item", true))).toString());
-		html = html.replace("close_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("close"))).toString());
+		html = html.replace(/close_path/g, this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("close"))).toString());
 		html = html.replace("clear_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("clear-all"))).toString());
 		html = html.replace("up_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-up"))).toString());
 		html = html.replace("down_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-down"))).toString());
@@ -45,7 +45,7 @@ class provider {
 						deleteOld(message.data.old_item);
 					}
 					createNew(message.data.new_item);
-					REFRESH();
+					command.view.refresh();
 					break;
 
 				case "clearLog":
@@ -153,5 +153,5 @@ function createNew(item: any): void {
 
 	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已编辑。");
 
-	INITIALIZEPAGE();
+	command.page.initialize();
 }

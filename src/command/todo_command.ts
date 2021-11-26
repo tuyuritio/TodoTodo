@@ -1,7 +1,7 @@
 /* 模块调用 */
-import * as vscode from 'vscode';
-import * as file from '../operator/file_operator';
-import * as date from '../operator/date_operator';
+import * as vscode from "vscode";
+import * as file from "../operator/file_operator";
+import * as date from "../operator/date_operator";
 
 /**
  * 完成事项
@@ -21,6 +21,7 @@ export function accomplish(item: any) {
 	item_data.type = item.type;
 	item_data.time = date.toString(new Date());
 	delete item_data.cycle;
+	delete item_data.gaze;
 
 	let done_data = file.getJSON("done");
 	done_data.unshift(item_data);
@@ -47,6 +48,7 @@ export function shut(item: any) {
 	item_data.type = item.type;
 	delete item_data.time;
 	delete item_data.cycle;
+	delete item_data.gaze;
 
 	let fail_data = file.getJSON("fail");
 	fail_data.unshift(item_data);
@@ -131,4 +133,24 @@ export function newCycle(cycle_item: any) {
 	file.writeList(cycle_item.type, todo_data);
 
 	file.log("循环事项 \"" + cycle_item.label + "(" + cycle_item.type + ")\" 已追加。");
+}
+
+/**
+ * 当前办理事项
+ * @param item 事项对象
+ */
+export function gaze(item: any) {
+	let data = file.getList(item.type);
+	data.list[item.index].gaze = true;
+	file.writeList(item.type, data);
+}
+
+/**
+ * 取消办理事项
+ * @param item 事项对象
+ */
+export function undo(item: any) {
+	let data = file.getList(item.type);
+	delete data.list[item.index].gaze;
+	file.writeList(item.type, data);
 }

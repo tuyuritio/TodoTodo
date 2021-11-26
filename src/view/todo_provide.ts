@@ -1,7 +1,7 @@
 /* 模块调用 */
-import * as vscode from 'vscode';
-import * as file from '../operator/file_operator';
-import * as date from '../operator/date_operator';
+import * as vscode from "vscode";
+import * as file from "../operator/file_operator";
+import * as date from "../operator/date_operator";
 
 /* 事项元素 */
 class item extends vscode.TreeItem {
@@ -34,10 +34,10 @@ class item extends vscode.TreeItem {
 	/**
 	 * 事项参数设置
 	 * @param index 事项序号(清单内序号)
-	 * @param priority 事项优先级
+	 * @param priority 优先层级
 	 * @param cycle 事项周期
-	 * @param time 事项截止时间
-	 * @param place 事项目标地点
+	 * @param time 截止时间
+	 * @param place 目标地点
 	 */
 	set(index: number, priority: number, cycle: string, time: string, place: string, mail: string, detail: string): void {
 		this.index = index;
@@ -55,11 +55,13 @@ class item extends vscode.TreeItem {
 		if (this.time) {
 			tips += "截止时间: " + this.time + "\n";
 
-			if (date.isRecent(this.time)) {
-				this.description = this.time.substr(11, 5);
-				this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
-			} else {
-				this.description = this.time.substr(0, 10);
+			if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {
+				if (date.isRecent(this.time)) {
+					this.description = this.time.substr(11, 5);
+					this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
+				} else {
+					this.description = this.time.substr(0, 10);
+				}
 			}
 		} else {
 			this.iconPath = new vscode.ThemeIcon("info");
@@ -78,11 +80,15 @@ class item extends vscode.TreeItem {
 		}
 
 		this.tooltip = tips;
+
+		if (this.contextValue == "gaze_item") {
+			this.iconPath = vscode.Uri.file(file.getIconPath(this.iconPath.id, true));
+		}
 	}
 };
 
 /* 元素提供器 */
-class provider implements vscode.TreeDataProvider<item> {
+export class provider implements vscode.TreeDataProvider<item> {
 	ShowEmpty: boolean = false;
 
 	/**
@@ -108,7 +114,8 @@ class provider implements vscode.TreeDataProvider<item> {
 				if (element.type == data[i].type) {			// 进入相应类别清单
 					for (let index = 0; index < data[i].list.length; index++) {
 						let item_data = data[i].list[index];
-						items[index] = new item(item_data.label, "todo_item", data[i].type);
+						let item_id = item_data.gaze ? "gaze_item" : "todo_item";
+						items[index] = new item(item_data.label, item_id, data[i].type);
 						items[index].set(index, item_data.priority, item_data.cycle, item_data.time, item_data.place, item_data.mail, item_data.detail);
 					}
 				}

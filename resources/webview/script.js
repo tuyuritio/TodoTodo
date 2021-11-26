@@ -2,7 +2,8 @@
 let vscode = acquireVsCodeApi();
 
 /* 全局变量 */
-let is_show_detail = false;
+let is_show_detail = false;		// 是否展开细节
+let action_after_add = "remain";
 
 let editing_type;
 let editing_index;
@@ -49,7 +50,7 @@ window.onload = function () {
 				break;
 
 			case "add":
-				readyAdd();
+				readyAdd(message.data);
 				break;
 
 			case "edit":
@@ -118,6 +119,7 @@ function initialize() {
 	cycle.selectedIndex = 0;
 	priority.selectedIndex = 0;
 
+	input_type.value = "";
 	label.value = "";
 	place.value = "";
 	mail.value = "";
@@ -210,8 +212,9 @@ function closeEditor() {
 /**
  * 设置新建编辑器
  */
-function readyAdd() {
+function readyAdd(action) {
 	editor.style.display = "flex";
+	action_after_add = action;
 
 	label.focus();
 	initialize();
@@ -301,7 +304,7 @@ function toDate(time) {
  * @returns Milliseconds
  */
 function toNumber(time) {
-	let time_object= new Date();
+	let time_object = new Date();
 
 	if (typeof time == "string") {
 		let year = Number(time.substr(0, 4));

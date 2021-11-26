@@ -1,15 +1,10 @@
 /* 模块调用 */
-import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
+import * as vscode from "vscode";
+import * as path from "path";
+import * as fs from "fs";
 
-/**
- * 判断路径是否存在
- * @returns 路径是否存在
- */
-export function floderExists() {
-	return fs.existsSync(toData());
-}
+/* 全局变量 */
+let is_reminded = false;	// 是否已提醒异常路径
 
 /**
  * 获取JSON文件目录路径
@@ -18,47 +13,49 @@ export function floderExists() {
  */
 function toData(is_list: boolean = true): string {
 	let configuration = vscode.workspace.getConfiguration("todotodo");
-	let listPath = configuration.listPath;
+	let list_path = configuration.path;
 
-	if (!listPath || !fs.existsSync(listPath)) {
-		if (!fs.existsSync(listPath)) {
+	if (!list_path) {
+		list_path = path.join(__dirname, "..", "..", "TodoTodoData");
+	} else if (!fs.existsSync(list_path)) {
+		if (!is_reminded) {
+			is_reminded = true;
 			vscode.window.showErrorMessage("自定义清单文件目录路径无效，请检查！\n（现已使用默认路径，请及时更换！）");
 		}
-
-		listPath = path.join(__dirname, "..", "..", "TodoTodoData");
+		list_path = path.join(__dirname, "..", "..", "TodoTodoData");
 	}
 
 	if (is_list) {
-		if (!fs.existsSync(path.join(listPath, "ListData"))) {
-			fs.mkdirSync(path.join(listPath, "ListData"));
+		if (!fs.existsSync(path.join(list_path, "ListData"))) {
+			fs.mkdirSync(path.join(list_path, "ListData"));
 		}
 
-		if (!fs.existsSync(path.join(listPath, "ListData", "普通.json"))) {
+		if (!fs.existsSync(path.join(list_path, "ListData", "普通.json"))) {
 			let structure = { "type": "普通", "list": [] };
-			writeJSON(path.join(listPath, "ListData", "普通.json"), structure);
+			writeJSON(path.join(list_path, "ListData", "普通.json"), structure);
 		}
 
-		listPath = path.join(listPath, "ListData");
+		list_path = path.join(list_path, "ListData");
 	} else {
-		if (!fs.existsSync(path.join(listPath, "log.json"))) {
-			writeJSON(path.join(listPath, "log.json"), []);
+		if (!fs.existsSync(path.join(list_path, "log.json"))) {
+			writeJSON(path.join(list_path, "log.json"), []);
 		}
 
-		if (!fs.existsSync(path.join(listPath, "recent.json"))) {
+		if (!fs.existsSync(path.join(list_path, "recent.json"))) {
 			let structure: any = [];
-			writeJSON(path.join(listPath, "recent.json"), []);
+			writeJSON(path.join(list_path, "recent.json"), []);
 		}
 
-		if (!fs.existsSync(path.join(listPath, "done.json"))) {
-			writeJSON(path.join(listPath, "done.json"), []);
+		if (!fs.existsSync(path.join(list_path, "done.json"))) {
+			writeJSON(path.join(list_path, "done.json"), []);
 		}
 
-		if (!fs.existsSync(path.join(listPath, "fail.json"))) {
-			writeJSON(path.join(listPath, "fail.json"), []);
+		if (!fs.existsSync(path.join(list_path, "fail.json"))) {
+			writeJSON(path.join(list_path, "fail.json"), []);
 		}
 	}
 
-	return listPath;
+	return list_path;
 }
 
 /**
@@ -188,14 +185,17 @@ export function getWeb(type?: string, is_path: boolean = false): string {
 /**
  * 获取图标路径
  * @param icon_name 图标名称
+ * @param is_gif 是否获取gif - true则获取gif；false则获取svg。- **默认：** false
  * @returns 图标路径
  */
-export function getIconPath(icon_name: string): string {
+export function getIconPath(icon_name: string, is_gif: boolean = false): string {
 	let directory_path = __dirname;
 	while (!fs.existsSync(path.join(directory_path, "resources"))) {
 		directory_path = path.join(directory_path, "..");
 	}
-	return path.join(directory_path, "resources", "icon", icon_name + ".svg");
+
+	let file_type = is_gif ? ".gif" : ".svg";
+	return path.join(directory_path, "resources", "icon", icon_name + file_type);
 }
 
 /**
@@ -220,4 +220,20 @@ export function log(information: string) {
  */
 export function clearLog() {
 	writeJSON(getJSON("log", true), []);
+}
+
+/**
+ * 读取package.json
+ * @returns package.json数据
+ */
+export function getPackage() {
+	return JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "package.json"), "utf8"));
+}
+
+/**
+ * 写入package.json
+ * @param data package.json数据
+ */
+export function setPackage(data: any) {
+	writeJSON(path.join(__dirname, "..", "..", "package.json"), data);
 }

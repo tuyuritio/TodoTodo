@@ -33,8 +33,9 @@ h3 {
 body {
     display: flex;
 
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: wrap;
+    align-items: flex-start;
 }
 
 img {
@@ -58,34 +59,22 @@ section {
     background-color: var(--vscode-sideBar-background);
 }
 
+/* editor */
+
 section#editor {
     display: none;
 
     width: 222px;
 }
 
-section#detail_panel {
+section#editor section#detail_panel {
     display: none;
 
     margin: 0px;
     padding: 0px;
 }
 
-section#log {
-    max-width: 600px;
-    min-height: 400px;
-}
-
-section#log ul {
-    padding-left: 20px;
-}
-
-section#log ul li span.time_information {
-    font-size: 10px;
-    font-weight: bold;
-}
-
-label {
+section#editor label {
     display: flex;
 
     flex-wrap: wrap;
@@ -98,13 +87,13 @@ label {
     margin: 5px;
 }
 
-span {
+section#editor label span {
     width: 40px;
 
     margin: 3px 0px;
 }
 
-input, select, textarea {
+section#editor label input, select, textarea {
     width: 170px;
     height: var(--vscode-input-height);
 
@@ -184,6 +173,23 @@ button#show_detail img {
 
 button#show_detail img#arrow_up {
     display: none;
+}
+
+/* log */
+
+section#log {
+    min-width: 600px;
+    min-height: 400px;
+}
+
+section#log ul {
+    padding-left: 20px;
+}
+
+section#log ul li span.time_information {
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 20px;
 }
 
 .hide {

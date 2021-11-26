@@ -1,6 +1,6 @@
 /* 模块调用 */
-import * as vscode from 'vscode';
-import * as file from '../operator/file_operator';
+import * as vscode from "vscode";
+import * as file from "../operator/file_operator";
 
 /**
  * 重做事项

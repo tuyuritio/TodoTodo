@@ -1,7 +1,7 @@
 /* 模块调用 */
-import * as vscode from 'vscode';
-import * as file from '../operator/file_operator';
-import * as date from '../operator/date_operator';
+import * as vscode from "vscode";
+import * as file from "../operator/file_operator";
+import * as date from "../operator/date_operator";
 
 /* 事项元素 */
 class item extends vscode.TreeItem {
@@ -32,9 +32,9 @@ class item extends vscode.TreeItem {
 	/**
 	 * 事项参数设置
 	 * @param index 事项序号(清单内序号)
-	 * @param priority 事项优先级
-	 * @param time 事项截止时间
-	 * @param place 事项目标地点
+	 * @param priority 优先层级
+	 * @param time 截止时间
+	 * @param place 目标地点
 	 */
 	set(index: number, priority: number, time: string, place: string, mail: string, detail: string): void {
 		this.index = index;
@@ -50,7 +50,7 @@ class item extends vscode.TreeItem {
 };
 
 /* 元素提供器 */
-class provider implements vscode.TreeDataProvider<item> {
+export class provider implements vscode.TreeDataProvider<item> {
 	/**
 	 * getTreeItem
 	 * @param element

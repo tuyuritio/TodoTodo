@@ -4,7 +4,7 @@
 function loadOption(data) {
 	types = data.types;
 	while (other.previousElementSibling.innerHTML != "==事项类别==") {
-		select_type.removeChile(other.previousElementSibling.innerHTML);
+		select_type.removeChild(other.previousElementSibling);
 	}
 
 	for (let index = 0; index < data.types.length; index++) {
@@ -15,7 +15,7 @@ function loadOption(data) {
 
 	maximum.innerHTML = data.maximum_priority + 1;
 	while (priority.firstElementChild.id != "maximum") {
-		priority.removeChile(priority.firstElementChild);
+		priority.removeChild(priority.firstElementChild);
 	}
 
 	for (let index = 0; index <= data.maximum_priority; index++) {
@@ -189,5 +189,21 @@ function edit() {
 
 	if (editing_type != "") {
 		closeEditor();
+	} else {
+		switch (action_after_add) {
+			case "remain":
+				break;
+
+			case "clear":
+				initialize();
+				break;
+
+			case "close":
+				closeEditor();
+				break;
+
+			default:
+				break;
+		}
 	}
 }

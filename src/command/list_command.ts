@@ -1,9 +1,9 @@
 /* 模块调用 */
-import * as vscode from 'vscode';
-import * as file from '../operator/file_operator';
-import * as date from '../operator/date_operator';
-import * as todo from './todo_command';
-import { INITIALIZEPAGE } from '../extension';
+import * as vscode from "vscode";
+import * as file from "../operator/file_operator";
+import * as date from "../operator/date_operator";
+import * as todo from "./todo_command";
+import * as command from "../command_manage";
 
 /**
  * 检索已经逾期或未来24小时内将要逾期的事项
@@ -41,7 +41,7 @@ export function getRecentItem() {
 /**
  * 清理逾期事项
  */
-export function shutOverdue() {
+export function shutOverdueItem() {
 	let if_shut = false;
 
 	let data = file.getJSON("recent");
@@ -135,7 +135,7 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 
 				file.log("清单 \"" + list.label + "\" 已删除。");
 
-				INITIALIZEPAGE();
+				command.page.initialize();
 				return true;
 			} else {
 				return false;
@@ -154,7 +154,7 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 
 		file.log("清单 \"" + list.label + "\" 已删除。");
 
-		INITIALIZEPAGE();
+		command.page.initialize();
 		return true;
 	}
 }

@@ -2,6 +2,10 @@
 	"name": "todotodo",
 	"displayName": "TodoTodo",
 	"description": "VSCode Sidebar Todo",
+	"keywords": [
+		"todo",
+		"todolist"
+	],
 	"icon": "resources/icon/icon.png",
 	"version": "0.0.6",
 	"engines": {
@@ -11,7 +15,13 @@
 		"Other"
 	],
 	"publisher": "KinoshitaTatsukana",
-	"repository": "https://gitee.com/tatsukana/todo-todo",
+	"repository": {
+		"type": "git",
+		"url": "https://gitee.com/tatsukana/todo-todo.git"
+	},
+	"bugs": {
+		"url": "https://gitee.com/tatsukana/todo-todo/issues"
+	},
 	"activationEvents": [
 		"onStartupFinished"
 	],
@@ -21,17 +31,42 @@
 			{
 				"title": "TodoTodo",
 				"properties": {
-					"todotodo.delete.item.remind": {
-						"type": "boolean",
-						"default": true,
-						"description": "在删除事项时显示确认对话框。"
+					"todotodo.path": {
+						"description": "清单文件目录路径（绝对路径）。若为空则使用默认路径。\n注：使用默认路径在插件更新时本地事项将被清空！",
+						"type": "string"
 					},
-					"todotodo.delete.list.remind": {
-						"type": "boolean",
-						"default": true,
-						"description": "在删除清单时显示确认对话框。"
+					"todotodo.page.editor.add.after.action": {
+						"description": "编辑器在新建事项后的行为。",
+						"type": "string",
+						"default": "remain",
+						"enum": [
+							"remain",
+							"clear",
+							"close"
+						],
+						"enumDescriptions": [
+							"保留已填信息。",
+							"清空已填信息。",
+							"关闭编辑器。"
+						]
 					},
-					"todotodo.delete.list.method": {
+					"todotodo.list.todo.item.delete.remind": {
+						"description": "在删除事项时显示确认对话框。",
+						"type": "boolean",
+						"default": true
+					},
+					"todotodo.list.todo.item.time.show": {
+						"description": "是否在事项右侧显示截止时间。",
+						"type": "boolean",
+						"default": true
+					},
+					"todotodo.list.todo.delete.remind": {
+						"description": "在删除清单时显示确认对话框。",
+						"type": "boolean",
+						"default": true
+					},
+					"todotodo.list.todo.delete.method": {
+						"description": "删除清单时，原有事项的处理方法。",
 						"type": "string",
 						"default": "move",
 						"enum": [
@@ -41,17 +76,27 @@
 						"enumDescriptions": [
 							"移动至默认清单。",
 							"全部删除。"
-						],
-						"description": "删除清单时，原有事项的处理方法。"
+						]
 					},
-					"todotodo.show.emptyList": {
+					"todotodo.list.todo.empty.show": {
 						"type": "boolean",
 						"default": false,
 						"description": "是否显示空清单。"
 					},
-					"todotodo.listPath": {
+					"todotodo.list.todo.empty.text": {
+						"description": "空Todo清单视图提示文本。\n注：该设置在下次重启时生效。",
 						"type": "string",
-						"description": "清单文件目录路径（绝对路径）。若为空则使用默认路径。\n注：使用默认路径在插件更新时本地事项将被清空！"
+						"default": "暂时没有待办事项，芜湖起飞！"
+					},
+					"todotodo.list.done.empty.text": {
+						"description": "空Done清单视图提示文本。\n注：该设置在下次重启时生效。",
+						"type": "string",
+						"default": "暂时没有已办事项，加油冲冲冲！"
+					},
+					"todotodo.list.fail.empty.text": {
+						"description": "空Fail清单视图提示文本。\n注：该设置在下次重启时生效。",
+						"type": "string",
+						"default": "暂时没有失效事项，不错加油！"
 					}
 				}
 			}
@@ -137,7 +182,17 @@
 				"icon": "$(pass)"
 			},
 			{
-				"command": "todo.fail",
+				"command": "todo.gaze",
+				"title": "当前办理",
+				"icon": "$(play)"
+			},
+			{
+				"command": "todo.undo",
+				"title": "取消办理",
+				"icon": "$(stop-circle)"
+			},
+			{
+				"command": "todo.shut",
 				"title": "未完成",
 				"icon": "$(error)"
 			},
@@ -198,6 +253,11 @@
 			],
 			"view/item/context": [
 				{
+					"command": "todo.undo",
+					"group": "inline",
+					"when": "viewItem == gaze_item"
+				},
+				{
 					"command": "list.delete",
 					"when": "viewItem == todo_list"
 				},
@@ -210,12 +270,17 @@
 					"when": "viewItem == todo_item"
 				},
 				{
-					"command": "todo.accomplish",
+					"command": "todo.gaze",
 					"group": "inline",
 					"when": "viewItem == todo_item"
 				},
 				{
-					"command": "todo.fail",
+					"command": "todo.accomplish",
+					"group": "inline",
+					"when": "viewItem == todo_item || viewItem == gaze_item"
+				},
+				{
+					"command": "todo.shut",
 					"group": "inline",
 					"when": "viewItem == todo_item"
 				},
