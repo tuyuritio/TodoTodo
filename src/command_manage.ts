@@ -38,8 +38,6 @@ export class configurations {
 	static pageEditorAddAfterAction = configurations.configuration.page.editor.add.after.action;
 
 	constructor() {
-		console.log("point1");
-
 		// 监听配置变更
 		vscode.workspace.onDidChangeConfiguration(() => {
 			configurations.configuration = vscode.workspace.getConfiguration("todotodo");
