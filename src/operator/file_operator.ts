@@ -42,7 +42,6 @@ function toData(is_list: boolean = true): string {
 		}
 
 		if (!fs.existsSync(path.join(list_path, "recent.json"))) {
-			let structure: any = [];
 			writeJSON(path.join(list_path, "recent.json"), []);
 		}
 

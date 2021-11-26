@@ -55,13 +55,15 @@ class item extends vscode.TreeItem {
 		if (this.time) {
 			tips += "截止时间: " + this.time + "\n";
 
+			if (date.isRecent(this.time)) {
+				this.description = this.time.substr(11, 5);
+				this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
+			} else {
+				this.description = this.time.substr(0, 10);
+			}
+
 			if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {
-				if (date.isRecent(this.time)) {
-					this.description = this.time.substr(11, 5);
-					this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
-				} else {
-					this.description = this.time.substr(0, 10);
-				}
+
 			}
 		} else {
 			this.iconPath = new vscode.ThemeIcon("info");

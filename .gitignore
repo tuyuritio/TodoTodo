@@ -3,5 +3,7 @@ dist
 node_modules
 .vscode-test/
 *.vsix
-PersonalAccessToken.ini
 TodoTodoData/**
+!TodoTodoData/log.json
+PersonalAccessToken.ini
+css_configuration.json

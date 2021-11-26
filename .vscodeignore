@@ -9,4 +9,6 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 TodoTodoData/**
+!TodoTodoData/log.json
 PersonalAccessToken.ini
+css_configuration.json

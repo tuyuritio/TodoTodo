@@ -59,6 +59,10 @@ section {
     background-color: var(--vscode-sideBar-background);
 }
 
+.hide {
+    visibility: hidden;
+}
+
 /* editor */
 
 section#editor {
@@ -192,6 +196,10 @@ section#log ul li span.time_information {
     line-height: 20px;
 }
 
-.hide {
-    visibility: hidden;
+/* item_information */
+
+section#item_information {
+    display: none;
+
+    min-width: 222px;
 }
