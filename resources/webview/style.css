@@ -255,6 +255,10 @@ section#list_editor table {
 }
 
 section#list_editor table thead tr th {
+    text-align: center;
+}
+
+section#list_editor table thead tr th#list_label {
     text-align: left;
 }
 

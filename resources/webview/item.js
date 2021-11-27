@@ -255,6 +255,11 @@ function editItem() {
 		particulars: textarea.value
 	};
 
+	if (is_new) {
+		editing_type = "";
+		editing_index = 0;
+	}
+
 	let data = {
 		old_item: {				// 将要删除的原有事项
 			type: editing_type,
@@ -265,7 +270,7 @@ function editItem() {
 
 	postToExtension("add", data);
 
-	if (editing_type != "") {
+	if (!is_new) {
 		close("item_editor");
 	} else {
 		switch (action_after_add) {

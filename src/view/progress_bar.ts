@@ -4,7 +4,7 @@ import * as file from "../operator/file_operator";
 
 /* 进度提供器 */
 export class progress_provider {
-	progress: vscode.StatusBarItem = vscode.window.createStatusBarItem("progress", vscode.StatusBarAlignment.Left, 20000);
+	progress: vscode.StatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 20000);
 
 	/**
 	 * 显示进度视图

@@ -5,11 +5,11 @@ let vscode = acquireVsCodeApi();
 let is_show_detail = false;			// 是否展开细节
 let action_after_add = "remain";
 
-let adding_type;					// 记录新建事项后新事项的类别
-let adding_priority;				// 记录新建事项后新事项的优先级
+let is_new;							// 记录当前编辑器状态为新建或编辑
 let editing_type;					// 记录编辑前的事项类别
 let editing_index;					// 记录编辑前事项所处清单的位置，以便后期删除原事项
 let editing_priority;
+
 let types = [];						// 清单数据
 
 /* 窗口加载 */

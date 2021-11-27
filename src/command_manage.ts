@@ -80,8 +80,6 @@ export class page {
 						break;
 
 					case "add":
-						console.log("add?");
-
 						if (message.data.old_item.type != "") {
 							todo.deleteOld(message.data.old_item);
 						}

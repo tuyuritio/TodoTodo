@@ -88,8 +88,8 @@ class item extends vscode.TreeItem {
 		}
 
 		this.command = {
-			command: "page.particulars",
 			title: "显示详情",
+			command: "page.particulars",
 			arguments: [this, "todo"]
 		};
 	}

@@ -121,6 +121,8 @@ function close(panel) {
  * 设置新建编辑器
  */
 function readyAdd(action) {
+	is_new = true;
+
 	item_editor.style.display = "flex";
 	action_after_add = action;
 
@@ -133,6 +135,8 @@ function readyAdd(action) {
  * 设置修改编辑器
  */
 function readyEdit(data) {
+	is_new = false;
+
 	item_editor.style.display = "flex";
 
 	label.focus();
