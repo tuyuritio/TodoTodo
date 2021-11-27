@@ -38,8 +38,10 @@ function chooseType(event) {
 
 	if (type == "其它") {
 		other_label.style.display = "flex";
+		other_label.focus();
 	} else {
 		other_label.style.display = "none";
+		label.focus();
 	}
 }
 

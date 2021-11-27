@@ -33,6 +33,51 @@ function addEvents() {
 	textarea.addEventListener("input", () => adaptiveHeight());
 }
 
+/**
+ * 聚焦事件
+ */
+function nextEvents() {
+	other_type.addEventListener("keypress", (key) => {
+		if (key.code == "Enter") {
+			label.focus();
+		}
+	});
+
+	label.addEventListener("keypress", (key) => {
+		if (key.ctrlKey) {
+			editItem();
+		} else {
+			if (is_show_detail) {
+				place.focus();
+			} else {
+				editItem();
+			}
+		}
+	});
+
+	place.addEventListener("keypress", (key) => {
+		if (key.ctrlKey) {
+			editItem();
+		} else {
+			mail.focus();
+		}
+	});
+
+	mail.addEventListener("keypress", (key) => {
+		if (key.ctrlKey) {
+			editItem();
+		} else {
+			particulars.focus();
+		}
+	});
+
+	particulars.addEventListener("keypress", (key) => {
+		if (key.ctrlKey) {
+			editItem();
+		}
+	});
+}
+
 // 接收扩展命令
 window.addEventListener("message", (event) => {
 	let message = event.data;
