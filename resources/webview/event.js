@@ -44,36 +44,44 @@ function nextEvents() {
 	});
 
 	label.addEventListener("keypress", (key) => {
-		if (key.ctrlKey) {
-			editItem();
-		} else {
-			if (is_show_detail) {
-				place.focus();
-			} else {
+		if (key.code == "Enter") {
+			if (key.ctrlKey) {
 				editItem();
+			} else {
+				if (is_show_detail) {
+					place.focus();
+				} else {
+					editItem();
+				}
 			}
 		}
 	});
 
 	place.addEventListener("keypress", (key) => {
-		if (key.ctrlKey) {
-			editItem();
-		} else {
-			mail.focus();
+		if (key.code == "Enter") {
+			if (key.ctrlKey) {
+				editItem();
+			} else {
+				mail.focus();
+			}
 		}
 	});
 
 	mail.addEventListener("keypress", (key) => {
-		if (key.ctrlKey) {
-			editItem();
-		} else {
-			particulars.focus();
+		if (key.code == "Enter") {
+			if (key.ctrlKey) {
+				editItem();
+			} else {
+				particulars.focus();
+			}
 		}
 	});
 
 	particulars.addEventListener("keypress", (key) => {
-		if (key.ctrlKey) {
-			editItem();
+		if (key.code == "Enter") {
+			if (key.ctrlKey) {
+				editItem();
+			}
 		}
 	});
 }
