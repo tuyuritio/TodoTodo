@@ -3,7 +3,6 @@ import * as vscode from "vscode";
 import * as file from "../operator/file_operator";
 import * as date from "../operator/date_operator";
 import * as todo from "./todo_command";
-import * as command from "../command_manage";
 
 /**
  * 检索已经逾期或未来24小时内将要逾期的事项
@@ -140,7 +139,6 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 
 				file.log("清单 \"" + list.label + "\" 已删除。");
 
-				command.page.initialize();
 				return true;
 			} else {
 				return false;
@@ -159,7 +157,34 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 
 		file.log("清单 \"" + list.label + "\" 已删除。");
 
-		command.page.initialize();
 		return true;
+	}
+}
+
+/**
+ * 编辑清单
+ * @param data 清单对象
+ */
+export function editList(list: any) {
+	if (list.new.priority != list.old.priority) {
+		let data = file.getList(list.old.type);
+		data.priority = list.new.priority;
+		file.writeList(list.old.type, data);
+	}
+
+	if (list.new.type != list.old.type) {
+		let data = file.getList();
+		let if_same = false;
+		for (let index = 0; index < data.length; index++) {
+			if (index != list.index + 1 && list.new.type == data[index].type) {
+				vscode.window.showWarningMessage("存在同名清单，请重新输入！");
+				if_same = true;
+				break;
+			}
+		}
+
+		if (!if_same) {
+			file.renameList(list.old.type, list.new.type);
+		}
 	}
 }

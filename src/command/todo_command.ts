@@ -154,3 +154,42 @@ export function undo(item: any) {
 	delete data.list[item.index].gaze;
 	file.writeList(item.type, data);
 }
+
+/**
+ * 删除原有事项
+ * @param item 原有事项对象
+ */
+export function deleteOld(item: any): void {
+	let data = file.getList(item.type);
+	data.list.splice(item.index, 1);
+	file.writeList(item.type, data);
+}
+
+/**
+ * 新建事项
+ * @param item 事项对象
+ */
+export function addNew(item: any): void {
+	let data = file.getList(item.type);
+
+	let cycle = item.cycle != "" ? item.cycle : undefined;
+	let time = item.time != "" ? item.time : undefined;
+	let place = item.place != "" ? item.place : undefined;
+	let mail = item.mail != "" ? item.mail : undefined;
+	let particulars = item.particulars != "" ? item.particulars : undefined;
+
+	let item_data = {
+		label: item.label,
+		priority: item.priority,
+		cycle: cycle,
+		time: time,
+		place: place,
+		mail: mail,
+		particulars: particulars
+	};
+
+	data.list.push(item_data);
+	file.writeList(item.type, data);
+
+	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已编辑。");
+}

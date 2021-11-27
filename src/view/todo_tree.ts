@@ -58,7 +58,7 @@ class item extends vscode.TreeItem {
 			if (date.isRecent(this.time)) {
 				this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
 				if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {
-					this.description = this.time.substr(12, 5);
+					this.description = this.time.substr(11, 5);
 				}
 			} else {
 				if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {
@@ -174,7 +174,7 @@ export class provider implements vscode.TreeDataProvider<item> {
  * 创建树状视图
  * @returns 元素提供器
  */
-export function createItemTree(): provider {
+export function create(): provider {
 	let item_provider: provider = new provider();
 
 	let option: vscode.TreeViewOptions<item> = {

@@ -147,11 +147,12 @@ export function removeList(list: string) {
 
 /**
  * 获取Web资源 | 获取web资源路径
- * @param type 资源类型 - 可选值为 **"HTML"** 、 **"CSS"** 、 **"JS"** 、 **"Item"**
+ * @param type 资源类型 - 可选值为 **"HTML"** 、 **"CSS"** 、 **"JS"**
+ * @param name JS文件名称 - 可选值为 **"script"** 、 **"item"** 、 **"element"** 、 **"window"** 、 **"event"**
  * @param is_path 是否获取路径 - true则获取路径；false则获取资源。- **默认：** false
  * @returns JSON文件内容
  */
-export function getWeb(type?: string, is_path: boolean = false): string {
+export function getWeb(type?: string, name?: string, is_path: boolean = false): string {
 	let directory_path = __dirname;
 	while (!fs.existsSync(path.join(directory_path, "resources"))) {
 		directory_path = path.join(directory_path, "..");
@@ -165,6 +166,7 @@ export function getWeb(type?: string, is_path: boolean = false): string {
 			} else {
 				return fs.readFileSync(path.join(directory_path, "index.html"), "utf8");
 			}
+
 		case "CSS":
 			if (is_path) {
 				return path.join(directory_path, "style.css");
@@ -172,16 +174,11 @@ export function getWeb(type?: string, is_path: boolean = false): string {
 				return fs.readFileSync(path.join(directory_path, "stype.css"), "utf8");
 			}
 		case "JS":
+
 			if (is_path) {
-				return path.join(directory_path, "script.js");
+				return path.join(directory_path, name + ".js");
 			} else {
-				return fs.readFileSync(path.join(directory_path, "script.js"), "utf8");
-			}
-		case "Item":
-			if (is_path) {
-				return path.join(directory_path, "item.js");
-			} else {
-				return fs.readFileSync(path.join(directory_path, "item.js"), "utf8");
+				return fs.readFileSync(path.join(directory_path, name + ".js"), "utf8");
 			}
 		default:
 			return directory_path;
@@ -219,13 +216,6 @@ export function log(information: string) {
 
 	data.unshift(new_log);
 	writeJSON(getJSON("log", true), data);
-}
-
-/**
- * 清空日志文件
- */
-export function clearLog() {
-	writeJSON(getJSON("log", true), []);
 }
 
 /**

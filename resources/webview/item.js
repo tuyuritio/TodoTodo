@@ -17,16 +17,16 @@ function loadOption(data) {
 
 	// 事项类别
 	types = data.types;
-	let select_adding_type = 0;
+	let select_editing_type = 0;
 	for (let index = 0; index < data.types.length; index++) {
 		let new_option = document.createElement("option");
 		new_option.innerHTML = types[index].type;
-		if (adding_type == types[index].type) {
-			select_adding_type = index;
+		if (editing_type == types[index].type) {
+			select_editing_type = index;
 		}
 		select_type.insertBefore(new_option, other);
 	}
-	select_type.selectedIndex = select_adding_type;
+	select_type.selectedIndex = select_editing_type;
 	other_label.style.display = "none";
 
 	// 优先层级
@@ -36,7 +36,7 @@ function loadOption(data) {
 		priority.insertBefore(new_option, maximum);
 	}
 	maximum.innerHTML = data.item_maximum_priority + 1;
-	priority.selectedIndex = adding_priority;
+	priority.selectedIndex = editing_priority;
 
 	// 清单列表
 	for (let index = 0; index < data.types.length; index++) {
@@ -85,7 +85,13 @@ function loadOption(data) {
 		if (index) {
 			let delete_button = document.createElement("button");
 			delete_button.innerHTML = "删除";
-			delete_button.addEventListener("click", () => postToExtension("delete", data.types[index].type));
+
+			let list_data = {
+				label: data.types[index].type,
+				type: data.types[index].type
+			};
+
+			delete_button.addEventListener("click", () => postToExtension("deleteList", list_data));
 			tabel_data_button.appendChild(delete_button);
 		}
 
@@ -105,10 +111,11 @@ function loadOption(data) {
 function cover(item) {
 	editing_type = item.type;
 	editing_index = item.index;
+	editing_priority = item.priority;
 
 	for (let index = 0; index < types.length; index++) {
 		if (types[index].type == item.type) {
-			select_type.selectedIndex = index + 1;
+			select_type.selectedIndex = index;
 			break;
 		}
 	}
@@ -144,7 +151,7 @@ function cover(item) {
 			daily.style.display = "flex";
 			weekly.style.display = "none";
 
-			select_time.value = item.time.substr(12, 5);
+			select_time.value = item.time.substr(11, 5);
 		}
 
 		if (item.cycle == "weekly") {
@@ -154,7 +161,7 @@ function cover(item) {
 			weekly.style.display = "flex";
 
 			weekly.selectedIndex = (toDate(item.time).getDay() + 6) % 7;
-			select_time.value = item.time.substr(12, 5);
+			select_time.value = item.time.substr(11, 5);
 		}
 	} else {
 		if (item.time) {
@@ -224,7 +231,7 @@ function editItem() {
 
 	// 编辑类别
 	let new_type = select_type.options[select_type.selectedIndex].text;
-	if (new_type != "其它") {
+	if (new_type == "其它") {
 		new_type = input_type.value;
 	}
 
@@ -263,12 +270,12 @@ function editItem() {
 	} else {
 		switch (action_after_add) {
 			case "remain":
-				adding_type = new_type;
-				adding_priority = priority.selectedIndex;
+				editing_type = new_type;
+				editing_priority = priority.selectedIndex;
 				break;
 
 			case "clear":
-				initialize();
+				initializeItemEditor();
 				break;
 
 			case "close":
@@ -307,7 +314,7 @@ function information(item) {
 
 				time_text += "每周"
 				time_text += week_days.charAt((toDate(item.time).getDay() + 6) % 7);
-				time_text += item.time.substr(12, 5);
+				time_text += item.time.substr(11, 5);
 
 				break;
 		}

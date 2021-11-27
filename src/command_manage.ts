@@ -19,21 +19,21 @@ export function initialize(context: vscode.ExtensionContext): void {
 	extension_context = context;						// 建立上下文
 	commands.register();
 
-	view.todo_tree = todo_tree.createItemTree();		// 创建todo_tree视图
-	view.done_tree = done_tree.createItemTree();		// 创建done_tree视图
-	view.fail_tree = fail_tree.createItemTree();		// 创建fail_tree视图
-	view.progress = progress_bar.CreateProgress();	// 创建进度视图
+	view.todo_tree = todo_tree.create();		// 创建todo_tree视图
+	view.done_tree = done_tree.create();		// 创建done_tree视图
+	view.fail_tree = fail_tree.create();		// 创建fail_tree视图
+	view.progress = progress_bar.create();	// 创建进度视图
 }
 
-/* 扩展配置参数 */
+/* 扩展配置管理 */
 export class configurations {
 	static configuration = vscode.workspace.getConfiguration("todotodo");
-	static listAllItemDeleteRemind = configurations.configuration.list.todo.item.delete.remind;
-	static listAllDeleteRemind = configurations.configuration.list.todo.delete.remind;
-	static listAllItemDeleteMethod = configurations.configuration.list.todo.delete.method;
-	static listAllEmptyShow = configurations.configuration.list.todo.empty.show;
-	static pageEditorAddAfterAction = configurations.configuration.page.editor.add.after.action;
-	static path = configurations.configuration.path;
+	static listAllItemDeleteRemind = this.configuration.list.todo.item.delete.remind;
+	static listAllDeleteRemind = this.configuration.list.todo.delete.remind;
+	static listAllItemDeleteMethod = this.configuration.list.todo.delete.method;
+	static listAllEmptyShow = this.configuration.list.todo.empty.show;
+	static pageEditorAddAfterAction = this.configuration.page.editor.add.after.action;
+	static path = this.configuration.path;
 
 	constructor() {
 		// 监听配置变更
@@ -51,9 +51,133 @@ export class configurations {
 	}
 }
 
-/* 全局变量 */
-let extension_context: vscode.ExtensionContext;			// 扩展上下文
-new configurations();									// 扩展配置
+/* 主页管理 */
+export class page {
+	static view: page_view.provider;
+
+	/**
+	 * 刷新视图
+	 */
+	static refresh() {
+		if (this.view && this.view.is_visible()) {
+			this.view.showLog();
+			this.view.initialize();
+		}
+	}
+
+	/**
+	* 显示主页
+	*/
+	static show(): void {
+		if (!this.view || !this.view.is_visible()) {
+			this.view = page_view.create();
+			this.view.showLog();
+
+			page.view.panel.webview.onDidReceiveMessage((message) => {
+				switch (message.command) {
+					case "warning":
+						vscode.window.showWarningMessage(message.data);
+						break;
+
+					case "add":
+						console.log("add?");
+
+						if (message.data.old_item.type != "") {
+							todo.deleteOld(message.data.old_item);
+						}
+						todo.addNew(message.data.new_item);
+						view.refresh();
+						break;
+
+					case "list":
+						list.edit(message.data);
+						break;
+
+					case "deleteList":
+						list.deleteList(message.data, configurations.listAllDeleteRemind, configurations.listAllItemDeleteMethod);
+						break;
+
+					case "clearLog":
+						page_view.clearLog();
+						break;
+				}
+			});
+		} else {
+			this.view.show();
+		}
+	}
+
+	/**
+	 * 初始化主页
+	 */
+	static initialize(): void {
+		if (this.view) {
+			this.view.initialize();
+		}
+	}
+
+	/**
+	 * 新增事项
+	 */
+	static add(action: string): void {
+		this.show();
+
+		this.view.postToPage("add", action);
+	}
+
+	/**
+	 * 编辑事项
+	 * @param item 被点击的事项对象
+	 */
+	static edit(item: any): void {
+		this.show();
+
+		let data = {
+			type: item.type,
+			index: item.index,
+			label: item.label,
+			priority: item.priority,
+			cycle: item.cycle,
+			time: item.time,
+			place: item.place,
+			mail: item.mail,
+			particulars: item.particulars
+		};
+		this.view.postToPage("edit", data);
+	}
+
+	/**
+	 * 显示事项信息
+	 * @param item 事项对象
+	 * @param status 事项状态
+	 */
+	static particulars(item: any, status: string) {
+		this.show();
+
+		let data = {
+			type: item.type,
+			index: item.index,
+			label: item.label,
+			priority: item.priority,
+			cycle: item.cycle,
+			time: item.time,
+			place: item.place,
+			mail: item.mail,
+			particulars: item.particulars,
+			status: status
+		};
+		this.view.postToPage("information", data);
+	}
+
+	/**
+	 * 显示清单列表
+	 */
+	static showList() {
+		this.show();
+
+		this.view.showList();
+	}
+}
 
 /* 视图管理 */
 export class view {
@@ -61,19 +185,15 @@ export class view {
 	static done_tree: done_tree.provider;
 	static fail_tree: fail_tree.provider;
 	static progress: progress_bar.progress_provider;
-	static page_view: page_view.provider;
 
 	/**
 	 * 刷新全局视图
 	 */
 	static refresh(): void {
-		if (view.page_view && view.page_view.is_visible()) {
-			view.page_view.showLog();
-			view.page_view.initialize();
-		}
+		list.getRecentItem();
+		list.sortItem();
 
-		list_command.getRecentItem();
-		list_command.sortItem();
+		page.refresh();
 
 		view.todo_tree.refresh(configurations.listAllEmptyShow);
 		view.done_tree.refresh();
@@ -81,6 +201,10 @@ export class view {
 		view.progress.show();
 	}
 }
+
+/* 全局变量 */
+let extension_context: vscode.ExtensionContext;			// 扩展上下文
+new configurations();									// 扩展配置
 
 /* 命令注册管理 */
 export namespace commands {
@@ -94,7 +218,7 @@ export namespace commands {
 		set("page.add", () => page.add(configurations.pageEditorAddAfterAction));
 		set("page.edit", (item) => page.edit(item));
 		set("page.particulars", (item, status) => page.particulars(item, status));
-		set("page.list", () => page.list());
+		set("page.list", () => page.showList());
 
 		// 注册list命令
 		set("list.delete", (item) => list.deleteList(item, configurations.listAllDeleteRemind, configurations.listAllItemDeleteMethod));
@@ -117,103 +241,8 @@ export namespace commands {
 	}
 }
 
-/* 主页管理 */
-export namespace page {
-	/**
-	* 显示主页
-	*/
-	export function show(): void {
-		if (!view.page_view || !view.page_view.is_visible()) {
-			view.page_view = page_view.createPage();
-			view.page_view.showLog();
-		}
-	}
-
-	/**
-	 * 初始化主页
-	 */
-	export function initialize(): void {
-		if (view.page_view) {
-			view.page_view.initialize();
-		}
-	}
-
-	/**
-	 * 新增事项
-	 */
-	export function add(action: string): void {
-		show();
-
-		view.page_view.postToPage("add", action);
-	}
-
-	/**
-	 * 编辑事项
-	 * @param item 被点击的事项对象
-	 */
-	export function edit(item: any): void {
-		show();
-
-		let data = {
-			type: item.type,
-			index: item.index,
-			label: item.label,
-			priority: item.priority,
-			cycle: item.cycle,
-			time: item.time,
-			place: item.place,
-			mail: item.mail,
-			particulars: item.particulars
-		};
-		view.page_view.postToPage("edit", data);
-	}
-
-	/**
-	 * 显示事项信息
-	 * @param item 事项对象
-	 * @param status 事项状态
-	 */
-	export function particulars(item: any, status: string) {
-		show();
-
-		let data = {
-			type: item.type,
-			index: item.index,
-			label: item.label,
-			priority: item.priority,
-			cycle: item.cycle,
-			time: item.time,
-			place: item.place,
-			mail: item.mail,
-			particulars: item.particulars,
-			status: status
-		};
-		view.page_view.postToPage("information", data);
-	}
-
-	export function list() {
-		show();
-
-		view.page_view.list();
-	}
-}
-
 /* 清单管理 */
 export namespace list {
-	/**
-	 * 删除清单
-	 * @param item 清单对象
-	 * @param if_remind 是否确认删除
-	 * @param move 删除清单的方法 - "move"则移动到默认清单；"remove"则直接删除。
-	 */
-	export function deleteList(item: any, if_remind: boolean, move: string): void {
-		list_command.deleteList(item, if_remind, move).then((if_delete) => {
-			if (if_delete) {
-				view.refresh();
-			}
-		});
-	}
-
 	/**
 	 * 检索已经逾期或未来24小时内将要逾期的事项
 	 */
@@ -236,6 +265,26 @@ export namespace list {
 		if (if_shut) {
 			view.refresh();
 		}
+	}
+
+	/**
+	 * 删除清单
+	 * @param item 清单对象
+	 * @param if_remind 是否确认删除
+	 * @param move 删除清单的方法 - "move"则移动到默认清单；"remove"则直接删除。
+	 */
+	export function deleteList(item: any, if_remind: boolean, move: string): void {
+		list_command.deleteList(item, if_remind, move).then((if_delete) => {
+			if (if_delete) {
+				view.refresh();
+			}
+		});
+	}
+
+	export function edit(list: any) {
+		list_command.editList(list);
+
+		view.refresh();
 	}
 }
 
@@ -292,6 +341,22 @@ export namespace todo {
 		todo_command.undo(item);
 
 		view.refresh();
+	}
+
+	/**
+	 * 新建事项
+	 * @param item 事项对象
+	 */
+	export function addNew(item: any) {
+		todo_command.addNew(item);
+	}
+
+	/**
+	 * 删除原有事项
+	 * @param item 原有事项对象
+	 */
+	export function deleteOld(item: any) {
+		todo_command.deleteOld(item);
 	}
 }
 

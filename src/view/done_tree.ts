@@ -97,7 +97,7 @@ export class provider implements vscode.TreeDataProvider<item> {
  * 创建树状视图
  * @returns 元素提供器
  */
-export function createItemTree(): provider {
+export function create(): provider {
 	let item_provider: provider = new provider();
 
 	let option: vscode.TreeViewOptions<item> = {

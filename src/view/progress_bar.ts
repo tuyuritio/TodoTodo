@@ -41,6 +41,6 @@ export class progress_provider {
  * 创建进度视图
  * @returns 进度提供器
  */
-export function CreateProgress(): progress_provider {
+export function create(): progress_provider {
 	return new progress_provider();
 }
