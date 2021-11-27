@@ -32,7 +32,7 @@
 				"title": "TodoTodo",
 				"properties": {
 					"todotodo.path": {
-						"description": "清单文件目录路径（绝对路径）。若为空则使用默认路径。\n注：使用默认路径在插件更新时本地事项将被清空！",
+						"description": "清单文件目录路径（绝对路径）。若为空则使用默认路径。\n注：使用默认路径在插件更新时本地事项将被清空！\n注：该设置将在下次重启时生效。",
 						"type": "string"
 					},
 					"todotodo.page.editor.add.after.action": {
@@ -84,17 +84,17 @@
 						"description": "是否显示空清单。"
 					},
 					"todotodo.list.todo.empty.text": {
-						"description": "空Todo清单视图提示文本。\n注：该设置在下次重启时生效。",
+						"description": "空Todo清单视图提示文本。\n注：该设置将在下次重启时生效。",
 						"type": "string",
 						"default": "暂时没有待办事项，芜湖起飞！"
 					},
 					"todotodo.list.done.empty.text": {
-						"description": "空Done清单视图提示文本。\n注：该设置在下次重启时生效。",
+						"description": "空Done清单视图提示文本。\n注：该设置将在下次重启时生效。",
 						"type": "string",
 						"default": "暂时没有已办事项，加油冲冲冲！"
 					},
 					"todotodo.list.fail.empty.text": {
-						"description": "空Fail清单视图提示文本。\n注：该设置在下次重启时生效。",
+						"description": "空Fail清单视图提示文本。\n注：该设置将在下次重启时生效。",
 						"type": "string",
 						"default": "暂时没有失效事项，不错加油！"
 					}

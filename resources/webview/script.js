@@ -2,12 +2,14 @@
 let vscode = acquireVsCodeApi();
 
 /* 全局变量 */
-let is_show_detail = false;		// 是否展开细节
+let is_show_detail = false;			// 是否展开细节
 let action_after_add = "remain";
 
+let adding_type;
+let adding_priority;
 let editing_type;
 let editing_index;
-let types = [];
+let types = [];						// 清单数据
 
 /* 窗口加载 */
 window.onload = function () {
@@ -60,8 +62,7 @@ window.onload = function () {
 				break;
 
 			case "edit":
-				readyEdit();
-				cover(message.data);
+				readyEdit(message.data);
 				break;
 
 			case "information":
@@ -117,7 +118,7 @@ function setElements() {
 	label = get("label");
 	label_value = get("label_value");
 	list_editor = get("list_editor");
-	lists_list = get("lists_list");
+	list_table = get("list_table");
 	log_list = get("log_list");
 	mail = get("mail");
 	mail_value = get("mail_value");
@@ -145,6 +146,8 @@ function setElements() {
 function initialize() {
 	editing_type = "";
 	editing_index = 0;
+	adding_type = "";
+	adding_priority = 0;
 
 	select_type.selectedIndex = 0;
 	cycle.selectedIndex = 0;
@@ -162,6 +165,11 @@ function initialize() {
 	weekly.style.display = "none";
 
 	textarea.style.height = "18px";
+
+	let current_time = new Date();
+	weekly.selectedIndex = (current_time.getDay() + 6) % 7;
+	datetime.value = current_time.getFullYear() + "-" + (current_time.getMonth() + 1).toString().padStart(2, "0") + "-" + current_time.getDate().toString().padStart(2, "0") + "T" + current_time.getHours().toString().padStart(2, "0") + ":" + current_time.getMinutes().toString().padStart(2, "0");
+	select_time.value = current_time.getHours().toString().padStart(2, "0") + ":" + current_time.getMinutes().toString().padStart(2, "0");
 }
 
 /**
@@ -260,23 +268,19 @@ function readyAdd(action) {
 	action_after_add = action;
 
 	label.focus();
-	initialize();
 	item_editor_title.innerHTML = "新建事项";
-
-	let current_time = new Date();
-	weekly.selectedIndex = (current_time.getDay() + 6) % 7;
-	datetime.value = current_time.getFullYear() + "-" + (current_time.getMonth() + 1).toString().padStart(2, "0") + "-" + current_time.getDate().toString().padStart(2, "0") + "T" + current_time.getHours().toString().padStart(2, "0") + ":" + current_time.getMinutes().toString().padStart(2, "0");
-	select_time.value = current_time.getHours().toString().padStart(2, "0") + ":" + current_time.getMinutes().toString().padStart(2, "0");
+	initialize();
 }
 
 /**
  * 设置修改编辑器
  */
-function readyEdit() {
+function readyEdit(data) {
 	item_editor.style.display = "flex";
 
 	label.focus();
 	item_editor_title.innerHTML = "编辑事项";
+	cover(data);
 }
 
 /**

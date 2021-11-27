@@ -58,7 +58,7 @@ class item extends vscode.TreeItem {
 			if (date.isRecent(this.time)) {
 				this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
 				if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {
-					this.description = this.time.substr(11, 5);
+					this.description = this.time.substr(12, 5);
 				}
 			} else {
 				if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {

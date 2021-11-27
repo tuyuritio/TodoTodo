@@ -1,5 +1,4 @@
 /* 模块调用 */
-import { type } from "os";
 import * as vscode from "vscode";
 import * as command from "../command_manage";
 import * as file from "../operator/file_operator";
@@ -80,12 +79,11 @@ export class provider {
 	initialize(): void {
 		let data = file.getList();
 
-		let default_index: number = -1;
-		let types: { type: string, priority: number }[] = [];
+		let types: { type: string, priority: number, quantity: number }[] = [];
 		let list_maximum_priority = 0;
 		let item_maximum_priority = 0;
 		for (let index = 0; index < data.length; index++) {
-			types.push({ type: data[index].type, priority: data[index].priority });
+			types.push({ type: data[index].type, priority: data[index].priority, quantity: data[index].list.length });
 
 			// 计算清单最大优先层级
 			if (data[index].priority > list_maximum_priority) {
@@ -99,13 +97,23 @@ export class provider {
 					item_maximum_priority = item_data.priority;
 				}
 			}
-
-			if (types[index].type == "普通") {
-				default_index = index;
-			}
 		}
 
-		types.splice(default_index, 1);
+		for (let index = 1; index < types.length; index++) {
+			let pointer = index - 1;
+			let list = types[index];
+
+			while (pointer >= 0) {
+				if (list.type != "默认清单") {					// 默认置顶
+					if (types[pointer].priority >= list.priority) break;
+				}
+
+				types[pointer + 1] = types[pointer];
+				pointer--;
+			}
+
+			types[pointer + 1] = list;
+		}
 
 		let page_data = {
 			types: types,
@@ -216,12 +224,22 @@ function editList(list: any) {
  * 删除清单
  * @param index 清单编号
  */
-function deleteList(index: number) {
+function deleteList(list: string) {
 	let data = file.getList();
-	let list = {
-		label: data[index].type,
-		type: data[index].type
+
+	let list_data = {
+		label: "",
+		type: ""
+	};
+
+	for (let index = 0; index < data.length; index++) {
+		if (data[index].type == list) {
+			list_data = {
+				label: data[index].type,
+				type: data[index].type
+			}
+		}
 	}
 
-	vscode.commands.executeCommand("list.delete", list)
+	vscode.commands.executeCommand("list.delete", list_data);
 }

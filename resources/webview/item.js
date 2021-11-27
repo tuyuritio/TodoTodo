@@ -2,51 +2,62 @@
  * 加载选项
  */
 function loadOption(data) {
-	// 事项类别
-	while (other.previousElementSibling.innerHTML != "==事项类别==") {
-		select_type.removeChild(other.previousElementSibling);
+	// 选项清空
+	while (select_type.firstElementChild.id != "other") {
+		select_type.removeChild(select_type.firstElementChild);
 	}
 
-	types = data.types;
-	for (let index = 0; index < data.types.length; index++) {
-		let new_option = document.createElement("option");
-		new_option.innerHTML = types[index].type;
-		select_type.insertBefore(new_option, other);
-	}
-
-	// 优先层级
-	maximum.innerHTML = data.item_maximum_priority + 1;
 	while (priority.firstElementChild.id != "maximum") {
 		priority.removeChild(priority.firstElementChild);
 	}
 
+	while (list_table.firstElementChild) {
+		list_table.removeChild(list_table.firstElementChild);
+	}
+
+	// 事项类别
+	types = data.types;
+	let select_adding_type = 0;
+	for (let index = 0; index < data.types.length; index++) {
+		let new_option = document.createElement("option");
+		new_option.innerHTML = types[index].type;
+		if (adding_type == types[index].type) {
+			select_adding_type = index;
+		}
+		select_type.insertBefore(new_option, other);
+	}
+	select_type.selectedIndex = select_adding_type;
+	other_label.style.display = "none";
+
+	// 优先层级
 	for (let index = 0; index <= data.item_maximum_priority; index++) {
 		let new_option = document.createElement("option");
 		new_option.innerHTML = index;
 		priority.insertBefore(new_option, maximum);
 	}
-	priority.selectedIndex = 0;
+	maximum.innerHTML = data.item_maximum_priority + 1;
+	priority.selectedIndex = adding_priority;
 
 	// 清单列表
-	while (lists_list.firstElementChild) {
-		lists_list.removeChild(lists_list.firstElementChild);
-	}
-
 	for (let index = 0; index < data.types.length; index++) {
-		let new_list = document.createElement("p");
+		let new_list = document.createElement("tr");
 
-		let name_label = document.createElement("span");
-		name_label.innerHTML = "名称：";
+		// 清单名称输入框
+		let tabel_data_label = document.createElement("td");
 
-		let name_input = document.createElement("input");
-		name_input.type = "text";
-		name_input.value = data.types[index].type;
-		name_input.id = "new_type_" + index;
+		let label_input = document.createElement("input");
+		label_input.type = "text";
+		label_input.id = "new_type_" + index;
+		label_input.value = data.types[index].type;
+		if (!index) {
+			label_input.disabled = "disabled";
+		}
 
-		let priority_label = document.createElement("span");
-		priority_label.innerHTML = "层级：";
+		tabel_data_label.appendChild(label_input);
 
-		// 获取列表优先层级序列
+		// 获取清单优先层级序列
+		let tabel_data_select = document.createElement("td");
+
 		let new_selector = document.createElement("select");
 		for (let i = 0; i <= data.list_maximum_priority + 1; i++) {
 			let new_option = document.createElement("option");
@@ -56,22 +67,34 @@ function loadOption(data) {
 		new_selector.selectedIndex = data.types[index].priority;
 		new_selector.id = "new_priority_" + index;
 
+		tabel_data_select.appendChild(new_selector);
+
+		// 剩余代办
+		let table_data_quantity = document.createElement("td");
+		table_data_quantity.innerHTML = data.types[index].quantity;
+		table_data_quantity.style.textAlign = "center";
+
+		// 按钮
+		let tabel_data_button = document.createElement("td");
+
 		let edit_button = document.createElement("button");
 		edit_button.innerHTML = "编辑";
 		edit_button.addEventListener("click", () => editList(index));
+		tabel_data_button.appendChild(edit_button);
 
-		let delete_button = document.createElement("button");
-		delete_button.innerHTML = "删除";
-		delete_button.addEventListener("click", () => postToExtension("delete", index));
+		if (index) {
+			let delete_button = document.createElement("button");
+			delete_button.innerHTML = "删除";
+			delete_button.addEventListener("click", () => postToExtension("delete", data.types[index].type));
+			tabel_data_button.appendChild(delete_button);
+		}
 
-		new_list.appendChild(name_label);
-		new_list.appendChild(name_input);
-		new_list.appendChild(priority_label);
-		new_list.appendChild(new_selector);
-		new_list.appendChild(edit_button);
-		new_list.appendChild(delete_button);
+		new_list.appendChild(tabel_data_label);
+		new_list.appendChild(tabel_data_select);
+		new_list.appendChild(table_data_quantity);
+		new_list.appendChild(tabel_data_button);
 
-		lists_list.appendChild(new_list);
+		list_table.appendChild(new_list);
 	}
 }
 
@@ -83,10 +106,11 @@ function cover(item) {
 	editing_type = item.type;
 	editing_index = item.index;
 
-	if (item.type == "普通") {
-		select_type.selectedIndex = 0;
-	} else {
-		select_type.selectedIndex = types.indexOf(item.type) + 1;
+	for (let index = 0; index < types.length; index++) {
+		if (types[index].type == item.type) {
+			select_type.selectedIndex = index + 1;
+			break;
+		}
 	}
 
 	label.value = item.label;
@@ -120,7 +144,7 @@ function cover(item) {
 			daily.style.display = "flex";
 			weekly.style.display = "none";
 
-			select_time.value = item.time.substr(11, 5);
+			select_time.value = item.time.substr(12, 5);
 		}
 
 		if (item.cycle == "weekly") {
@@ -130,7 +154,7 @@ function cover(item) {
 			weekly.style.display = "flex";
 
 			weekly.selectedIndex = (toDate(item.time).getDay() + 6) % 7;
-			select_time.value = item.time.substr(11, 5);
+			select_time.value = item.time.substr(12, 5);
 		}
 	} else {
 		if (item.time) {
@@ -200,9 +224,7 @@ function editItem() {
 
 	// 编辑类别
 	let new_type = select_type.options[select_type.selectedIndex].text;
-	if (new_type == "==事项类别==") {
-		new_type = "普通";
-	} else if (new_type == "其它") {
+	if (new_type != "其它") {
 		new_type = input_type.value;
 	}
 
@@ -218,7 +240,7 @@ function editItem() {
 	let new_item = {
 		type: new_type,
 		label: label.value,
-		priority: parseInt(priority.options[priority.selectedIndex].text),
+		priority: priority.selectedIndex,
 		cycle: new_cycle,
 		time: time_string,
 		place: place.value,
@@ -237,10 +259,12 @@ function editItem() {
 	postToExtension("add", data);
 
 	if (editing_type != "") {
-		closeEditor();
+		close("item_editor");
 	} else {
 		switch (action_after_add) {
 			case "remain":
+				adding_type = new_type;
+				adding_priority = priority.selectedIndex;
 				break;
 
 			case "clear":
@@ -283,7 +307,7 @@ function information(item) {
 
 				time_text += "每周"
 				time_text += week_days.charAt((toDate(item.time).getDay() + 6) % 7);
-				time_text += item.time.substr(11, 5);
+				time_text += item.time.substr(12, 5);
 
 				break;
 		}

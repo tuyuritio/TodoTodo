@@ -29,7 +29,7 @@ export function getRecentItem() {
 						time: item_data.time,
 						cycle: item_data.cycle,
 						gaze: item_data.gaze
-					}
+					};
 					items.push(item);
 				}
 			}
@@ -116,11 +116,11 @@ export function sortItem() {
  * 删除清单
  * @param list 清单对象
  * @param if_remind 是否确认删除
- * @param move 删除清单的方法 - "move"则移动到普通清单；"remove"则直接删除。
+ * @param move 删除清单的方法 - "move"则移动到默认清单；"remove"则直接删除。
  * @returns Promise<boolean>
  */
 export async function deleteList(list: any, if_remind: boolean, move: string): Promise<boolean> {
-	if (list.label == "普通") {
+	if (list.label == "默认清单") {
 		vscode.window.showWarningMessage("默认清单无法删除！");
 		return false;
 	}
@@ -130,10 +130,10 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 			if (action == "确认") {
 				if (move == "move") {
 					let data = file.getList(list.label).list;
-					let default_data = file.getList("普通");
+					let default_data = file.getList("默认清单");
 
 					default_data.list = default_data.list.concat(data);
-					file.writeList("普通", default_data);
+					file.writeList("默认清单", default_data);
 				}
 
 				file.removeList(list.label);
@@ -149,10 +149,10 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 	} else {
 		if (move == "move") {
 			let data = file.getList(list.label).list;
-			let default_data = file.getList("普通");
+			let default_data = file.getList("默认清单");
 
 			default_data.list = default_data.list.concat(data);
-			file.writeList("普通", default_data);
+			file.writeList("默认清单", default_data);
 		}
 
 		file.removeList(list.label);

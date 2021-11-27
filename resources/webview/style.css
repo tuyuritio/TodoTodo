@@ -12,7 +12,7 @@
     outline-color: var(--vscode-focusBorder) !important;
 }
 
-/* specified */
+/* Common */
 
 hr {
     height: 2px;
@@ -28,14 +28,14 @@ h3 {
     height: 20px;
 }
 
-/* Common */
-
 body {
     display: flex;
 
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
+
+    padding: 0px;
 }
 
 img {
@@ -53,7 +53,7 @@ section {
 
     flex-direction: column;
 
-    margin: 20px 10px;
+    margin: 20px 0px 0px 20px;
     padding: 20px;
 
     background-color: var(--vscode-sideBar-background);
@@ -76,6 +76,8 @@ input, select, textarea {
 }
 
 button {
+    align-self: center;
+
     margin: 5px;
     padding: 6px;
 
@@ -86,12 +88,12 @@ button {
 
     text-align: center;
 
-    align-self: center;
     background: var(--vscode-button-background);
 }
 
 button:hover {
     background: var(--vscode-button-hoverBackground);
+
     cursor: pointer;
 }
 
@@ -101,13 +103,6 @@ section#item_editor {
     display: none;
 
     width: 222px;
-}
-
-section#item_editor section#detail_panel {
-    display: none;
-
-    margin: 0px;
-    padding: 0px;
 }
 
 section#item_editor label {
@@ -135,27 +130,31 @@ section#item_editor label input, select, textarea {
     resize: none;
 }
 
-section#item_editor input#select_time {
+section#item_editor label#daily input#select_time {
     width: 107px;
 }
 
-section#item_editor select {
-    width: 115px;
+section#item_editor label select#select_type {
+    width: 178px;
 }
 
-section#item_editor select#weekly {
-    width: 50px;
-}
-
-section#item_editor option:first-child {
+section#item_editor label select#select_type option:first-child {
     color: var(--vscode-input-placeholderForeground);
+}
+
+section#item_editor label select#cycle {
+    width: 65px;
+}
+
+section#item_editor label select#weekly {
+    width: 50px;
 }
 
 section#item_editor button {
     width: 224px;
 }
 
-button#show_detail {
+section#item_editor button#show_detail {
     display: flex;
 
     justify-content: center;
@@ -173,12 +172,19 @@ button#show_detail {
     background-color: var(--vscode-sideBar-background);
 }
 
-button#show_detail img {
-    float: none;
+section#item_editor button#show_detail img#arrow_up {
+    display: none;
 }
 
-button#show_detail img#arrow_up {
+section#item_editor section#detail_panel {
     display: none;
+
+    margin: 0px;
+    padding: 0px;
+}
+
+section#item_editor section#detail_panel label select#priority {
+    width: 50px;
 }
 
 /* log */
@@ -244,17 +250,26 @@ section#list_editor {
     display: none;
 }
 
-section#list_editor input {
-    width: 100px;
-
-    margin-right: 10px;
+section#list_editor table {
+    border-spacing: 15px 5px;
 }
 
-section#list_editor select {
+section#list_editor table thead tr th {
+    text-align: left;
+}
+
+section#list_editor table tbody tr td input {
+    width: 170px;
+}
+
+section#list_editor table tbody tr td input#new_type_0 {
+    color: var(--vscode-input-placeholderForeground);
+}
+
+section#list_editor table tbody tr td select {
     width: 50px;
 }
 
-section#list_editor button {
-    margin-right: 0px;
+section#list_editor table tbody tr td button {
     padding: 3px 6px;
 }

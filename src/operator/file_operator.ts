@@ -2,6 +2,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import { configurations } from "../command_manage";
 
 /* 全局变量 */
 let is_reminded = false;	// 是否已提醒异常路径
@@ -12,8 +13,7 @@ let is_reminded = false;	// 是否已提醒异常路径
  * @returns JSON文件目录路径
  */
 function toData(is_list: boolean = true): string {
-	let configuration = vscode.workspace.getConfiguration("todotodo");
-	let list_path = configuration.path;
+	let list_path = configurations.configuration.path;
 
 	if (!list_path) {
 		list_path = path.join(__dirname, "..", "..", "TodoTodoData");
@@ -30,9 +30,9 @@ function toData(is_list: boolean = true): string {
 			fs.mkdirSync(path.join(list_path, "ListData"));
 		}
 
-		if (!fs.existsSync(path.join(list_path, "ListData", "普通.json"))) {
-			let default_list = { type: "普通", priority: -1, list: [{ label: "样例事项", priority: 0, cycle: "weekly", time: "2999/01/01/-00:00", place: "在这里记录目标地点", mail: "在这里记录目标邮箱", particulars: "在这里记录事项细节" }] };
-			writeJSON(path.join(list_path, "ListData", "普通.json"), default_list);
+		if (!fs.existsSync(path.join(list_path, "ListData", "默认清单.json"))) {
+			let default_list = { type: "默认清单", priority: 1, list: [{ label: "样例事项", priority: 0, time: "2999/01/01/-00:00", place: "在这里记录目标地点", mail: "在这里记录目标邮箱", particulars: "在这里记录事项细节" }] };
+			writeJSON(path.join(list_path, "ListData", "默认清单.json"), default_list);
 		}
 
 		list_path = path.join(list_path, "ListData");
@@ -94,7 +94,6 @@ export function getList(list?: string, is_path: boolean = false): any {
 	if (list) {
 		directory_path = path.join(directory_path, list + ".json");
 		if (!is_path) {
-
 			if (!fs.existsSync(directory_path)) {
 				let structure = { type: list, priority: 0, list: [] };
 				writeJSON(directory_path, structure);

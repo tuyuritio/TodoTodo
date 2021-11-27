@@ -41,7 +41,7 @@ export async function restartAll() {
 
 			file.writeJSON(file.getJSON("fail", true), []);
 
-			file.log("已重启所有失效事项。")
+			file.log("已重启所有失效事项。");
 
 			return true;
 		} else {

@@ -33,6 +33,7 @@ export class configurations {
 	static listAllItemDeleteMethod = configurations.configuration.list.todo.delete.method;
 	static listAllEmptyShow = configurations.configuration.list.todo.empty.show;
 	static pageEditorAddAfterAction = configurations.configuration.page.editor.add.after.action;
+	static path = configurations.configuration.path;
 
 	constructor() {
 		// 监听配置变更
@@ -203,7 +204,7 @@ export namespace list {
 	 * 删除清单
 	 * @param item 清单对象
 	 * @param if_remind 是否确认删除
-	 * @param move 删除清单的方法 - "move"则移动到普通清单；"remove"则直接删除。
+	 * @param move 删除清单的方法 - "move"则移动到默认清单；"remove"则直接删除。
 	 */
 	export function deleteList(item: any, if_remind: boolean, move: string): void {
 		list_command.deleteList(item, if_remind, move).then((if_delete) => {

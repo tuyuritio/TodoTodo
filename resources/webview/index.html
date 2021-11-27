@@ -24,7 +24,6 @@
 		<!-- 类别 -->
 		<label><span>类别：</span>
 			<select id="select_type">
-				<option>==事项类别==</option>
 				<option id="other">其它</option>
 			</select>
 		</label>
@@ -88,16 +87,17 @@
 		</div>
 		<hr>
 
-		<div id="lists_list">
-			<!-- <p id="default_list"><span>名称：</span><input type="text">
-				<span>层级：</span>
-				<select>
-					<option class="maximum_option">0</option>
-				</select>
-				<button>编辑</button>
-				<button>删除</button>
-			</p> -->
-		</div>
+		<table>
+			<thead>
+				<tr>
+					<th>清单名称</th>
+					<th>优先层级</th>
+					<th>剩余待办</th>
+					<th>可用操作</th>
+				</tr>
+			</thead>
+			<tbody id="list_table"></tbody>
+		</table>
 	</section>
 
 	<!-- 事项信息 -->
