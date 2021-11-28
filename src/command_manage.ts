@@ -10,19 +10,29 @@ import * as list_command from "./command/list_command";
 import * as todo_command from "./command/todo_command";
 import * as done_command from "./command/done_command";
 import * as fail_command from "./command/fail_command";
+import { data } from "./operator/data_center";
 
 /* 初始化扩展 */
 /**
  * 创建todo_tree视图、done_tree视图、fail_tree视图、进度视图
  */
 export function initialize(context: vscode.ExtensionContext): void {
-	extension_context = context;						// 建立上下文
+	extension_context = context;				// 建立上下文
+	new configurations();						// 扩展配置
+	new data();									// 数据中心
 	commands.register();
 
 	view.todo_tree = todo_tree.create();		// 创建todo_tree视图
 	view.done_tree = done_tree.create();		// 创建done_tree视图
 	view.fail_tree = fail_tree.create();		// 创建fail_tree视图
 	view.progress = progress_bar.create();		// 创建进度视图
+}
+
+/**
+ * 终止程序
+ */
+export function terminate() {
+	data.write();
 }
 
 /* 扩展配置管理 */
@@ -60,7 +70,6 @@ export class page {
 	 */
 	static refresh() {
 		if (this.view && this.view.is_visible()) {
-			this.view.showLog();
 			this.view.initialize();
 		}
 	}
@@ -71,7 +80,6 @@ export class page {
 	static show(): void {
 		if (!this.view || !this.view.is_visible()) {
 			this.view = page_view.create();
-			this.view.showLog();
 
 			page.view.panel.webview.onDidReceiveMessage((message) => {
 				switch (message.command) {
@@ -94,10 +102,6 @@ export class page {
 
 					case "deleteList":
 						list.deleteList(message.data, configurations.listAllDeleteRemind, configurations.listAllItemDeleteMethod);
-						break;
-
-					case "clearLog":
-						page_view.clearLog();
 						break;
 				}
 			});
@@ -203,7 +207,6 @@ export class view {
 
 /* 全局变量 */
 let extension_context: vscode.ExtensionContext;			// 扩展上下文
-new configurations();									// 扩展配置
 
 /* 命令注册管理 */
 export namespace commands {

@@ -1,6 +1,7 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import * as file from "../operator/file_operator";
+import { data } from "../operator/data_center";
+import { getIconPath } from "../operator/file_operator";
 import * as date from "../operator/date_operator";
 
 /* 事项元素 */
@@ -84,7 +85,7 @@ class item extends vscode.TreeItem {
 		this.tooltip = tips;
 
 		if (this.contextValue == "gaze_item") {
-			this.iconPath = vscode.Uri.file(file.getIconPath(this.iconPath.id, true));
+			this.iconPath = vscode.Uri.file(getIconPath(this.iconPath.id, true));
 		}
 
 		this.command = {
@@ -114,25 +115,23 @@ export class provider implements vscode.TreeDataProvider<item> {
 	 * @returns vscode.ProviderResult<item[]>
 	 */
 	getChildren(element?: item): vscode.ProviderResult<item[]> {
-		let data = file.getList();
+		let todo_data = data.getTodo();
 
 		let items: item[] = [];
 		if (element) {
-			for (let i = 0; i < data.length; i++) {
-				if (element.type == data[i].type) {			// 进入相应类别清单
-					for (let index = 0; index < data[i].list.length; index++) {
-						let item_data = data[i].list[index];
-						let item_id = item_data.gaze ? "gaze_item" : "todo_item";
-						items[index] = new item(item_data.label, item_id, data[i].type, item_data.priority);
-						items[index].set(index, item_data.cycle, item_data.time, item_data.place, item_data.mail, item_data.particulars);
-					}
-				}
+			let list_data = todo_data[element.type];
+
+			for (let index = 0; index < list_data.list.length; index++) {
+				let item_data = list_data.list[index];
+				let item_id = item_data.gaze ? "gaze_item" : "todo_item";
+				items[index] = new item(item_data.label, item_id, list_data.type, item_data.priority);
+				items[index].set(index, item_data.cycle, item_data.time, item_data.place, item_data.mail, item_data.particulars);
 			}
 		} else {
 			let count: number = 0;
-			for (let index = 0; index < data.length; index++) {
-				if (data[index].list.length != 0 || this.ShowEmpty) {
-					items[count++] = new item(data[index].type, "todo_list", data[index].type, data[index].priority, vscode.TreeItemCollapsibleState.Expanded);
+			for (let list in todo_data) {
+				if (todo_data[list].list.length != 0 || this.ShowEmpty) {
+					items[count++] = new item(todo_data[list].type, "todo_list", todo_data[list].type, todo_data[list].priority, vscode.TreeItemCollapsibleState.Expanded);
 				}
 			}
 

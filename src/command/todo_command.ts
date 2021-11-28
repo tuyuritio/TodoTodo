@@ -1,8 +1,7 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import * as file from "../operator/file_operator";
 import * as date from "../operator/date_operator";
-import * as log from "../log_set";
+import { data } from "../operator/data_center";
 
 /**
  * 完成事项
@@ -13,22 +12,17 @@ export function accomplish(item: any) {
 		newCycle(item);
 	}
 
-	let todo_data = file.getList(item.type);
+	let todo_data = data.getTodo(item.type);
 	let item_data = todo_data.list[item.index];
 
 	todo_data.list.splice(item.index, 1);
-	file.writeList(item.type, todo_data);
 
 	item_data.type = item.type;
 	item_data.time = date.toString(new Date());
 	delete item_data.cycle;
 	delete item_data.gaze;
 
-	let done_data = file.getJSON("done");
-	done_data.unshift(item_data);
-	file.writeJSON(file.getJSON("done", true), done_data);
-
-	log.add(item, undefined, log.did.accomplish);
+	data.unshiftDone(item_data);
 }
 
 /**
@@ -40,22 +34,19 @@ export function shut(item: any) {
 		newCycle(item);
 	}
 
-	let todo_data = file.getList(item.type);
+	let todo_data = data.getTodo(item.type);
 	let item_data = todo_data.list[item.index];
 
 	todo_data.list.splice(item.index, 1);
-	file.writeList(item.type, todo_data);
+
+	data.setTodo(item.type, todo_data);
 
 	item_data.type = item.type;
 	delete item_data.time;
 	delete item_data.cycle;
 	delete item_data.gaze;
 
-	let fail_data = file.getJSON("fail");
-	fail_data.unshift(item_data);
-	file.writeJSON(file.getJSON("fail", true), fail_data);
-
-	log.add(item, undefined, log.did.shut);
+	data.unshiftFail(item_data);
 }
 
 /**
@@ -68,12 +59,10 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 	if (if_remind) {
 		return vscode.window.showInformationMessage("确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消").then((action) => {
 			if (action == "确认") {
-				let data = file.getList(item.type);
-				data.list.splice(item.index, 1);
+				let todo_data = data.getTodo(item.type);
+				todo_data.list.splice(item.index, 1);
 
-				file.writeList(item.type, data);
-
-				log.add(item, undefined, log.did.delete);
+				data.setTodo(item.type, todo_data);
 
 				return true;
 			} else {
@@ -81,12 +70,10 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 			}
 		});
 	} else {
-		let data = file.getList(item.type);
-		data.list.splice(item.index, 1);
+		let todo_data = data.getTodo(item.type);
+		todo_data.list.splice(item.index, 1);
 
-		file.writeList(item.type, data);
-
-		log.add(item, undefined, log.did.delete);
+		data.setTodo(item.type, todo_data);
 
 		return true;
 	}
@@ -125,16 +112,13 @@ export function newCycle(cycle_item: any) {
 		}
 	}
 
-	let todo_data = file.getList(cycle_item.type);
+	let todo_data = data.getTodo(cycle_item.type);
 
 	let new_item = todo_data.list[cycle_item.index];
 	new_item.time = date.toString(cycle_time);
 	todo_data.list.push(new_item);
 
-	file.writeList(cycle_item.type, todo_data);
-
-	cycle_item.time = new_item.time;
-	log.add(undefined, cycle_item, log.did.append);
+	data.setTodo(cycle_item.type, todo_data);
 }
 
 /**
@@ -142,9 +126,7 @@ export function newCycle(cycle_item: any) {
  * @param item 事项对象
  */
 export function gaze(item: any) {
-	let data = file.getList(item.type);
-	data.list[item.index].gaze = true;
-	file.writeList(item.type, data);
+	data.getTodo(item.type).list[item.index].gaze = true;
 }
 
 /**
@@ -152,9 +134,7 @@ export function gaze(item: any) {
  * @param item 事项对象
  */
 export function undo(item: any) {
-	let data = file.getList(item.type);
-	delete data.list[item.index].gaze;
-	file.writeList(item.type, data);
+	delete data.getTodo(item.type).list[item.index].gaze;
 }
 
 /**
@@ -165,9 +145,7 @@ let old_item: any;				// 保留原有事项
 export function deleteOld(item: any): void {
 	old_item = item;
 
-	let data = file.getList(item.type);
-	data.list.splice(item.index, 1);
-	file.writeList(item.type, data);
+	data.getTodo(item.type).list.splice(item.index, 1);
 }
 
 /**
@@ -175,7 +153,7 @@ export function deleteOld(item: any): void {
  * @param item 事项对象
  */
 export function addNew(item: any): void {
-	let data = file.getList(item.type);
+	let todo_data = data.getTodo(item.type);
 
 	let cycle = item.cycle;
 	let time = item.time;
@@ -193,18 +171,8 @@ export function addNew(item: any): void {
 		particulars: particulars
 	};
 
-	data.list.push(item_data);
-	file.writeList(item.type, data);
-
-	if (old_item) {
-		let old_data = old_item;
-		old_data.type = old_item.type;
-		old_data.label = old_item.label;
-
-		log.add(old_data, item, log.did.edit);
-	} else {
-		log.add(undefined, item, log.did.add);
-	}
+	todo_data.list.push(item_data);
+	data.setTodo(item.type, todo_data);
 
 	old_item = undefined;
 }

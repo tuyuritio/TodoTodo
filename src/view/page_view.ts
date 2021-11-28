@@ -1,6 +1,7 @@
 /* 模块调用 */
 import * as vscode from "vscode";
 import * as file from "../operator/file_operator";
+import { data } from "../operator/data_center";
 
 /* Page选项 */
 class option implements vscode.WebviewOptions, vscode.WebviewPanelOptions {
@@ -27,7 +28,6 @@ export class provider {
 		html = html.replace("window_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "window", true))).toString());
 		html = html.replace("element_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "element", true))).toString());
 		html = html.replace("event_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "event", true))).toString());
-		html = html.replace("log_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "log", true))).toString());
 		html = html.replace(/close_path/g, this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("close"))).toString());
 		html = html.replace("clear_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("clear-all"))).toString());
 		html = html.replace("up_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-up"))).toString());
@@ -74,26 +74,28 @@ export class provider {
 	 * 初始化主页
 	 */
 	initialize(): void {
-		let data = file.getList();
+		let todo_data = data.getTodo();
 
 		let types: { type: string, priority: number, quantity: number }[] = [];
 		let list_maximum_priority = 0;
 		let item_maximum_priority = 0;
-		for (let index = 0; index < data.length; index++) {
-			types.push({ type: data[index].type, priority: data[index].priority, quantity: data[index].list.length });
+		for (let list in todo_data) {
+			types.push({ type: todo_data[list].type, priority: todo_data[list].priority, quantity: todo_data[list].list.length });
 
 			// 计算清单最大优先层级
-			if (data[index].priority > list_maximum_priority) {
-				list_maximum_priority = data[index].priority;
+			if (todo_data[list].priority > list_maximum_priority) {
+				list_maximum_priority = todo_data[list].priority;
 			}
 
 			// 计算事项最大优先层级
-			for (let i = 0; i < data[index].list.length; i++) {
-				let item_data = data[index].list[i];
+			for (let i = 0; i < todo_data[list].list.length; i++) {
+				let item_data = todo_data[list].list[i];
 				if (item_data.priority > item_maximum_priority) {
 					item_maximum_priority = item_data.priority;
 				}
 			}
+		}
+		for (let index = 0; index < todo_data.length; index++) {
 		}
 
 		for (let index = 1; index < types.length; index++) {
@@ -129,13 +131,6 @@ export class provider {
 	}
 
 	/**
-	 * 显示日志
-	 */
-	showLog() {
-		this.postToPage("log", file.getJSON("log"));
-	}
-
-	/**
 	 * 获取主页是否可见
 	 * @returns 主页是否可见
 	 */
@@ -150,11 +145,4 @@ export class provider {
  */
 export function create(): provider {
 	return new provider();
-}
-
-/**
- * 清空日志文件
- */
-export function clearLog() {
-	file.writeJSON(file.getJSON("log", true), []);
 }

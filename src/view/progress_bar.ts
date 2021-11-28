@@ -1,6 +1,6 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import * as file from "../operator/file_operator";
+import { data } from "../operator/data_center";
 
 /* 进度提供器 */
 export class progress_provider {
@@ -26,11 +26,11 @@ export class progress_provider {
 	 * @returns todo事项总数
 	 */
 	count_todo(): number {
-		let data = file.getList();
+		let todo_data = data.getTodo();
 		let count: number = 0;
 
-		for (let i = 0; i < data.length; i++) {
-			count += data[i].list.length;
+		for (let list in todo_data) {
+			count += todo_data[list].list.length;
 		}
 
 		return count;

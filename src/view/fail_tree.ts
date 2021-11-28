@@ -1,6 +1,6 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import * as file from "../operator/file_operator";
+import { data } from "../operator/data_center";
 
 /* 事项元素 */
 class item extends vscode.TreeItem {
@@ -66,12 +66,12 @@ export class provider implements vscode.TreeDataProvider<item> {
 	 * @returns vscode.ProviderResult<item[]>
 	 */
 	getChildren(): vscode.ProviderResult<item[]> {
-		let data = file.getJSON("fail");
+		let fail_data = data.getFail();
 
 		let items: item[] = [];
-		for (let index = 0; index < data.length; index++) {
-			items[index] = new item(data[index].label, data[index].type);
-			items[index].set(index, data[index].priority, data[index].place, data[index].mail, data[index].particulars);
+		for (let index = 0; index < fail_data.length; index++) {
+			items[index] = new item(fail_data[index].label, fail_data[index].type);
+			items[index].set(index, fail_data[index].priority, fail_data[index].place, fail_data[index].mail, fail_data[index].particulars);
 		}
 
 		return items;
