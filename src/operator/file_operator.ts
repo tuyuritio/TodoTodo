@@ -5,7 +5,7 @@ import * as fs from "fs";
 import { configurations } from "../command_manage";
 
 /* 全局变量 */
-let is_reminded = false;				// 是否已提醒异常路径
+let is_reminded = false;						// 是否已提醒异常路径
 let data_path: string;							// 文件基准路径
 
 /**
@@ -23,6 +23,11 @@ export function checkPath() {
 		}
 
 		data_path = path.join(__dirname, "..", "..", "TodoTodoData");
+	}
+
+
+	if (fs.existsSync(path.join(data_path, "ListData"))) {
+		fs.renameSync(path.join(data_path, "ListData"), path.join(data_path, "TodoData"));
 	}
 
 	let file_path = path.join(data_path, "done.json")
@@ -186,6 +191,8 @@ export function writeData(todo_data: any, done_data: any, fail_data: any) {
 	}
 
 	for (let list in todo_data) {
+		console.log(todo_data[list]);
+
 		writeJSON(path.join(data_path, "TodoData", list + ".json"), todo_data[list]);
 	}
 }
