@@ -22,7 +22,7 @@ export function initialize(context: vscode.ExtensionContext): void {
 	view.todo_tree = todo_tree.create();		// 创建todo_tree视图
 	view.done_tree = done_tree.create();		// 创建done_tree视图
 	view.fail_tree = fail_tree.create();		// 创建fail_tree视图
-	view.progress = progress_bar.create();	// 创建进度视图
+	view.progress = progress_bar.create();		// 创建进度视图
 }
 
 /* 扩展配置管理 */
@@ -80,10 +80,11 @@ export class page {
 						break;
 
 					case "add":
-						if (message.data.old_item.type != "") {
+						if (message.data.old_item) {
 							todo.deleteOld(message.data.old_item);
 						}
 						todo.addNew(message.data.new_item);
+
 						view.refresh();
 						break;
 

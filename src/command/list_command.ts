@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import * as file from "../operator/file_operator";
 import * as date from "../operator/date_operator";
 import * as todo from "./todo_command";
+import * as log from "../log_set";
 
 /**
  * 检索已经逾期或未来24小时内将要逾期的事项
@@ -119,25 +120,25 @@ export function sortItem() {
  * @returns Promise<boolean>
  */
 export async function deleteList(list: any, if_remind: boolean, move: string): Promise<boolean> {
-	if (list.label == "默认清单") {
+	if (list.type == "默认清单") {
 		vscode.window.showWarningMessage("默认清单无法删除！");
 		return false;
 	}
 
 	if (if_remind) {
-		return vscode.window.showInformationMessage("确认删除清单 \"" + list.label + "\" 吗？", "确认", "取消").then((action) => {
+		return vscode.window.showInformationMessage("确认删除清单 \"" + list.type + "\" 吗？", "确认", "取消").then((action) => {
 			if (action == "确认") {
 				if (move == "move") {
-					let data = file.getList(list.label).list;
+					let data = file.getList(list.type).list;
 					let default_data = file.getList("默认清单");
 
 					default_data.list = default_data.list.concat(data);
 					file.writeList("默认清单", default_data);
 				}
 
-				file.removeList(list.label);
+				file.removeList(list.type);
 
-				file.log("清单 \"" + list.label + "\" 已删除。");
+				log.add({ type: list.type }, undefined, log.did.delete);
 
 				return true;
 			} else {
@@ -146,16 +147,16 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 		});
 	} else {
 		if (move == "move") {
-			let data = file.getList(list.label).list;
+			let data = file.getList(list.type).list;
 			let default_data = file.getList("默认清单");
 
 			default_data.list = default_data.list.concat(data);
 			file.writeList("默认清单", default_data);
 		}
 
-		file.removeList(list.label);
+		file.removeList(list.type);
 
-		file.log("清单 \"" + list.label + "\" 已删除。");
+		log.add({ type: list.type }, undefined, log.did.delete);
 
 		return true;
 	}
@@ -187,4 +188,6 @@ export function editList(list: any) {
 			file.renameList(list.old.type, list.new.type);
 		}
 	}
+
+	log.add({ type: list.old.type, priority: list.old.priority }, { type: list.new.type, priority: list.new.priority }, log.did.edit);
 }

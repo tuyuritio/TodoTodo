@@ -21,7 +21,7 @@ function loadOption(data) {
 	for (let index = 0; index < data.types.length; index++) {
 		let new_option = document.createElement("option");
 		new_option.innerHTML = types[index].type;
-		if (editing_type == types[index].type) {
+		if (editing_item.type == types[index].type) {
 			select_editing_type = index;
 		}
 		select_type.insertBefore(new_option, other);
@@ -36,7 +36,7 @@ function loadOption(data) {
 		priority.insertBefore(new_option, maximum);
 	}
 	maximum.innerHTML = data.item_maximum_priority + 1;
-	priority.selectedIndex = editing_priority;
+	priority.selectedIndex = editing_item.priority;
 
 	// 清单列表
 	for (let index = 0; index < data.types.length; index++) {
@@ -87,7 +87,6 @@ function loadOption(data) {
 			delete_button.innerHTML = "删除";
 
 			let list_data = {
-				label: data.types[index].type,
 				type: data.types[index].type
 			};
 
@@ -109,9 +108,7 @@ function loadOption(data) {
  * @param item 事项对象
  */
 function cover(item) {
-	editing_type = item.type;
-	editing_index = item.index;
-	editing_priority = item.priority;
+	editing_item = item;
 
 	for (let index = 0; index < types.length; index++) {
 		if (types[index].type == item.type) {
@@ -189,6 +186,9 @@ function editItem() {
 	let new_time;
 	let time_string;
 	let new_cycle;
+	let new_place;
+	let new_mail;
+	let new_particulars;
 
 	switch (cycle.options[cycle.selectedIndex].text) {
 		case "长期":
@@ -239,9 +239,21 @@ function editItem() {
 	let space_label = label.value.replaceAll(" ", "");
 	let space_type = input_type.value.replaceAll(" ", "");
 
-	if (space_label == "" || new_type == "其它" && space_type == "") {
+	if (space_label == "" || space_label == " " || new_type == "其它" && (space_type == "" || space_type == " ")) {
 		postToExtension("warning", "请输入必填项！");
 		return;
+	}
+
+	if (place.value != "") {
+		new_place = place.value;
+	}
+
+	if (mail.value != "") {
+		new_mail = mail.value;
+	}
+
+	if (particulars.value != "") {
+		new_particulars = textarea.value;
 	}
 
 	let new_item = {
@@ -250,21 +262,17 @@ function editItem() {
 		priority: priority.selectedIndex,
 		cycle: new_cycle,
 		time: time_string,
-		place: place.value,
-		mail: mail.value,
-		particulars: textarea.value
+		place: new_place,
+		mail: new_mail,
+		particulars: new_particulars
 	};
 
 	if (is_new) {
-		editing_type = "";
-		editing_index = 0;
+		editing_item = undefined;
 	}
 
 	let data = {
-		old_item: {				// 将要删除的原有事项
-			type: editing_type,
-			index: editing_index
-		},
+		old_item: editing_item,			// 将要删除的原有事项
 		new_item: new_item
 	};
 
@@ -275,8 +283,7 @@ function editItem() {
 	} else {
 		switch (action_after_add) {
 			case "remain":
-				editing_type = new_type;
-				editing_priority = priority.selectedIndex;
+				editing_item = new_item;
 				break;
 
 			case "clear":

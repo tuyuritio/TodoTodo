@@ -1,6 +1,7 @@
 /* 模块调用 */
 import * as vscode from "vscode";
 import * as file from "../operator/file_operator";
+import * as log from "../log_set";
 
 /**
  * 重启事项
@@ -18,7 +19,7 @@ export function restart(item: any) {
 	todo_data.list.push(item_data);
 	file.writeList(item.type, todo_data);
 
-	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已重启。");
+	log.add(item, undefined, log.did.restart);
 }
 
 /**
@@ -31,6 +32,8 @@ export async function restartAll() {
 			for (let index = 0; index < fail_data.length; index++) {
 				let item_data = fail_data[index];
 
+				log.add(item_data, undefined, log.did.restart);
+
 				let type = item_data.type;
 				delete item_data.type;
 
@@ -40,8 +43,6 @@ export async function restartAll() {
 			}
 
 			file.writeJSON(file.getJSON("fail", true), []);
-
-			file.log("已重启所有失效事项。");
 
 			return true;
 		} else {

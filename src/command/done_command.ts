@@ -1,6 +1,7 @@
 /* 模块调用 */
 import * as vscode from "vscode";
 import * as file from "../operator/file_operator";
+import * as log from "../log_set";
 
 /**
  * 重做事项
@@ -19,7 +20,7 @@ export function redo(item: any): void {
 	todo_data.list.push(item_data);
 	file.writeList(item.type, todo_data);
 
-	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已重做。");
+	log.add(item, undefined, log.did.redo);
 }
 
 /**
@@ -30,7 +31,7 @@ export async function clear() {
 		if (action == "确认") {
 			file.writeJSON(file.getJSON("done", true), []);
 
-			file.log("已清除所有已办事项。");
+			log.add(undefined, undefined, log.did.clear);
 
 			return true;
 		} else {

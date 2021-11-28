@@ -2,10 +2,12 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import * as log from "../log_set";
 import { configurations } from "../command_manage";
 
 /* 全局变量 */
-let is_reminded = false;	// 是否已提醒异常路径
+let is_reminded = false;										// 是否已提醒异常路径
+let old_data
 
 /**
  * 获取JSON文件目录路径
@@ -98,7 +100,7 @@ export function getList(list?: string, is_path: boolean = false): any {
 				let structure = { type: list, priority: 0, list: [] };
 				writeJSON(directory_path, structure);
 
-				log("清单 \"" + list + "\" 已建立。");
+				log.add(undefined, { type: list }, log.did.add);
 			}
 
 			{	// 兼容0.2.3及更早版本，写入清单priority属性
@@ -133,7 +135,7 @@ export function getList(list?: string, is_path: boolean = false): any {
  * @param list 清单名称
  * @param data 被写入数据
  */
-export function writeList(list: string, data: any) {
+export function writeList(list: string, data: any): void {
 	writeJSON(getList(list, true), data);
 }
 
@@ -141,7 +143,7 @@ export function writeList(list: string, data: any) {
  * 删除清单文件
  * @param list 清单名称
  */
-export function removeList(list: string) {
+export function removeList(list: string): void {
 	fs.unlinkSync(path.join(toData(), list + ".json"));
 }
 
@@ -202,27 +204,10 @@ export function getIconPath(icon_name: string, is_gif: boolean = false): string 
 }
 
 /**
- * 写入日志信息
- * @param information 日志信息
- */
-export function log(information: string) {
-	let data = getJSON("log");
-	let time = new Date();
-
-	let new_log = {
-		time: time.getFullYear() + "/" + (time.getMonth() + 1) + "/" + time.getDate().toString().padStart(2, "0") + "-" + time.getHours().toString().padStart(2, "0") + ":" + time.getMinutes().toString().padStart(2, "0") + ":" + time.getSeconds().toString().padStart(2, "0"),
-		information: information
-	}
-
-	data.unshift(new_log);
-	writeJSON(getJSON("log", true), data);
-}
-
-/**
  * 读取package.json
  * @returns package.json数据
  */
-export function getPackage() {
+export function getPackage(): any {
 	return JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "package.json"), "utf8"));
 }
 
@@ -230,7 +215,7 @@ export function getPackage() {
  * 写入package.json
  * @param data package.json数据
  */
-export function setPackage(data: any) {
+export function setPackage(data: any): void {
 	writeJSON(path.join(__dirname, "..", "..", "package.json"), data);
 }
 
@@ -239,10 +224,11 @@ export function setPackage(data: any) {
  * @param list 清单名称
  * @param new_name 新名称
  */
-export function renameList(list: string, new_name: string) {
+export function renameList(list: string, new_name: string): void {
 	fs.renameSync(getList(list, true), getList(new_name, true));
 
 	let data = getList(new_name);
 	data.type = new_name;
 	writeList(new_name, data);
 }
+

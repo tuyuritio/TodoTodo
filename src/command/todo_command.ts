@@ -2,6 +2,7 @@
 import * as vscode from "vscode";
 import * as file from "../operator/file_operator";
 import * as date from "../operator/date_operator";
+import * as log from "../log_set";
 
 /**
  * 完成事项
@@ -27,7 +28,7 @@ export function accomplish(item: any) {
 	done_data.unshift(item_data);
 	file.writeJSON(file.getJSON("done", true), done_data);
 
-	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已完成。");
+	log.add(item, undefined, log.did.accomplish);
 }
 
 /**
@@ -54,7 +55,7 @@ export function shut(item: any) {
 	fail_data.unshift(item_data);
 	file.writeJSON(file.getJSON("fail", true), fail_data);
 
-	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已失效。");
+	log.add(item, undefined, log.did.shut);
 }
 
 /**
@@ -72,7 +73,7 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 
 				file.writeList(item.type, data);
 
-				file.log("事项 \"" + item.label + "(" + item.type + ")\" 已删除。");
+				log.add(item, undefined, log.did.delete);
 
 				return true;
 			} else {
@@ -85,7 +86,7 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 
 		file.writeList(item.type, data);
 
-		file.log("事项 \"" + item.label + "(" + item.type + ")\" 已删除。");
+		log.add(item, undefined, log.did.delete);
 
 		return true;
 	}
@@ -132,7 +133,8 @@ export function newCycle(cycle_item: any) {
 
 	file.writeList(cycle_item.type, todo_data);
 
-	file.log("循环事项 \"" + cycle_item.label + "(" + cycle_item.type + ")\" 已追加。");
+	cycle_item.time = new_item.time;
+	log.add(undefined, cycle_item, log.did.append);
 }
 
 /**
@@ -159,7 +161,10 @@ export function undo(item: any) {
  * 删除原有事项
  * @param item 原有事项对象
  */
+let old_item: any;				// 保留原有事项
 export function deleteOld(item: any): void {
+	old_item = item;
+
 	let data = file.getList(item.type);
 	data.list.splice(item.index, 1);
 	file.writeList(item.type, data);
@@ -172,11 +177,11 @@ export function deleteOld(item: any): void {
 export function addNew(item: any): void {
 	let data = file.getList(item.type);
 
-	let cycle = item.cycle != "" ? item.cycle : undefined;
-	let time = item.time != "" ? item.time : undefined;
-	let place = item.place != "" ? item.place : undefined;
-	let mail = item.mail != "" ? item.mail : undefined;
-	let particulars = item.particulars != "" ? item.particulars : undefined;
+	let cycle = item.cycle;
+	let time = item.time;
+	let place = item.place;
+	let mail = item.mail;
+	let particulars;
 
 	let item_data = {
 		label: item.label,
@@ -191,5 +196,15 @@ export function addNew(item: any): void {
 	data.list.push(item_data);
 	file.writeList(item.type, data);
 
-	file.log("事项 \"" + item.label + "(" + item.type + ")\" 已编辑。");
+	if (old_item) {
+		let old_data = old_item;
+		old_data.type = old_item.type;
+		old_data.label = old_item.label;
+
+		log.add(old_data, item, log.did.edit);
+	} else {
+		log.add(undefined, item, log.did.add);
+	}
+
+	old_item = undefined;
 }

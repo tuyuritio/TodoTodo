@@ -2,9 +2,7 @@
  * 初始化编辑器
  */
 function initializeItemEditor() {
-	editing_type = "";
-	editing_index = 0;
-	editing_priority = 0;
+	editing_item = {};
 
 	select_type.selectedIndex = 0;
 	cycle.selectedIndex = 0;
