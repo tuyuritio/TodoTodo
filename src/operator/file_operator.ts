@@ -7,7 +7,6 @@ import { configurations } from "../command_manage";
 
 /* 全局变量 */
 let is_reminded = false;										// 是否已提醒异常路径
-let old_data
 
 /**
  * 获取JSON文件目录路径
@@ -15,7 +14,7 @@ let old_data
  * @returns JSON文件目录路径
  */
 function toData(is_list: boolean = true): string {
-	let list_path = configurations.configuration.path;
+	let list_path = configurations.first_configuration.path;
 
 	if (!list_path) {
 		list_path = path.join(__dirname, "..", "..", "TodoTodoData");
@@ -150,7 +149,7 @@ export function removeList(list: string): void {
 /**
  * 获取Web资源 | 获取web资源路径
  * @param type 资源类型 - 可选值为 **"HTML"** 、 **"CSS"** 、 **"JS"**
- * @param name JS文件名称 - 可选值为 **"script"** 、 **"item"** 、 **"element"** 、 **"window"** 、 **"event"**
+ * @param name JS文件名称 - 可选值为 **"script"** 、 **"item"** 、 **"element"** 、 **"window"** 、 **"event"** 、 **"log"**
  * @param is_path 是否获取路径 - true则获取路径；false则获取资源。- **默认：** false
  * @returns JSON文件内容
  */

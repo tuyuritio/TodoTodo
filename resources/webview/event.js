@@ -38,13 +38,13 @@ function addEvents() {
  */
 function nextEvents() {
 	other_type.addEventListener("keypress", (key) => {
-		if (key.code == "Enter") {
+		if (key.key == "Enter") {
 			label.focus();
 		}
 	});
 
 	label.addEventListener("keypress", (key) => {
-		if (key.code == "Enter") {
+		if (key.key == "Enter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -54,11 +54,13 @@ function nextEvents() {
 					editItem();
 				}
 			}
+		} else {
+			console.log(key);
 		}
 	});
 
 	place.addEventListener("keypress", (key) => {
-		if (key.code == "Enter") {
+		if (key.key == "Enter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -68,7 +70,7 @@ function nextEvents() {
 	});
 
 	mail.addEventListener("keypress", (key) => {
-		if (key.code == "Enter") {
+		if (key.key == "Enter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -78,7 +80,7 @@ function nextEvents() {
 	});
 
 	particulars.addEventListener("keypress", (key) => {
-		if (key.code == "Enter") {
+		if (key.key == "Enter") {
 			if (key.ctrlKey) {
 				editItem();
 			}

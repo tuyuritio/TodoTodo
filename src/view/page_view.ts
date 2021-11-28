@@ -27,6 +27,7 @@ export class provider {
 		html = html.replace("window_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "window", true))).toString());
 		html = html.replace("element_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "element", true))).toString());
 		html = html.replace("event_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "event", true))).toString());
+		html = html.replace("log_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "log", true))).toString());
 		html = html.replace(/close_path/g, this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("close"))).toString());
 		html = html.replace("clear_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("clear-all"))).toString());
 		html = html.replace("up_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-up"))).toString());

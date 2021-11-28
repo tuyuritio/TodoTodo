@@ -13,14 +13,13 @@ export function add(old_data?: any, new_data?: any, action?: did): void {
 	let data = file.getJSON("log");
 	let time = new Date();
 
-	let new_log: { time: string, list?: string, item?: string, action?: string, old?: { label?: string, type?: string, priority?: number, cycle?: string, time?: string, place?: string, mail?: string, particulars?: string }, new?: { label?: string, type?: string, priority?: number, cycle?: string, time?: string, place?: string, mail?: string, particulars?: string }, text?: string } = {
+	let new_log: { time: string, list?: string, item?: string, action?: string, old?: { label?: string, type?: string, priority?: number, cycle?: string, time?: string, place?: string, mail?: string, particulars?: string }, new?: { label?: string, type?: string, priority?: number, cycle?: string, time?: string, place?: string, mail?: string, particulars?: string } } = {
 		time: time.getFullYear() + "/" + (time.getMonth() + 1) + "/" + time.getDate().toString().padStart(2, "0") + "-" + time.getHours().toString().padStart(2, "0") + ":" + time.getMinutes().toString().padStart(2, "0") + ":" + time.getSeconds().toString().padStart(2, "0"),
 		action: undefined,
 		list: undefined,
 		item: undefined,
 		old: undefined,
-		new: undefined,
-		text: undefined
+		new: undefined
 	};
 
 	switch (action) {
@@ -61,12 +60,12 @@ export function add(old_data?: any, new_data?: any, action?: did): void {
 		case did.edit:
 			new_log.action = "edit";
 
+			new_log.old = {};
+			new_log.new = {};
+
 			new_log.list = new_data.type;
 			if (new_data.label) {
 				new_log.item = new_data.label;
-
-				new_log.old = {};
-				new_log.new = {};
 
 				if (old_data.label != new_data.label) {
 					new_log.old.label = old_data.label;
@@ -106,6 +105,16 @@ export function add(old_data?: any, new_data?: any, action?: did): void {
 				if (old_data.particulars != new_data.particulars) {
 					new_log.old.particulars = old_data.particulars;
 					new_log.new.particulars = new_data.particulars;
+				}
+			} else {
+				if (old_data.type != new_data.type) {
+					new_log.old.type = old_data.type;
+					new_log.new.type = new_data.type;
+				}
+
+				if (old_data.priority != new_data.priority) {
+					new_log.old.priority = old_data.priority;
+					new_log.new.priority = new_data.priority;
 				}
 			}
 
@@ -149,7 +158,7 @@ export function add(old_data?: any, new_data?: any, action?: did): void {
 			break;
 
 		default:
-			new_log.text = "欢迎使用TodoTodo！";
+			new_log.action = "welcome";
 			break;
 	}
 

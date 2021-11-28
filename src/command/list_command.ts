@@ -189,5 +189,8 @@ export function editList(list: any) {
 		}
 	}
 
+	let new_data = {
+		
+	}
 	log.add({ type: list.old.type, priority: list.old.priority }, { type: list.new.type, priority: list.new.priority }, log.did.edit);
 }

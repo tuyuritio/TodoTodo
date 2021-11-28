@@ -27,23 +27,23 @@ export function initialize(context: vscode.ExtensionContext): void {
 
 /* 扩展配置管理 */
 export class configurations {
-	static configuration = vscode.workspace.getConfiguration("todotodo");
-	static listAllItemDeleteRemind = this.configuration.list.todo.item.delete.remind;
-	static listAllDeleteRemind = this.configuration.list.todo.delete.remind;
-	static listAllItemDeleteMethod = this.configuration.list.todo.delete.method;
-	static listAllEmptyShow = this.configuration.list.todo.empty.show;
-	static pageEditorAddAfterAction = this.configuration.page.editor.add.after.action;
-	static path = this.configuration.path;
+	static first_configuration = vscode.workspace.getConfiguration("todotodo");
+	static listAllItemDeleteRemind = this.first_configuration.list.todo.item.delete.remind;
+	static listAllDeleteRemind = this.first_configuration.list.todo.delete.remind;
+	static listAllItemDeleteMethod = this.first_configuration.list.todo.delete.method;
+	static listAllEmptyShow = this.first_configuration.list.todo.empty.show;
+	static pageEditorAddAfterAction = this.first_configuration.page.editor.add.after.action;
+	static path = this.first_configuration.path;
 
 	constructor() {
 		// 监听配置变更
 		vscode.workspace.onDidChangeConfiguration(() => {
-			configurations.configuration = vscode.workspace.getConfiguration("todotodo");
-			configurations.listAllItemDeleteRemind = configurations.configuration.list.todo.item.delete.remind;
-			configurations.listAllDeleteRemind = configurations.configuration.list.todo.delete.remind;
-			configurations.listAllItemDeleteMethod = configurations.configuration.list.todo.delete.method;
-			configurations.listAllEmptyShow = configurations.configuration.list.todo.empty.show;
-			configurations.pageEditorAddAfterAction = configurations.configuration.page.editor.add.after.action;
+			let new_configuration = vscode.workspace.getConfiguration("todotodo");
+			configurations.listAllItemDeleteRemind = new_configuration.list.todo.item.delete.remind;
+			configurations.listAllDeleteRemind = new_configuration.list.todo.delete.remind;
+			configurations.listAllItemDeleteMethod = new_configuration.list.todo.delete.method;
+			configurations.listAllEmptyShow = new_configuration.list.todo.empty.show;
+			configurations.pageEditorAddAfterAction = new_configuration.page.editor.add.after.action;
 
 			package_set.setEmptyText();
 			view.refresh();

@@ -150,35 +150,3 @@ function readyEdit(data) {
 function readyList() {
 	list_editor.style.display = "flex";
 }
-
-/**
- * 显示日志
- * @param log_data 日志数据
- */
-function showLog(log_data) {
-	for (let index = 0; index < log_data.length; index++) {
-		let new_list_item = document.createElement("li");
-
-		let time_information = document.createElement("span");
-		time_information.setAttribute("class", "time_information");
-		time_information.innerHTML = log_data[index].time + " :   ";
-
-		let log_information = document.createElement("span");
-		log_information.setAttribute("class", "log_information");
-		log_information.innerHTML = log_data[index].information;
-
-		new_list_item.appendChild(time_information);
-		new_list_item.appendChild(log_information);
-
-		log_list.appendChild(new_list_item);
-	}
-}
-
-/**
- * 清空日志
- */
-function clearAllLog() {
-	while (log_list.firstElementChild) {
-		log_list.removeChild(log_list.firstElementChild);
-	}
-}

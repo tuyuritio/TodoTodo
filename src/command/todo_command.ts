@@ -181,7 +181,7 @@ export function addNew(item: any): void {
 	let time = item.time;
 	let place = item.place;
 	let mail = item.mail;
-	let particulars;
+	let particulars = item.particulars;
 
 	let item_data = {
 		label: item.label,
