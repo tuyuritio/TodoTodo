@@ -7,7 +7,7 @@
 		"todolist"
 	],
 	"icon": "resources/icon/icon.png",
-	"version": "0.5.2",
+	"version": "0.6.0",
 	"engines": {
 		"vscode": "^1.61.0"
 	},
