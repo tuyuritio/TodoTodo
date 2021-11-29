@@ -2,6 +2,7 @@
 import * as vscode from "vscode";
 import * as date from "../operator/date_operator";
 import { data } from "../operator/data_center";
+import * as log from "../log_set";
 
 /**
  * 完成事项
@@ -23,6 +24,8 @@ export function accomplish(item: any) {
 	delete item_data.gaze;
 
 	data.unshiftDone(item_data);
+
+	log.add(item, undefined, log.did.accomplish);
 }
 
 /**
@@ -47,6 +50,8 @@ export function shut(item: any) {
 	delete item_data.gaze;
 
 	data.unshiftFail(item_data);
+
+	log.add(item, undefined, log.did.shut);
 }
 
 /**
@@ -64,6 +69,8 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 
 				data.setTodo(item.type, todo_data);
 
+				log.add(item, undefined, log.did.delete);
+
 				return true;
 			} else {
 				return false;
@@ -74,6 +81,8 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 		todo_data.list.splice(item.index, 1);
 
 		data.setTodo(item.type, todo_data);
+
+		log.add(item, undefined, log.did.delete);
 
 		return true;
 	}
@@ -119,6 +128,7 @@ export function newCycle(cycle_item: any) {
 	todo_data.list.push(new_item);
 
 	data.setTodo(cycle_item.type, todo_data);
+	log.add(undefined, cycle_item, log.did.append);
 }
 
 /**
@@ -145,7 +155,9 @@ let old_item: any;				// 保留原有事项
 export function deleteOld(item: any): void {
 	old_item = item;
 
-	data.getTodo(item.type).list.splice(item.index, 1);
+	let todo_data = data.getTodo(item.type);
+	todo_data.list.splice(item.index, 1);
+	data.setTodo(item.type, todo_data);
 }
 
 /**
@@ -173,6 +185,16 @@ export function addNew(item: any): void {
 
 	todo_data.list.push(item_data);
 	data.setTodo(item.type, todo_data);
+
+	if (old_item) {
+		let old_data = old_item;
+		old_data.type = old_item.type;
+		old_data.label = old_item.label;
+
+		log.add(old_data, item, log.did.edit);
+	} else {
+		log.add(undefined, item, log.did.add);
+	}
 
 	old_item = undefined;
 }

@@ -12,15 +12,18 @@ import * as done_command from "./command/done_command";
 import * as fail_command from "./command/fail_command";
 import { data } from "./operator/data_center";
 
+/* 全局变量 */
+let extension_context: vscode.ExtensionContext;			// 扩展上下文
+
 /* 初始化扩展 */
 /**
- * 创建todo_tree视图、done_tree视图、fail_tree视图、进度视图
+ * 注册扩展命令、载入扩展配置、载入本地数据、创建todo_tree视图、done_tree视图、fail_tree视图、进度视图
  */
 export function initialize(context: vscode.ExtensionContext): void {
 	extension_context = context;				// 建立上下文
+	commands.register();						// 注册命令
 	new configurations();						// 扩展配置
 	new data();									// 数据中心
-	commands.register();
 
 	view.todo_tree = todo_tree.create();		// 创建todo_tree视图
 	view.done_tree = done_tree.create();		// 创建done_tree视图
@@ -28,8 +31,9 @@ export function initialize(context: vscode.ExtensionContext): void {
 	view.progress = progress_bar.create();		// 创建进度视图
 }
 
+/* 终止扩展 */
 /**
- * 终止程序
+ * 写入日志文件
  */
 export function terminate() {
 	data.write();
@@ -38,6 +42,8 @@ export function terminate() {
 /* 扩展配置管理 */
 export class configurations {
 	static first_configuration = vscode.workspace.getConfiguration("todotodo");
+	static new_configuration = configurations.first_configuration;
+
 	static listAllItemDeleteRemind = this.first_configuration.list.todo.item.delete.remind;
 	static listAllDeleteRemind = this.first_configuration.list.todo.delete.remind;
 	static listAllItemDeleteMethod = this.first_configuration.list.todo.delete.method;
@@ -48,12 +54,13 @@ export class configurations {
 	constructor() {
 		// 监听配置变更
 		vscode.workspace.onDidChangeConfiguration(() => {
-			let new_configuration = vscode.workspace.getConfiguration("todotodo");
-			configurations.listAllItemDeleteRemind = new_configuration.list.todo.item.delete.remind;
-			configurations.listAllDeleteRemind = new_configuration.list.todo.delete.remind;
-			configurations.listAllItemDeleteMethod = new_configuration.list.todo.delete.method;
-			configurations.listAllEmptyShow = new_configuration.list.todo.empty.show;
-			configurations.pageEditorAddAfterAction = new_configuration.page.editor.add.after.action;
+			configurations.new_configuration = vscode.workspace.getConfiguration("todotodo");
+
+			configurations.listAllItemDeleteRemind = configurations.new_configuration.list.todo.item.delete.remind;
+			configurations.listAllDeleteRemind = configurations.new_configuration.list.todo.delete.remind;
+			configurations.listAllItemDeleteMethod = configurations.new_configuration.list.todo.delete.method;
+			configurations.listAllEmptyShow = configurations.new_configuration.list.todo.empty.show;
+			configurations.pageEditorAddAfterAction = configurations.new_configuration.page.editor.add.after.action;
 
 			package_set.setEmptyText();
 			view.refresh();
@@ -61,15 +68,86 @@ export class configurations {
 	}
 }
 
+/* 命令注册管理 */
+export namespace commands {
+	function set(command: string, action: (...data: any) => any): void {
+		extension_context.subscriptions.push(vscode.commands.registerCommand(command, (...data) => action(...data)));
+	}
+
+	export function register(): void {
+		// 注册page命令
+		set("page.show", () => page.show());
+		set("page.add", () => page.add(configurations.pageEditorAddAfterAction));
+		set("page.edit", (item) => page.edit(item));
+		set("page.particulars", (item, status) => page.particulars(item, status));
+		set("page.list", () => page.showList());
+
+		// 注册list命令
+		set("list.delete", (item) => list.deleteList(item, configurations.listAllDeleteRemind, configurations.listAllItemDeleteMethod));
+
+		// 注册todo_tree命令
+		set("todo.refresh", () => view.refresh(false));
+		set("todo.accomplish", (item) => todo.accomplish(item));
+		set("todo.shut", (item) => todo.shut(item));
+		set("todo.delete", (item) => todo.deleteItem(item, configurations.listAllItemDeleteRemind));
+		set("todo.gaze", (item) => todo.gaze(item));
+		set("todo.undo", (item) => todo.undo(item));
+
+		// 注册done_tree命令
+		set("done.clear", () => done.clear());
+		set("done.redo", (item) => done.redo(item));
+
+		// 注册fail_tree命令
+		set("fail.restart", (item) => fail.restart(item));
+		set("fail.restart_all", () => fail.restartAll());
+	}
+}
+
+/* 视图管理 */
+export class view {
+	static todo_tree: todo_tree.provider;
+	static done_tree: done_tree.provider;
+	static fail_tree: fail_tree.provider;
+	static progress: progress_bar.progress_provider;
+
+	/**
+	 * 刷新全局视图
+	 * @param auto 刷新时是否读写本地数据并刷新网页 - true则仅执行刷新；false则在刷新前读写本地数据
+	 */
+	static refresh(auto: boolean = true): void {
+		if (!auto) {
+			terminate();
+			new data();
+		}
+
+		list.getRecentItem();
+		list.sortItem();
+
+		page.refresh(auto);
+
+		view.todo_tree.refresh(configurations.listAllEmptyShow);
+		view.done_tree.refresh();
+		view.fail_tree.refresh();
+		view.progress.show();
+	}
+}
+
 /* 主页管理 */
 export class page {
-	static view: page_view.provider;
+	private static view: page_view.provider;
 
 	/**
 	 * 刷新视图
+	 * @param auto 是否强制刷新 - false则强制刷新；false则默认刷新
 	 */
-	static refresh() {
+	static refresh(auto: boolean = true) {
 		if (this.view && this.view.is_visible()) {
+			if (!auto) {
+				this.view.close();
+				this.view = page_view.create();
+			}
+
+			this.view.showLog();
 			this.view.initialize();
 		}
 	}
@@ -80,6 +158,7 @@ export class page {
 	static show(): void {
 		if (!this.view || !this.view.is_visible()) {
 			this.view = page_view.create();
+			this.view.showLog();
 
 			page.view.panel.webview.onDidReceiveMessage((message) => {
 				switch (message.command) {
@@ -103,11 +182,22 @@ export class page {
 					case "deleteList":
 						list.deleteList(message.data, configurations.listAllDeleteRemind, configurations.listAllItemDeleteMethod);
 						break;
+
+					case "clearLog":
+						page_view.clearLog();
+						break;
 				}
 			});
 		} else {
 			this.view.show();
 		}
+	}
+
+	/**
+	 * 关闭主页
+	 */
+	static close() {
+		this.view.close();
 	}
 
 	/**
@@ -179,67 +269,6 @@ export class page {
 		this.show();
 
 		this.view.showList();
-	}
-}
-
-/* 视图管理 */
-export class view {
-	static todo_tree: todo_tree.provider;
-	static done_tree: done_tree.provider;
-	static fail_tree: fail_tree.provider;
-	static progress: progress_bar.progress_provider;
-
-	/**
-	 * 刷新全局视图
-	 */
-	static refresh(): void {
-		list.getRecentItem();
-		list.sortItem();
-
-		page.refresh();
-
-		view.todo_tree.refresh(configurations.listAllEmptyShow);
-		view.done_tree.refresh();
-		view.fail_tree.refresh();
-		view.progress.show();
-	}
-}
-
-/* 全局变量 */
-let extension_context: vscode.ExtensionContext;			// 扩展上下文
-
-/* 命令注册管理 */
-export namespace commands {
-	function set(command: string, action: (...data: any) => any): void {
-		extension_context.subscriptions.push(vscode.commands.registerCommand(command, (...data) => action(...data)));
-	}
-
-	export function register(): void {
-		// 注册page命令
-		set("page.show", () => page.show());
-		set("page.add", () => page.add(configurations.pageEditorAddAfterAction));
-		set("page.edit", (item) => page.edit(item));
-		set("page.particulars", (item, status) => page.particulars(item, status));
-		set("page.list", () => page.showList());
-
-		// 注册list命令
-		set("list.delete", (item) => list.deleteList(item, configurations.listAllDeleteRemind, configurations.listAllItemDeleteMethod));
-
-		// 注册todo_tree命令
-		set("todo.refresh", () => view.refresh());					// 作用于全局刷新
-		set("todo.accomplish", (item) => todo.accomplish(item));
-		set("todo.shut", (item) => todo.shut(item));
-		set("todo.delete", (item) => todo.deleteItem(item, configurations.listAllItemDeleteRemind));
-		set("todo.gaze", (item) => todo.gaze(item));
-		set("todo.undo", (item) => todo.undo(item));
-
-		// 注册done_tree命令
-		set("done.clear", () => done.clear());
-		set("done.redo", (item) => done.redo(item));
-
-		// 注册fail_tree命令
-		set("fail.restart", (item) => fail.restart(item));
-		set("fail.restart_all", () => fail.restartAll());
 	}
 }
 

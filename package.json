@@ -50,6 +50,16 @@
 							"关闭编辑器。"
 						]
 					},
+					"todotodo.page.log.start.remind": {
+						"description": "启动时在日志中显示欢迎文本。",
+						"type": "boolean",
+						"default": true
+					},
+					"todotodo.page.log.color": {
+						"description": "启用日志色彩高亮。",
+						"type": "boolean",
+						"default": true
+					},
 					"todotodo.list.todo.item.delete.remind": {
 						"description": "在删除事项时显示确认对话框。",
 						"type": "boolean",

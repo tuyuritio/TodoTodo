@@ -5,7 +5,7 @@ import * as fs from "fs";
 import { configurations } from "../command_manage";
 
 /* 全局变量 */
-let is_reminded = false;						// 是否已提醒异常路径
+let is_reminded = false;						// 是否已提醒
 let data_path: string;							// 文件基准路径
 
 /**
@@ -14,20 +14,23 @@ let data_path: string;							// 文件基准路径
 export function checkPath() {
 	data_path = configurations.first_configuration.path;
 
-	if (!data_path || !fs.existsSync(data_path)) {
-		if (!fs.existsSync(data_path)) {
-			if (!is_reminded) {
-				is_reminded = true;
-				vscode.window.showErrorMessage("自定义清单文件目录路径无效，请检查！\n（现已使用默认路径，请及时更换！）");
-			}
-		}
-
+	if (data_path == "") {
 		data_path = path.join(__dirname, "..", "..", "TodoTodoData");
+	} else if (!fs.existsSync(data_path)) {
+		if (!is_reminded) {
+			is_reminded = true;
+			vscode.window.showErrorMessage("自定义清单文件目录路径无效，请检查！\n（现已使用默认路径，请及时更换！）");
+		}
 	}
 
+	{	// v0.4.3兼容性调整
+		if (fs.existsSync(path.join(data_path, "ListData"))) {
+			fs.renameSync(path.join(data_path, "ListData"), path.join(data_path, "TodoData"));
+		}
 
-	if (fs.existsSync(path.join(data_path, "ListData"))) {
-		fs.renameSync(path.join(data_path, "ListData"), path.join(data_path, "TodoData"));
+		if (fs.existsSync(path.join(data_path, "recent.json"))) {
+			fs.unlinkSync(path.join(data_path, "recent.json"));
+		}
 	}
 
 	let file_path = path.join(data_path, "done.json")
@@ -52,7 +55,7 @@ export function checkPath() {
 
 	file_path = path.join(file_path, "默认清单.json");
 	if (!fs.existsSync(file_path)) {
-		let default_list = { type: "默认清单", priority: 1, list: [{ label: "样例事项", priority: 0, time: "2999/01/01/-00:00", place: "在这里记录目标地点", mail: "在这里记录目标邮箱", particulars: "在这里记录事项细节" }] };
+		let default_list = { type: "默认清单", priority: 1, list: [{ label: "样例事项", priority: 0, time: "2050/01/01/-00:00", place: "在这里记录目标地点", mail: "在这里记录目标邮箱", particulars: "在这里记录事项细节" }] };
 		writeJSON(file_path, default_list);
 	}
 }
@@ -80,6 +83,7 @@ export function readJSON(content: string) {
 			let file_path = path.join(data_path, "TodoData", file);
 			todo_data[index++] = JSON.parse(fs.readFileSync(file_path, "utf8"));
 		}
+
 		return todo_data;
 	} else {
 		return JSON.parse(fs.readFileSync(path.join(data_path, content + ".json"), "utf8"));
@@ -89,7 +93,8 @@ export function readJSON(content: string) {
 /**
  * 获取Web资源 | 获取web资源路径
  * @param type 资源类型 - 可选值为 **"HTML"** 、 **"CSS"** 、 **"JS"**
- * @param name JS文件名称 - 可选值为 **"script"** 、 **"item"** 、 **"element"** 、 **"window"** 、 **"event"**
+ * @param name 文件内容 - 当`type`为 **"CSS"** 时可选值为 **"style"** 、 **"style_colorless"**
+ * @param name 文件内容 - 当`type`为 **"JS"** 时可选值为 **"script"** 、 **"item"** 、 **"element"** 、 **"window"** 、 **"event"**
  * @param is_path 是否获取路径 - true则获取路径；false则获取资源。- **默认：** false
  * @returns JSON文件内容
  */
@@ -110,12 +115,12 @@ export function getWeb(type?: string, name?: string, is_path: boolean = false): 
 
 		case "CSS":
 			if (is_path) {
-				return path.join(directory_path, "style.css");
+				return path.join(directory_path, name + ".css");
 			} else {
-				return fs.readFileSync(path.join(directory_path, "stype.css"), "utf8");
+				return fs.readFileSync(path.join(directory_path, name + ".css"), "utf8");
 			}
-		case "JS":
 
+		case "JS":
 			if (is_path) {
 				return path.join(directory_path, name + ".js");
 			} else {
@@ -181,9 +186,10 @@ export function setPackage(data: any): void {
  * @param done_data Done数据
  * @param fail_data Fail数据
  */
-export function writeData(todo_data: any, done_data: any, fail_data: any) {
+export function writeData(todo_data: any, done_data: any, fail_data: any, log_data: any) {
 	writeJSON(path.join(data_path, "done.json"), done_data);
 	writeJSON(path.join(data_path, "fail.json"), fail_data);
+	writeJSON(path.join(data_path, "log.json"), log_data);
 
 	let files = fs.readdirSync(path.join(data_path, "TodoData"));
 	for (let file of files) {
@@ -191,8 +197,6 @@ export function writeData(todo_data: any, done_data: any, fail_data: any) {
 	}
 
 	for (let list in todo_data) {
-		console.log(todo_data[list]);
-
 		writeJSON(path.join(data_path, "TodoData", list + ".json"), todo_data[list]);
 	}
 }

@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import * as date from "../operator/date_operator";
 import * as todo from "./todo_command";
 import { data } from "../operator/data_center";
-import { removeList, renameList } from "../operator/file_operator";
+import * as log from "../log_set";
 
 /**
  * 检索已经逾期或未来24小时内将要逾期的事项
@@ -136,7 +136,9 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 					data.setTodo("默认清单", default_data);
 				}
 
-				removeList(list.type);
+				data.deleteList(list.type);
+
+				log.add({ type: list.type }, undefined, log.did.delete);
 
 				return true;
 			} else {
@@ -152,7 +154,9 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 			data.setTodo("默认清单", default_data);
 		}
 
-		removeList(list.type);
+		data.deleteList(list.type);
+
+		log.add({ type: list.type }, undefined, log.did.delete);
 
 		return true;
 	}
@@ -179,9 +183,6 @@ export function editList(list_data: any) {
 				break;
 			}
 		}
-
-		if (!if_same) {
-			renameList(list_data.old.type, list_data.new.type);
-		}
 	}
+	log.add({ type: list_data.old.type, priority: list_data.old.priority }, { type: list_data.new.type, priority: list_data.new.priority }, log.did.edit);
 }

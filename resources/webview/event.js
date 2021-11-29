@@ -8,6 +8,12 @@ function addEvents() {
 	// 周期选择
 	cycle.addEventListener("change", (event) => chooseCycle(event));
 
+	// 清空日志
+	clear_log.addEventListener("click", () => {
+		clearAllLog();
+		postToExtension("clearLog");
+	});
+
 	// 确认编辑事项
 	complete_button.addEventListener("click", () => editItem());
 
@@ -103,6 +109,11 @@ window.addEventListener("message", (event) => {
 
 		case "list":
 			readyList();
+			break;
+
+		case "log":
+			clearAllLog();
+			showLog(message.data);
 			break;
 	}
 });

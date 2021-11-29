@@ -1,5 +1,6 @@
 /* 模块调用 */
 import * as vscode from "vscode";
+import * as log from "../log_set";
 import { data } from "../operator/data_center";
 
 /**
@@ -15,7 +16,13 @@ export function redo(item: any): void {
 	delete item_data.time;
 	delete item_data.type;
 
-	data.pushTodo(item.type, item_data);
+	if (item.type in data.getTodo()) {
+		data.pushTodo(item.type, item_data);
+	} else {
+		data.pushTodo("默认清单", item_data);
+	}
+
+	log.add(item, undefined, log.did.redo);
 }
 
 /**
@@ -26,6 +33,8 @@ export async function clear() {
 		if (action == "确认") {
 			data.setDone([]);
 
+			log.add(undefined, undefined, log.did.clear);
+			
 			return true;
 		} else {
 			return false;

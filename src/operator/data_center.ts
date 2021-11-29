@@ -1,5 +1,10 @@
 /* 模块调用 */
 import * as file from "./file_operator";
+import * as log from "../log_set";
+import { configurations } from "../command_manage";
+
+/* 全局变量 */
+let is_start = true;
 
 /* 数据中心 */
 export class data {
@@ -7,6 +12,7 @@ export class data {
 	private static done_data: any = [];
 	private static fail_data: any = [];
 	private static recent_data: any = [];
+	private static log_data: any = [];
 
 	constructor() {
 		file.checkPath();
@@ -18,10 +24,20 @@ export class data {
 
 		data.done_data = file.readJSON("done");
 		data.fail_data = file.readJSON("fail");
+		data.log_data = file.readJSON("log");
+
+		if (is_start && configurations.first_configuration.page.log.start.remind) {
+			is_start = false;
+			log.add();
+		}
 	}
 
 	static write() {
-		file.writeData(data.todo_data, data.done_data, data.fail_data);
+		file.writeData(data.todo_data, data.done_data, data.fail_data, data.log_data);
+	}
+
+	static deleteList(list: string) {
+		delete data.todo_data[list];
 	}
 
 	static getTodo(list?: string) {
@@ -32,6 +48,8 @@ export class data {
 					priority: 0,
 					list: []
 				};
+
+				log.add(undefined, { type: list }, log.did.add);
 			}
 
 			return data.todo_data[list];
@@ -80,7 +98,19 @@ export class data {
 		data.recent_data = recent_data;
 	}
 
-	static pushRecent(item_data: any) {
-		data.recent_data.push(item_data);
+	static pushRecent(recent_item: any) {
+		data.recent_data.push(recent_item);
+	}
+
+	static getLog() {
+		return data.log_data;
+	}
+
+	static setLog(log_data: any) {
+		data.log_data = log_data;
+	}
+
+	static unshiftLog(new_log: any) {
+		data.log_data.unshift(new_log);
 	}
 }

@@ -1,3 +1,4 @@
+/* 模块调用 */
 import * as vscode from "vscode";
 import { getPackage, setPackage } from "./operator/file_operator";
 

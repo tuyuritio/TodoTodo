@@ -1,5 +1,6 @@
 /* 模块调用 */
 import * as vscode from "vscode";
+import * as log from "../log_set";
 import { data } from "../operator/data_center";
 
 /**
@@ -14,7 +15,13 @@ export function restart(item: any) {
 
 	delete item_data.type;
 
-	data.pushTodo(item.type, item_data);
+	if (item.type in data.getTodo()) {
+		data.pushTodo(item.type, item_data);
+	}else{
+		data.pushTodo("默认清单", item_data);
+	}
+
+	log.add(item, undefined, log.did.restart);
 }
 
 /**
@@ -26,6 +33,8 @@ export async function restartAll() {
 			let fail_data = data.getFail();
 			for (let index = 0; index < fail_data.length; index++) {
 				let item_data = fail_data[index];
+
+				log.add(item_data, undefined, log.did.restart);
 
 				let type = item_data.type;
 				delete item_data.type;

@@ -2,6 +2,7 @@
 import * as vscode from "vscode";
 import * as file from "../operator/file_operator";
 import { data } from "../operator/data_center";
+import { configurations } from "../command_manage";
 
 /* Page选项 */
 class option implements vscode.WebviewOptions, vscode.WebviewPanelOptions {
@@ -22,17 +23,23 @@ export class provider {
 		this.panel.iconPath = vscode.Uri.file(file.getIconPath("icon_page"));
 
 		let html = file.getWeb("HTML");
-		html = html.replace("style_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("CSS", undefined, true))).toString());
 		html = html.replace("script_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "script", true))).toString());
 		html = html.replace("item_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "item", true))).toString());
 		html = html.replace("window_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "window", true))).toString());
 		html = html.replace("element_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "element", true))).toString());
 		html = html.replace("event_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "event", true))).toString());
+		html = html.replace("log_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "log", true))).toString());
 		html = html.replace(/close_path/g, this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("close"))).toString());
 		html = html.replace("clear_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("clear-all"))).toString());
 		html = html.replace("up_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-up"))).toString());
 		html = html.replace("down_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-down"))).toString());
 		html = html.replace(/csp_source/g, this.panel.webview.cspSource);
+
+		if(configurations.new_configuration.page.log.color){
+			html = html.replace("style_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("CSS", "style", true))).toString());
+		}else{
+			html = html.replace("style_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("CSS", "style_colorless", true))).toString());
+		}
 
 		this.panel.webview.html = html;
 		this.initialize();
@@ -131,6 +138,13 @@ export class provider {
 	}
 
 	/**
+	 * 显示日志
+	 */
+	showLog() {
+		this.postToPage("log", data.getLog());
+	}
+
+	/**
 	 * 获取主页是否可见
 	 * @returns 主页是否可见
 	 */
@@ -145,4 +159,11 @@ export class provider {
  */
 export function create(): provider {
 	return new provider();
+}
+
+/**
+ * 清空日志
+ */
+export function clearLog() {
+	data.setLog([]);
 }

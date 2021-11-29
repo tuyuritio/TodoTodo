@@ -14,6 +14,7 @@ function setElements() {
 	action_text = get("action_text");
 	arrow_down = get("arrow_down");
 	arrow_up = get("arrow_up");
+	clear_log = get("clear_log");
 	close_item_editor = get("close_item_editor");
 	complete_button = get("complete_button");
 	cycle = get("cycle");
@@ -35,6 +36,7 @@ function setElements() {
 	label_value = get("label_value");
 	list_editor = get("list_editor");
 	list_table = get("list_table");
+	log_list = get("log_list");
 	mail = get("mail");
 	mail_value = get("mail_value");
 	maximum = get("maximum");
