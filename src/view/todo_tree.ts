@@ -5,9 +5,6 @@ import { getIconPath } from "../operator/file_operator";
 import * as date from "../operator/date_operator";
 import { configurations } from "../command_manage";
 
-/* 全局变量 */
-let on_flash = true;
-
 /* 事项元素 */
 class item extends vscode.TreeItem {
 	// 事项参数
