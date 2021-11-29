@@ -65,6 +65,21 @@
 						"type": "boolean",
 						"default": true
 					},
+					"todotodo.list.todo.item.gaze.style": {
+						"description": "正在办理事项的提示方式",
+						"type": "string",
+						"default": "flash",
+						"enum": [
+							"flash",
+							"highlight",
+							"disabled"
+						],
+						"enumDescriptions": [
+							"图标闪烁。",
+							"图标高亮。",
+							"禁用\"正在办理\"功能。"
+						]
+					},
 					"todotodo.list.todo.item.time.show": {
 						"description": "在事项右侧显示截止时间。",
 						"type": "boolean",
@@ -290,7 +305,7 @@
 				{
 					"command": "todo.gaze",
 					"group": "inline",
-					"when": "viewItem == todo_item"
+					"when": "viewItem == todo_item && config.todotodo.list.todo.item.gaze.style != disabled"
 				},
 				{
 					"command": "todo.accomplish",

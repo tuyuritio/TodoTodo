@@ -38,13 +38,13 @@ function addEvents() {
  */
 function nextEvents() {
 	other_type.addEventListener("keypress", (key) => {
-		if (key.key == "Enter") {
+		if (key.code == "Enter" || key.code =="NumpadEnter") {
 			label.focus();
 		}
 	});
 
 	label.addEventListener("keypress", (key) => {
-		if (key.key == "Enter") {
+		if (key.code == "Enter" || key.code == "NumpadEnter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -58,7 +58,7 @@ function nextEvents() {
 	});
 
 	place.addEventListener("keypress", (key) => {
-		if (key.key == "Enter") {
+		if (key.code == "Enter" || key.code == "NumpadEnter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -68,7 +68,7 @@ function nextEvents() {
 	});
 
 	mail.addEventListener("keypress", (key) => {
-		if (key.key == "Enter") {
+		if (key.code == "Enter" || key.code == "NumpadEnter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -78,7 +78,8 @@ function nextEvents() {
 	});
 
 	particulars.addEventListener("keypress", (key) => {
-		if (key.key == "Enter") {
+		console.log(key);
+		if (key.code == "Enter" || key.code == "NumpadEnter") {
 			if (key.ctrlKey) {
 				editItem();
 			}
@@ -117,7 +118,6 @@ window.addEventListener("message", (event) => {
 			break;
 	}
 });
-
 
 /**
  * 发送扩展命令

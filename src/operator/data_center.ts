@@ -110,7 +110,7 @@ export class data {
 		data.log_data = log_data;
 	}
 
-	static unshiftLog(new_log: any) {
-		data.log_data.unshift(new_log);
+	static pushLog(new_log: any) {
+		data.log_data.push(new_log);
 	}
 }

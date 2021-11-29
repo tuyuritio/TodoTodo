@@ -264,11 +264,13 @@ section#list_editor table tbody tr td button {
 
 section#log {
     width: 600px;
+    height: 400px;
     max-width: 600px;
-    min-height: 400px;
 }
 
 section#log ul#log_list {
+    overflow: scroll;
+
     padding-left: 20px;
 }
 

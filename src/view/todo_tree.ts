@@ -3,6 +3,10 @@ import * as vscode from "vscode";
 import { data } from "../operator/data_center";
 import { getIconPath } from "../operator/file_operator";
 import * as date from "../operator/date_operator";
+import { configurations } from "../command_manage";
+
+/* 全局变量 */
+let on_flash = true;
 
 /* 事项元素 */
 class item extends vscode.TreeItem {
@@ -85,7 +89,19 @@ class item extends vscode.TreeItem {
 		this.tooltip = tips;
 
 		if (this.contextValue == "gaze_item") {
-			this.iconPath = vscode.Uri.file(getIconPath(this.iconPath.id, true));
+			switch (configurations.new_configuration.list.todo.item.gaze.style) {
+				case "flash":
+					this.iconPath = vscode.Uri.file(getIconPath(this.iconPath.id, true));
+					break;
+
+				case "highlight":
+					this.iconPath = new vscode.ThemeIcon(this.iconPath.id, new vscode.ThemeColor("list.highlightForeground"));
+					break;
+
+				case "disabled":
+					this.iconPath = new vscode.ThemeIcon(this.iconPath.id);
+					break;
+			}
 		}
 
 		this.command = {

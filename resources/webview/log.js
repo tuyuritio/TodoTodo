@@ -212,4 +212,6 @@ function showLog(log_data) {
 		}
 		log_list.appendChild(new_log);
 	}
+
+	log_list.scrollTop = log_list.scrollHeight;
 }
