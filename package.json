@@ -230,6 +230,16 @@
 				"icon": "$(trash)"
 			},
 			{
+				"command": "todo.save",
+				"title": "保存数据",
+				"icon": "${save}"
+			},
+			{
+				"command": "todo.read",
+				"title": "读取数据",
+				"icon": "${symbol-constant}"
+			},
+			{
 				"command": "done.clear",
 				"title": "清空已办事项",
 				"icon": "$(clear-all)",
@@ -255,7 +265,6 @@
 			"view/title": [
 				{
 					"command": "page.show",
-					"group": "navigation",
 					"when": "view == todo_tree"
 				},
 				{
@@ -270,7 +279,10 @@
 				},
 				{
 					"command": "todo.refresh",
-					"group": "navigation",
+					"when": "view == todo_tree"
+				},
+				{
+					"command": "todo.save",
 					"when": "view == todo_tree"
 				},
 				{
@@ -285,11 +297,6 @@
 				}
 			],
 			"view/item/context": [
-				{
-					"command": "todo.undo",
-					"group": "inline",
-					"when": "viewItem == gaze_item"
-				},
 				{
 					"command": "list.delete",
 					"when": "viewItem == todo_list"
@@ -306,6 +313,11 @@
 					"command": "todo.gaze",
 					"group": "inline",
 					"when": "viewItem == todo_item && config.todotodo.list.todo.item.gaze.style != disabled"
+				},
+				{
+					"command": "todo.undo",
+					"group": "inline",
+					"when": "viewItem == gaze_item"
 				},
 				{
 					"command": "todo.accomplish",

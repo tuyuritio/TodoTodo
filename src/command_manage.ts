@@ -92,6 +92,7 @@ export namespace commands {
 		set("todo.delete", (item) => todo.deleteItem(item, configurations.listAllItemDeleteRemind));
 		set("todo.gaze", (item) => todo.gaze(item));
 		set("todo.undo", (item) => todo.undo(item));
+		set("todo.save", () => todo.save());
 
 		// 注册done_tree命令
 		set("done.clear", () => done.clear());
@@ -116,7 +117,6 @@ export class view {
 	 */
 	static refresh(auto: boolean = true): void {
 		if (!auto) {
-			terminate();
 			new data();
 		}
 
@@ -388,6 +388,15 @@ export namespace todo {
 	 */
 	export function deleteOld(item: any) {
 		todo_command.deleteOld(item);
+	}
+
+	/**
+	 * 保存数据
+	 */
+	export function save(): void {
+		todo_command.save();
+
+		view.refresh();
 	}
 }
 

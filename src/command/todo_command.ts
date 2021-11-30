@@ -198,3 +198,10 @@ export function addNew(item: any): void {
 
 	old_item = undefined;
 }
+
+/**
+ * 保存数据
+ */
+export function save() {
+	data.write();
+}

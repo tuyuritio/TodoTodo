@@ -36,14 +36,26 @@ function addEvents() {
 /**
  * 聚焦事件
  */
-function nextEvents() {
-	other_type.addEventListener("keypress", (key) => {
-		if (key.code == "Enter" || key.code =="NumpadEnter") {
+function focusEvents() {
+	item_editor.addEventListener("keydown", (key) => {
+		if (key.code == "Escape") {
+			close("item_editor");
+		}
+	});
+
+	list_editor.addEventListener("keydown", (key) => {
+		if (key.code == "Escape") {
+			close("list_editor");
+		}
+	});
+
+	other_type.addEventListener("keydown", (key) => {
+		if (key.code == "Enter" || key.code == "NumpadEnter") {
 			label.focus();
 		}
 	});
 
-	label.addEventListener("keypress", (key) => {
+	label.addEventListener("keydown", (key) => {
 		if (key.code == "Enter" || key.code == "NumpadEnter") {
 			if (key.ctrlKey) {
 				editItem();
@@ -57,7 +69,7 @@ function nextEvents() {
 		}
 	});
 
-	place.addEventListener("keypress", (key) => {
+	place.addEventListener("keydown", (key) => {
 		if (key.code == "Enter" || key.code == "NumpadEnter") {
 			if (key.ctrlKey) {
 				editItem();
@@ -67,7 +79,7 @@ function nextEvents() {
 		}
 	});
 
-	mail.addEventListener("keypress", (key) => {
+	mail.addEventListener("keydown", (key) => {
 		if (key.code == "Enter" || key.code == "NumpadEnter") {
 			if (key.ctrlKey) {
 				editItem();
@@ -77,7 +89,7 @@ function nextEvents() {
 		}
 	});
 
-	particulars.addEventListener("keypress", (key) => {
+	particulars.addEventListener("keydown", (key) => {
 		console.log(key);
 		if (key.code == "Enter" || key.code == "NumpadEnter") {
 			if (key.ctrlKey) {

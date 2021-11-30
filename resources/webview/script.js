@@ -15,7 +15,7 @@ window.onload = function () {
 	setElements();
 	initializeItemEditor();
 	addEvents();
-	nextEvents();
+	focusEvents();
 }
 
 /* 时间辅助 */

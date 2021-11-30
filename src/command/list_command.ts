@@ -173,6 +173,15 @@ export function editList(list_data: any) {
 		data.setTodo(list_data.old.type, todo_data);
 	}
 
+	for (let index = 0; index < list_data.new.type.length; index++) {
+		let character = list_data.new.type[index];
+		let invalid_character = ["\\", "/", ":", "*", "?", "\"", "<", ">", "|"];
+		if (invalid_character.includes(character)) {
+			vscode.window.showWarningMessage("清单名称中禁止包含以下字符：\\, /, :, *, ?, \", <, >, |，请重新输入！");
+			return;
+		}
+	}
+
 	if (list_data.new.type != list_data.old.type) {
 		let todo_data = data.getTodo();
 		let if_same = false;
@@ -180,7 +189,7 @@ export function editList(list_data: any) {
 			if (list == list_data.new.type) {
 				vscode.window.showWarningMessage("存在同名清单，请重新输入！");
 				if_same = true;
-				break;
+				return;
 			}
 		}
 	}
