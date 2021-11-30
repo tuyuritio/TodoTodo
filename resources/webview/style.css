@@ -33,19 +33,25 @@ body {
 
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-between;
     align-items: flex-start;
 
     padding: 0px;
 }
 
-img {
-    float: right;
+main {
+    display: flex;
 
-    width: 20px;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-img:hover {
-    cursor: pointer;
+article {
+    display: flex;
+
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
 }
 
 section {
@@ -57,6 +63,16 @@ section {
     padding: 20px;
 
     background-color: var(--vscode-sideBar-background);
+}
+
+img {
+    float: right;
+
+    width: 20px;
+}
+
+img:hover {
+    cursor: pointer;
 }
 
 .hide {
@@ -263,9 +279,11 @@ section#list_editor table tbody tr td button {
 /* log */
 
 section#log {
+    height: calc(100vh - 80px);
     width: 600px;
-    height: 400px;
-    max-width: 600px;
+    flex-shrink: 0;
+
+    margin-right: 20px;
 }
 
 section#log ul#log_list {
