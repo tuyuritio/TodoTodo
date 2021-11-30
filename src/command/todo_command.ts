@@ -9,23 +9,22 @@ import * as log from "../log_set";
  * @param item 事项对象
  */
 export function accomplish(item: any) {
+	log.add(item, undefined, log.did.accomplish);
+
 	if (item.cycle) {
 		newCycle(item);
 	}
 
 	let todo_data = data.getTodo(item.type);
-	let item_data = todo_data.list[item.index];
-
 	todo_data.list.splice(item.index, 1);
+	data.setTodo(item.type, todo_data);
 
+	let item_data = todo_data.list[item.index];
 	item_data.type = item.type;
 	item_data.time = date.toString(new Date());
 	delete item_data.cycle;
 	delete item_data.gaze;
-
 	data.unshiftDone(item_data);
-
-	log.add(item, undefined, log.did.accomplish);
 }
 
 /**
@@ -33,25 +32,22 @@ export function accomplish(item: any) {
  * @param item 事项对象
  */
 export function shut(item: any) {
+	log.add(item, undefined, log.did.shut);
+
 	if (item.cycle) {
 		newCycle(item);
 	}
 
 	let todo_data = data.getTodo(item.type);
-	let item_data = todo_data.list[item.index];
-
 	todo_data.list.splice(item.index, 1);
-
 	data.setTodo(item.type, todo_data);
 
+	let item_data = todo_data.list[item.index];
 	item_data.type = item.type;
 	delete item_data.time;
 	delete item_data.cycle;
 	delete item_data.gaze;
-
 	data.unshiftFail(item_data);
-
-	log.add(item, undefined, log.did.shut);
 }
 
 /**
