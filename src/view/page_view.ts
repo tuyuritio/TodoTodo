@@ -35,9 +35,9 @@ export class provider {
 		html = html.replace("down_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-down"))).toString());
 		html = html.replace(/csp_source/g, this.panel.webview.cspSource);
 
-		if(configurations.new_configuration.page.log.color){
+		if (configurations.new_configuration.page.log.color) {
 			html = html.replace("style_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("CSS", "style", true))).toString());
-		}else{
+		} else {
 			html = html.replace("style_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("CSS", "style_colorless", true))).toString());
 		}
 
@@ -111,6 +111,7 @@ export class provider {
 
 			while (pointer >= 0) {
 				if (list.type != "默认清单") {					// 默认置顶
+					if (types[pointer].type == "默认清单") break;
 					if (types[pointer].priority >= list.priority) break;
 				}
 

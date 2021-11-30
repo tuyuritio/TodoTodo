@@ -192,6 +192,15 @@ export function editList(list_data: any) {
 				return;
 			}
 		}
+
+		if (!if_same) {
+			let old_data = data.getTodo(list_data.old.type);
+			delete todo_data[list_data.old.type];
+			todo_data[list_data.new.type] = old_data;
+			old_data.type = list_data.new.type;
+			data.setTodo(list_data.new.type, old_data);
+		}
 	}
+
 	log.add({ type: list_data.old.type, priority: list_data.old.priority }, { type: list_data.new.type, priority: list_data.new.priority }, log.did.edit);
 }
