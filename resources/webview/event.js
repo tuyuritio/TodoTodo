@@ -41,25 +41,25 @@ function focusEvents() {
 	weekly.addEventListener("change", () => select_time.focus());
 
 	item_editor.addEventListener("keydown", (key) => {
-		if (key.code == "Escape") {
+		if (key.key == "Escape") {
 			close("item_editor");
 		}
 	});
 
 	list_editor.addEventListener("keydown", (key) => {
-		if (key.code == "Escape") {
+		if (key.key == "Escape") {
 			close("list_editor");
 		}
 	});
 
 	other_type.addEventListener("keydown", (key) => {
-		if (key.code == "Enter" || key.code == "NumpadEnter") {
+		if (key.key == "Enter") {
 			label.focus();
 		}
 	});
 
 	label.addEventListener("keydown", (key) => {
-		if (key.code == "Enter" || key.code == "NumpadEnter") {
+		if (key.key == "Enter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -73,7 +73,7 @@ function focusEvents() {
 	});
 
 	datetime.addEventListener("keydown", (key) => {
-		if (key.code == "Enter" || key.code == "NumpadEnter") {
+		if (key.key == "Enter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -87,7 +87,7 @@ function focusEvents() {
 	});
 
 	select_time.addEventListener("keydown", (key) => {
-		if (key.code == "Enter" || key.code == "NumpadEnter") {
+		if (key.key == "Enter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -103,7 +103,7 @@ function focusEvents() {
 	priority.addEventListener("change", () => place.focus());
 
 	place.addEventListener("keydown", (key) => {
-		if (key.code == "Enter" || key.code == "NumpadEnter") {
+		if (key.key == "Enter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -113,7 +113,7 @@ function focusEvents() {
 	});
 
 	mail.addEventListener("keydown", (key) => {
-		if (key.code == "Enter" || key.code == "NumpadEnter") {
+		if (key.key == "Enter") {
 			if (key.ctrlKey) {
 				editItem();
 			} else {
@@ -123,8 +123,7 @@ function focusEvents() {
 	});
 
 	particulars.addEventListener("keydown", (key) => {
-		console.log(key);
-		if (key.code == "Enter" || key.code == "NumpadEnter") {
+		if (key.key == "Enter") {
 			if (key.ctrlKey) {
 				editItem();
 			}

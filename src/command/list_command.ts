@@ -184,22 +184,18 @@ export function editList(list_data: any) {
 
 	if (list_data.new.type != list_data.old.type) {
 		let todo_data = data.getTodo();
-		let if_same = false;
 		for (let list in todo_data) {
 			if (list == list_data.new.type) {
 				vscode.window.showWarningMessage("存在同名清单，请重新输入！");
-				if_same = true;
 				return;
 			}
 		}
 
-		if (!if_same) {
-			let old_data = data.getTodo(list_data.old.type);
-			delete todo_data[list_data.old.type];
-			todo_data[list_data.new.type] = old_data;
-			old_data.type = list_data.new.type;
-			data.setTodo(list_data.new.type, old_data);
-		}
+		let old_data = data.getTodo(list_data.old.type);
+		old_data.type = list_data.new.type;
+
+		data.deleteList(list_data.old.type);
+		data.setTodo(list_data.new.type, old_data);
 	}
 
 	log.add({ type: list_data.old.type, priority: list_data.old.priority }, { type: list_data.new.type, priority: list_data.new.priority }, log.did.edit);
