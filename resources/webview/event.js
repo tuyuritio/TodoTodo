@@ -2,12 +2,6 @@
  * 加载事件
  */
 function addEvents() {
-	// 事项类型选择
-	select_type.addEventListener("change", (event) => chooseType(event));
-
-	// 周期选择
-	cycle.addEventListener("change", (event) => chooseCycle(event));
-
 	// 清空日志
 	clear_log.addEventListener("click", () => {
 		clearAllLog();
@@ -37,6 +31,15 @@ function addEvents() {
  * 聚焦事件
  */
 function focusEvents() {
+	// 事项类型选择
+	select_type.addEventListener("change", (event) => chooseType(event));
+
+	// 周期选择
+	cycle.addEventListener("change", (event) => chooseCycle(event));
+
+	// 周次选择
+	weekly.addEventListener("change", () => select_time.focus());
+
 	item_editor.addEventListener("keydown", (key) => {
 		if (key.code == "Escape") {
 			close("item_editor");
@@ -68,6 +71,36 @@ function focusEvents() {
 			}
 		}
 	});
+
+	datetime.addEventListener("keydown", (key) => {
+		if (key.code == "Enter" || key.code == "NumpadEnter") {
+			if (key.ctrlKey) {
+				editItem();
+			} else {
+				if (is_show_detail) {
+					place.focus();
+				} else {
+					editItem();
+				}
+			}
+		}
+	});
+
+	select_time.addEventListener("keydown", (key) => {
+		if (key.code == "Enter" || key.code == "NumpadEnter") {
+			if (key.ctrlKey) {
+				editItem();
+			} else {
+				if (is_show_detail) {
+					place.focus();
+				} else {
+					editItem();
+				}
+			}
+		}
+	});
+
+	priority.addEventListener("change", () => place.focus());
 
 	place.addEventListener("keydown", (key) => {
 		if (key.code == "Enter" || key.code == "NumpadEnter") {

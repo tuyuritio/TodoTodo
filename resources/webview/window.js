@@ -54,14 +54,20 @@ function chooseCycle(event) {
 		once.style.display = "flex";
 		daily.style.display = "none";
 		weekly.style.display = "none";
+
+		datetime.focus();
 	} else if (cycle == "每日") {
 		once.style.display = "none";
 		daily.style.display = "flex";
 		weekly.style.display = "none";
+
+		select_time.focus();
 	} else if (cycle == "每周") {
 		once.style.display = "none";
 		daily.style.display = "flex";
 		weekly.style.display = "flex";
+
+		weekly.focus();
 	} else {
 		once.style.display = "none";
 		daily.style.display = "none";
