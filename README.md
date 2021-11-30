@@ -44,7 +44,7 @@
 
 ## 更多信息
 
-- :git:项目开始时间: **2021.11.01-03:08**
+- 项目开始时间: **2021.11.01-03:08**
 
 > Gitee地址：[https://gitee.com/tatsukana/todo-todo](https://gitee.com/tatsukana/todo-todo)
 > <br>

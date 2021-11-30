@@ -279,17 +279,22 @@ section#list_editor table tbody tr td button {
 /* log */
 
 section#log {
-    height: calc(100vh - 80px);
     width: 600px;
-    flex-shrink: 0;
+    height: calc(100vh - 80px);
 
     margin-right: 20px;
+
+    flex-shrink: 0;
 }
 
 section#log ul#log_list {
     overflow: scroll;
 
     padding-left: 20px;
+}
+
+section#log ul#log_list::-webkit-scrollbar {
+    display: none;
 }
 
 section#log ul#log_list li {
