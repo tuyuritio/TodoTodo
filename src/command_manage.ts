@@ -29,6 +29,7 @@ export function initialize(context: vscode.ExtensionContext): void {
 	view.done_tree = done_tree.create();		// 创建done_tree视图
 	view.fail_tree = fail_tree.create();		// 创建fail_tree视图
 	view.progress = progress_bar.create();		// 创建进度视图
+	view.progress.show();						// 显示进程视图
 }
 
 /* 终止扩展 */
