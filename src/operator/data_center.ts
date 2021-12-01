@@ -36,16 +36,6 @@ export class data {
 		file.writeData(data.todo, data.done, data.fail, data.log);
 	}
 
-	static createList(list: string) {
-		log.add(undefined, { type: list }, log.did.add);
-
-		return data.todo[list] = {
-			type: list,
-			priority: 0,
-			list: []
-		};
-	}
-
 	static copy(object: any) {
 		return JSON.parse(JSON.stringify(object));
 	}

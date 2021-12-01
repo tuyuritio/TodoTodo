@@ -150,8 +150,6 @@ export function deleteOld(item: any): void {
  * @param item 事项对象
  */
 export function addNew(item: any): void {
-	console.log(item);
-
 	let cycle = item.cycle;
 	let time = item.time;
 	let place = item.place;
@@ -167,6 +165,16 @@ export function addNew(item: any): void {
 		mail: mail,
 		particulars: particulars
 	};
+
+	if (!(item.type in data.todo)) {
+		log.add(undefined, { type: item.type }, log.did.add);
+
+		data.todo[item.type] = {
+			type: item.type,
+			priority: 0,
+			list: []
+		};
+	}
 
 	data.todo[item.type].list.push(item_data);
 
