@@ -36,6 +36,8 @@ body {
     justify-content: space-between;
     align-items: flex-start;
 
+    width: calc(100vw - 80px);
+
     padding: 0px;
 }
 
@@ -279,10 +281,12 @@ section#list_editor table tbody tr td button {
 /* log */
 
 section#log {
-    width: 600px;
+    width: 100%;
     height: calc(100vh - 80px);
+    max-width: 600px;
 
     margin-right: 20px;
+    margin-bottom: 20px;
 
     flex-shrink: 0;
 }
