@@ -58,6 +58,6 @@ export function add(old_data?: any, new_data?: any, action?: did): void {
 	}
 
 	if (if_change) {
-		data.pushLog(new_log);
+		data.log.push(new_log);
 	}
 }

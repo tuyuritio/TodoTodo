@@ -15,16 +15,14 @@ export function accomplish(item: any) {
 		newCycle(item);
 	}
 
-	let todo_data = data.getTodo(item.type);
-	todo_data.list.splice(item.index, 1);
-	data.setTodo(item.type, todo_data);
+	let item_data = data.copy(data.todo[item.type].list[item.index]);
+	data.todo[item.type].list.splice(item.index, 1);
 
-	let item_data = todo_data.list[item.index];
 	item_data.type = item.type;
 	item_data.time = date.toString(new Date());
 	delete item_data.cycle;
 	delete item_data.gaze;
-	data.unshiftDone(item_data);
+	data.done.unshift(item_data);
 }
 
 /**
@@ -38,16 +36,14 @@ export function shut(item: any) {
 		newCycle(item);
 	}
 
-	let todo_data = data.getTodo(item.type);
-	todo_data.list.splice(item.index, 1);
-	data.setTodo(item.type, todo_data);
+	let item_data = data.copy(data.todo[item.type].list[item.index]);
+	data.todo.list.splice(item.index, 1);
 
-	let item_data = todo_data.list[item.index];
 	item_data.type = item.type;
 	delete item_data.time;
 	delete item_data.cycle;
 	delete item_data.gaze;
-	data.unshiftFail(item_data);
+	data.fail.unshift(item_data);
 }
 
 /**
@@ -60,10 +56,10 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 	if (if_remind) {
 		return vscode.window.showInformationMessage("确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消").then((action) => {
 			if (action == "确认") {
-				let todo_data = data.getTodo(item.type);
+				let todo_data = data.todo[item.type];
 				todo_data.list.splice(item.index, 1);
 
-				data.setTodo(item.type, todo_data);
+				// data.setTodo(item.type, todo_data);
 
 				log.add(item, undefined, log.did.delete);
 
@@ -73,10 +69,7 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 			}
 		});
 	} else {
-		let todo_data = data.getTodo(item.type);
-		todo_data.list.splice(item.index, 1);
-
-		data.setTodo(item.type, todo_data);
+		data.todo[item.type].list.splice(item.index, 1);
 
 		log.add(item, undefined, log.did.delete);
 
@@ -117,13 +110,11 @@ export function newCycle(cycle_item: any) {
 		}
 	}
 
-	let todo_data = data.getTodo(cycle_item.type);
-
-	let new_item = todo_data.list[cycle_item.index];
+	let todo_data = data.todo[cycle_item.type];
+	let new_item = data.copy(todo_data.list[cycle_item.index]);
 	new_item.time = date.toString(cycle_time);
-	todo_data.list.push(new_item);
 
-	data.setTodo(cycle_item.type, todo_data);
+	data.todo[cycle_item.type].list.push(new_item);
 	log.add(undefined, cycle_item, log.did.append);
 }
 
@@ -132,7 +123,7 @@ export function newCycle(cycle_item: any) {
  * @param item 事项对象
  */
 export function gaze(item: any) {
-	data.getTodo(item.type).list[item.index].gaze = true;
+	data.todo[item.type].list[item.index].gaze = true;
 }
 
 /**
@@ -140,7 +131,7 @@ export function gaze(item: any) {
  * @param item 事项对象
  */
 export function undo(item: any) {
-	delete data.getTodo(item.type).list[item.index].gaze;
+	delete data.todo[item.type].list[item.index].gaze;
 }
 
 /**
@@ -151,9 +142,7 @@ let old_item: any;				// 保留原有事项
 export function deleteOld(item: any): void {
 	old_item = item;
 
-	let todo_data = data.getTodo(item.type);
-	todo_data.list.splice(item.index, 1);
-	data.setTodo(item.type, todo_data);
+	data.todo[item.type].list.splice(item.index, 1);
 }
 
 /**
@@ -161,8 +150,6 @@ export function deleteOld(item: any): void {
  * @param item 事项对象
  */
 export function addNew(item: any): void {
-	let todo_data = data.getTodo(item.type);
-
 	let cycle = item.cycle;
 	let time = item.time;
 	let place = item.place;
@@ -179,8 +166,7 @@ export function addNew(item: any): void {
 		particulars: particulars
 	};
 
-	todo_data.list.push(item_data);
-	data.setTodo(item.type, todo_data);
+	data.todo[item.type].list.push(item_data);
 
 	if (old_item) {
 		let old_data = old_item;

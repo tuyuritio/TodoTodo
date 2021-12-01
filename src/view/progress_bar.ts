@@ -26,7 +26,7 @@ export class progress_provider {
 	 * @returns todo事项总数
 	 */
 	count_todo(): number {
-		let todo_data = data.getTodo();
+		let todo_data = data.todo;
 		let count: number = 0;
 
 		for (let list in todo_data) {

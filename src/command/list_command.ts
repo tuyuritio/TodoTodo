@@ -2,41 +2,35 @@
 import * as vscode from "vscode";
 import * as date from "../operator/date_operator";
 import * as todo from "./todo_command";
-import { data } from "../operator/data_center";
 import * as log from "../log_set";
+import { data } from "../operator/data_center";
 
 /**
  * 检索已经逾期或未来24小时内将要逾期的事项
  */
 export function getRecentItem() {
-	let list_data = data.getTodo();
 	let expected_time = new Date();
 	expected_time.setHours(expected_time.getHours() + 24);
 
-	let items = [];
-	for (let i = 0; i < list_data.length; i++) {
-		for (let j = 0; j < list_data[i].list.length; j++) {
-			let item_data = list_data[i].list[j];
+	data.recent = [];
+	for (let list in data.todo) {
+		for (let index = 0; index < data.todo[list].length; index++) {
+			let item_data = data.copy(data.todo[list].list[index]);
 
-			if (item_data.time) {
-				let deadline = date.toDate(item_data.time);
+			if (item_data.time && date.toNumber(item_data.time) < date.toNumber(expected_time)) {
+				let item = {
+					type: list,
+					index: index,
+					label: item_data.label,
+					time: item_data.time,
+					cycle: item_data.cycle,
+					gaze: item_data.gaze
+				};
 
-				if (date.toNumber(deadline) < date.toNumber(expected_time)) {
-					let item = {
-						type: list_data[i].type,
-						index: j,
-						label: item_data.label,
-						time: item_data.time,
-						cycle: item_data.cycle,
-						gaze: item_data.gaze
-					};
-					items.push(item);
-				}
+				data.recent.push(item);
 			}
 		}
 	}
-
-	data.setRecent(items);
 }
 
 /**
@@ -44,28 +38,22 @@ export function getRecentItem() {
  */
 export function shutOverdueItem() {
 	let if_shut = false;
-
-	let recent_data = data.getRecent();
 	let current_time = new Date();
 
-	for (let index = 0; index < recent_data.length; index++) {
-		if (date.toNumber(recent_data[index].time) < date.toNumber(current_time)) {
+	for (let index = 0; index < data.recent.length; index++) {
+		if (date.toNumber(data.recent[index].time) < date.toNumber(current_time)) {
 			if_shut = true;
 
-			if (recent_data[index].gaze) {
-				todo.accomplish(recent_data[index]);
+			if (data.recent[index].gaze) {
+				todo.accomplish(data.recent[index]);
 			} else {
-				todo.shut(recent_data[index]);
-				vscode.window.showWarningMessage("事项 \"" + recent_data[index].label + "\" 已逾期！");
+				todo.shut(data.recent[index]);
+				vscode.window.showWarningMessage("事项 \"" + data.recent[index].label + "\" 已逾期！");
 			}
 
-			recent_data.splice(index, 1);
+			data.recent.splice(index, 1);
 			index--;
 		}
-	}
-
-	if (if_shut) {
-		data.setRecent(recent_data);
 	}
 
 	return if_shut;
@@ -75,40 +63,33 @@ export function shutOverdueItem() {
  * 排序事项
  */
 export function sortItem() {
-	let todo_data = data.getTodo();
-
-	for (let list in todo_data) {
-		let list_data = todo_data[list].list;
-		for (let i = 1; i < list_data.length; i++) {
-			let pointer = i - 1;
-			let item = list_data[i];
+	for (let list in data.todo) {
+		for (let index = 1; index < data.todo[list].list.length; index++) {
+			let pointer = index - 1;
 
 			// 有序则break
-			// list[pointer]在前，item在后
-			while (pointer >= 0) {																		// 插入排序
-				if (!list_data[pointer].time && item.time || list_data[pointer].time && !item.time) {				// 长期不等
-					if (!list_data[pointer].time) break;
+			// pointer在前，index在后
+			while (pointer >= 0) {																																			// 插入排序
+				if (!data.todo[list].list[pointer].time && data.todo[list].list[index].time || data.todo[list].list[pointer].time && !data.todo[list].list[index].time) {	// 长期不等
+					if (!data.todo[list].list[pointer].time) break;
 				} else {
-					if (list_data[pointer].time && item.time) {												// 同非长期
-						if (date.toNumber(list_data[pointer].time) != date.toNumber(item.time)) {				// 时间不同
-							if (date.toNumber(list_data[pointer].time) < date.toNumber(item.time)) break;		// Todo升序
+					if (data.todo[list].list[pointer].time && data.todo[list].list[index].time) {																			// 同非长期
+						if (date.toNumber(data.todo[list].list[pointer].time) != date.toNumber(data.todo[list].list[index].time)) {											// 时间不同
+							if (date.toNumber(data.todo[list].list[pointer].time) < date.toNumber(data.todo[list].list[index].time)) break;
 						} else {
-							if (list_data[pointer].priority >= item.priority) break;
+							if (data.todo[list].list[pointer].priority >= data.todo[list].list[index].priority) break;
 						}
-					} else {																			// 同长期
-						if (list_data[pointer].priority >= item.priority) break;
+					} else {																																				// 同长期
+						if (data.todo[list].list[pointer].priority >= data.todo[list].list[index].priority) break;
 					}
 				}
 
-				list_data[pointer + 1] = list_data[pointer];
+				data.todo[list].list[pointer + 1] = data.todo[list].list[pointer];
 				pointer--;
 			}
 
-			list_data[pointer + 1] = item;
+			data.todo[list].list[pointer + 1] = data.todo[list].list[index];
 		}
-
-		todo_data[list].list = list_data;
-		data.setTodo(list, todo_data[list]);
 	}
 }
 
@@ -129,14 +110,10 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 		return vscode.window.showInformationMessage("确认删除清单 \"" + list.type + "\" 吗？", "确认", "取消").then((action) => {
 			if (action == "确认") {
 				if (move == "move") {
-					let todo_data = data.getTodo(list.type).list;
-					let default_data = data.getTodo("默认清单");
-
-					default_data.list = default_data.list.concat(todo_data);
-					data.setTodo("默认清单", default_data);
+					data.todo["默认清单"].list = data.todo["默认清单"].list.concat(data.todo[list.type].list);
 				}
 
-				data.deleteList(list.type);
+				delete data.todo[list.type];
 
 				log.add({ type: list.type }, undefined, log.did.delete);
 
@@ -147,14 +124,10 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 		});
 	} else {
 		if (move == "move") {
-			let todo_data = data.getTodo(list.type).list;
-			let default_data = data.getTodo("默认清单");
-
-			default_data.list = default_data.list.concat(todo_data);
-			data.setTodo("默认清单", default_data);
+			data.todo["默认清单"].list = data.todo["默认清单"].list.concat(data.todo[list.type].list);
 		}
 
-		data.deleteList(list.type);
+		delete data.todo[list.type];
 
 		log.add({ type: list.type }, undefined, log.did.delete);
 
@@ -168,9 +141,7 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
  */
 export function editList(list_data: any) {
 	if (list_data.new.priority != list_data.old.priority) {
-		let todo_data = data.getTodo(list_data.old.type);
-		todo_data.priority = list_data.new.priority;
-		data.setTodo(list_data.old.type, todo_data);
+		data.todo[list_data.old.type].priority = list_data.new.priority;
 	}
 
 	for (let index = 0; index < list_data.new.type.length; index++) {
@@ -183,19 +154,18 @@ export function editList(list_data: any) {
 	}
 
 	if (list_data.new.type != list_data.old.type) {
-		let todo_data = data.getTodo();
-		for (let list in todo_data) {
+		for (let list in data.todo) {
 			if (list == list_data.new.type) {
 				vscode.window.showWarningMessage("存在同名清单，请重新输入！");
 				return;
 			}
 		}
 
-		let old_data = data.getTodo(list_data.old.type);
+		let old_data = data.copy(data.todo[list_data.old.type]);
 		old_data.type = list_data.new.type;
 
-		data.deleteList(list_data.old.type);
-		data.setTodo(list_data.new.type, old_data);
+		delete data.todo[list_data.old.type];
+		data.todo[list_data.new.type] = old_data;
 	}
 
 	log.add({ type: list_data.old.type, priority: list_data.old.priority }, { type: list_data.new.type, priority: list_data.new.priority }, log.did.edit);

@@ -16,12 +16,12 @@ function loadOption(data) {
 	}
 
 	// 事项类别
-	types = data.types;
+	lists = data.lists;
 	let select_editing_type = 0;
-	for (let index = 0; index < data.types.length; index++) {
+	for (let index = 0; index < data.lists.length; index++) {
 		let new_option = document.createElement("option");
-		new_option.innerHTML = types[index].type;
-		if (editing_item.type == types[index].type) {
+		new_option.innerHTML = lists[index].type;
+		if (editing_item.type == lists[index].type) {
 			select_editing_type = index;
 		}
 		select_type.insertBefore(new_option, other);
@@ -39,7 +39,7 @@ function loadOption(data) {
 	priority.selectedIndex = editing_item.priority;
 
 	// 清单列表
-	for (let index = 0; index < data.types.length; index++) {
+	for (let index = 0; index < data.lists.length; index++) {
 		let new_list = document.createElement("tr");
 
 		// 清单名称输入框
@@ -48,7 +48,7 @@ function loadOption(data) {
 		let label_input = document.createElement("input");
 		label_input.type = "text";
 		label_input.id = "new_type_" + index;
-		label_input.value = data.types[index].type;
+		label_input.value = data.lists[index].type;
 		if (!index) {
 			label_input.disabled = "disabled";
 		}
@@ -64,14 +64,14 @@ function loadOption(data) {
 			new_option.innerHTML = i;
 			new_selector.appendChild(new_option);
 		}
-		new_selector.selectedIndex = data.types[index].priority;
+		new_selector.selectedIndex = data.lists[index].priority;
 		new_selector.id = "new_priority_" + index;
 
 		tabel_data_select.appendChild(new_selector);
 
 		// 剩余代办
 		let table_data_quantity = document.createElement("td");
-		table_data_quantity.innerHTML = data.types[index].quantity;
+		table_data_quantity.innerHTML = data.lists[index].quantity;
 		table_data_quantity.style.textAlign = "center";
 
 		// 按钮
@@ -87,7 +87,7 @@ function loadOption(data) {
 			delete_button.innerHTML = "删除";
 
 			let list_data = {
-				type: data.types[index].type
+				type: data.lists[index].type
 			};
 
 			delete_button.addEventListener("click", () => postToExtension("deleteList", list_data));
@@ -110,8 +110,8 @@ function loadOption(data) {
 function cover(item) {
 	editing_item = item;
 
-	for (let index = 0; index < types.length; index++) {
-		if (types[index].type == item.type) {
+	for (let index = 0; index < lists.length; index++) {
+		if (lists[index].type == item.type) {
 			select_type.selectedIndex = index;
 			break;
 		}
@@ -396,8 +396,8 @@ function editList(index) {
 
 	let data = {
 		old: {
-			type: types[index].type,
-			priority: types[index].priority
+			type: lists[index].type,
+			priority: lists[index].priority
 		},
 		new: {
 			type: new_type,

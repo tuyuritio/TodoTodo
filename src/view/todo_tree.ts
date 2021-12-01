@@ -128,7 +128,7 @@ export class provider implements vscode.TreeDataProvider<item> {
 	 * @returns vscode.ProviderResult<item[]>
 	 */
 	getChildren(element?: item): vscode.ProviderResult<item[]> {
-		let todo_data = data.getTodo();
+		let todo_data = data.todo;
 
 		let items: item[] = [];
 		if (element) {

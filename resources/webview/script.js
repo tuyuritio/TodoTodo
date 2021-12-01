@@ -7,7 +7,7 @@ let action_after_add = "remain";
 
 let is_new;							// 记录当前编辑器状态为新建或编辑
 let editing_item;					// 记录原有事项
-let types = [];						// 清单数据
+let lists = [];						// 清单数据
 
 /* 窗口加载 */
 window.onload = function () {

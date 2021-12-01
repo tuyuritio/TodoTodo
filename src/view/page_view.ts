@@ -59,7 +59,7 @@ export class provider {
 	/**
 	 * 关闭主页
 	 */
-	close() {
+	close(): void {
 		this.panel.dispose();
 	}
 
@@ -81,49 +81,46 @@ export class provider {
 	 * 初始化主页
 	 */
 	initialize(): void {
-		let todo_data = data.getTodo();
-
-		let types: { type: string, priority: number, quantity: number }[] = [];
+		let lists: { type: string, priority: number, quantity: number }[] = [];
 		let list_maximum_priority = 0;
 		let item_maximum_priority = 0;
-		for (let list in todo_data) {
-			types.push({ type: todo_data[list].type, priority: todo_data[list].priority, quantity: todo_data[list].list.length });
+		for (let list in data.todo) {
+			lists.push({ type: data.todo[list].type, priority: data.todo[list].priority, quantity: data.todo[list].list.length });
 
 			// 计算清单最大优先层级
-			if (todo_data[list].priority > list_maximum_priority) {
-				list_maximum_priority = todo_data[list].priority;
+			if (data.todo[list].priority > list_maximum_priority) {
+				list_maximum_priority = data.todo[list].priority;
 			}
 
 			// 计算事项最大优先层级
-			for (let i = 0; i < todo_data[list].list.length; i++) {
-				let item_data = todo_data[list].list[i];
+			for (let i = 0; i < data.todo[list].list.length; i++) {
+				let item_data = data.todo[list].list[i];
 				if (item_data.priority > item_maximum_priority) {
 					item_maximum_priority = item_data.priority;
 				}
 			}
 		}
-		for (let index = 0; index < todo_data.length; index++) {
-		}
 
-		for (let index = 1; index < types.length; index++) {
+		// 清单优先级排序
+		for (let index = 1; index < lists.length; index++) {
 			let pointer = index - 1;
-			let list = types[index];
+			let list = lists[index];
 
 			while (pointer >= 0) {
-				if (list.type != "默认清单") {					// 默认置顶
-					if (types[pointer].type == "默认清单") break;
-					if (types[pointer].priority >= list.priority) break;
+				if (list.type != "默认清单") {
+					if (lists[pointer].type == "默认清单") break;					// 默认置顶
+					if (lists[pointer].priority >= list.priority) break;
 				}
 
-				types[pointer + 1] = types[pointer];
+				lists[pointer + 1] = lists[pointer];
 				pointer--;
 			}
 
-			types[pointer + 1] = list;
+			lists[pointer + 1] = list;
 		}
 
 		let page_data = {
-			types: types,
+			lists: lists,
 			item_maximum_priority: item_maximum_priority,
 			list_maximum_priority: list_maximum_priority
 		}
@@ -142,7 +139,7 @@ export class provider {
 	 * 显示日志
 	 */
 	showLog() {
-		this.postToPage("log", data.getLog());
+		this.postToPage("log", data.log);
 	}
 
 	/**
@@ -165,6 +162,6 @@ export function create(): provider {
 /**
  * 清空日志
  */
-export function clearLog() {
-	data.setLog([]);
+export function clearLog(): void {
+	data.log = [];
 }

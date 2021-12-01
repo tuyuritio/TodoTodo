@@ -66,12 +66,10 @@ export class provider implements vscode.TreeDataProvider<item> {
 	 * @returns vscode.ProviderResult<item[]>
 	 */
 	getChildren(): vscode.ProviderResult<item[]> {
-		let fail_data = data.getFail();
-
 		let items: item[] = [];
-		for (let index = 0; index < fail_data.length; index++) {
-			items[index] = new item(fail_data[index].label, fail_data[index].type);
-			items[index].set(index, fail_data[index].priority, fail_data[index].place, fail_data[index].mail, fail_data[index].particulars);
+		for (let index = 0; index < data.fail.length; index++) {
+			items[index] = new item(data.fail[index].label, data.fail[index].type);
+			items[index].set(index, data.fail[index].priority, data.fail[index].place, data.fail[index].mail, data.fail[index].particulars);
 		}
 
 		return items;

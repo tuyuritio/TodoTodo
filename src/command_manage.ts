@@ -10,7 +10,7 @@ import * as list_command from "./command/list_command";
 import * as todo_command from "./command/todo_command";
 import * as done_command from "./command/done_command";
 import * as fail_command from "./command/fail_command";
-import { data } from "./operator/data_center";
+import { data  } from "./operator/data_center";
 
 /* 全局变量 */
 let extension_context: vscode.ExtensionContext;			// 扩展上下文
@@ -23,7 +23,7 @@ export function initialize(context: vscode.ExtensionContext): void {
 	extension_context = context;				// 建立上下文
 	commands.register();						// 注册命令
 	new configurations();						// 扩展配置
-	new data();									// 数据中心
+	new data();
 
 	view.todo_tree = todo_tree.create();		// 创建todo_tree视图
 	view.done_tree = done_tree.create();		// 创建done_tree视图
