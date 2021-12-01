@@ -63,24 +63,26 @@ export function shutOverdueItem() {
  * 排序事项
  */
 export function sortItem() {
+	let todo = data.todo;
 	for (let list in data.todo) {
 		for (let index = 1; index < data.todo[list].list.length; index++) {
 			let pointer = index - 1;
+			let item = data.copy(data.todo[list].list[index]);
 
 			// 有序则break
 			// pointer在前，index在后
 			while (pointer >= 0) {																																			// 插入排序
-				if (!data.todo[list].list[pointer].time && data.todo[list].list[index].time || data.todo[list].list[pointer].time && !data.todo[list].list[index].time) {	// 长期不等
+				if (!data.todo[list].list[pointer].time && item.time || data.todo[list].list[pointer].time && !item.time) {	// 长期不等
 					if (!data.todo[list].list[pointer].time) break;
 				} else {
-					if (data.todo[list].list[pointer].time && data.todo[list].list[index].time) {																			// 同非长期
-						if (date.toNumber(data.todo[list].list[pointer].time) != date.toNumber(data.todo[list].list[index].time)) {											// 时间不同
-							if (date.toNumber(data.todo[list].list[pointer].time) < date.toNumber(data.todo[list].list[index].time)) break;
+					if (data.todo[list].list[pointer].time && item.time) {																			// 同非长期
+						if (date.toNumber(data.todo[list].list[pointer].time) != date.toNumber(item.time)) {											// 时间不同
+							if (date.toNumber(data.todo[list].list[pointer].time) < date.toNumber(item.time)) break;
 						} else {
-							if (data.todo[list].list[pointer].priority >= data.todo[list].list[index].priority) break;
+							if (data.todo[list].list[pointer].priority >= item.priority) break;
 						}
 					} else {																																				// 同长期
-						if (data.todo[list].list[pointer].priority >= data.todo[list].list[index].priority) break;
+						if (data.todo[list].list[pointer].priority >= item.priority) break;
 					}
 				}
 
@@ -88,7 +90,7 @@ export function sortItem() {
 				pointer--;
 			}
 
-			data.todo[list].list[pointer + 1] = data.todo[list].list[index];
+			data.todo[list].list[pointer + 1] = item;
 		}
 	}
 }

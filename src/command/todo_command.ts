@@ -150,6 +150,8 @@ export function deleteOld(item: any): void {
  * @param item 事项对象
  */
 export function addNew(item: any): void {
+	console.log(item);
+
 	let cycle = item.cycle;
 	let time = item.time;
 	let place = item.place;
