@@ -1,8 +1,8 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import * as date from "../operator/date_operator";
-import { data } from "../operator/data_center";
-import * as log from "../log_set";
+import * as date from "../general/date_operator";
+import { data } from "./data_center";
+import * as log from "../general/log_manage";
 
 /**
  * 完成事项

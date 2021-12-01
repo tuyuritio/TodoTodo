@@ -1,6 +1,6 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import { getPackage, setPackage } from "./operator/file_operator";
+import { getPackage, setPackage } from "./file_manage";
 
 /**
  * 设置空Todo清单视图提示文本

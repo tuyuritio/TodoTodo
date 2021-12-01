@@ -2,7 +2,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import { configurations } from "../command_manage";
+import { configuration } from "../general/configuration_center";
 
 /* 全局变量 */
 let is_reminded = false;						// 是否已提醒
@@ -12,26 +12,21 @@ let data_path: string;							// 文件基准路径
  * 检查文件路径
  */
 export function checkPath() {
-	data_path = configurations.first_configuration.path;
+	data_path = configuration.first_configuration.path;
 
-	if (data_path == "") {
+	if (data_path.replace(" ", "") == "") {
 		data_path = path.join(__dirname, "..", "..", "TodoTodoData");
 	} else if (!fs.existsSync(data_path)) {
 		if (!is_reminded) {
-			is_reminded = true;
-			vscode.window.showErrorMessage("自定义清单文件目录路径无效，请检查！\n（现已使用默认路径，请及时更换！）");
+			vscode.window.showErrorMessage("自定义清单文件目录路径无效，请检查！\n（现已使用默认路径，请及时设置正确路径！）", "前往设置").then((action) => {
+				if (action == "前往设置") {
+					vscode.commands.executeCommand("workbench.action.openSettings", "todotodo.path");
+				}
+			});
 		}
+		data_path = path.join(__dirname, "..", "..", "TodoTodoData");
 	}
-
-	{	// v0.4.3兼容性调整
-		if (fs.existsSync(path.join(data_path, "ListData"))) {
-			fs.renameSync(path.join(data_path, "ListData"), path.join(data_path, "TodoData"));
-		}
-
-		if (fs.existsSync(path.join(data_path, "recent.json"))) {
-			fs.unlinkSync(path.join(data_path, "recent.json"));
-		}
-	}
+	is_reminded = true;
 
 	let file_path = path.join(data_path, "done.json")
 	if (!fs.existsSync(file_path)) {

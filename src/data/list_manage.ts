@@ -1,9 +1,9 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import * as date from "../operator/date_operator";
-import * as todo from "./todo_command";
-import * as log from "../log_set";
-import { data } from "../operator/data_center";
+import * as date from "../general/date_operator";
+import * as todo from "./todo_manage";
+import * as log from "../general/log_manage";
+import { data } from "./data_center";
 
 /**
  * 检索已经逾期或未来24小时内将要逾期的事项

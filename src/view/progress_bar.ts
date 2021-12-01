@@ -1,6 +1,6 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import { data } from "../operator/data_center";
+import { data } from "../data/data_center";
 
 /* 进度提供器 */
 export class progress_provider {

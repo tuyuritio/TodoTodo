@@ -1,9 +1,9 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import { data } from "../operator/data_center";
-import { getIconPath } from "../operator/file_operator";
-import * as date from "../operator/date_operator";
-import { configurations } from "../command_manage";
+import { data } from "../data/data_center";
+import { getIconPath } from "../general/file_manage";
+import * as date from "../general/date_operator";
+import { configuration } from "../general/configuration_center";
 
 /* 事项元素 */
 class item extends vscode.TreeItem {
@@ -86,7 +86,7 @@ class item extends vscode.TreeItem {
 		this.tooltip = tips;
 
 		if (this.contextValue == "gaze_item") {
-			switch (configurations.new_configuration.list.todo.item.gaze.style) {
+			switch (configuration.new_configuration.list.todo.item.gaze.style) {
 				case "flash":
 					this.iconPath = vscode.Uri.file(getIconPath(this.iconPath.id, true));
 					break;

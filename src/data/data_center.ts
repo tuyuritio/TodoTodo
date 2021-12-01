@@ -1,7 +1,7 @@
 /* 模块调用 */
-import * as file from "./file_operator";
-import * as log from "../log_set";
-import { configurations } from "../command_manage";
+import * as file from "../general/file_manage";
+import * as log from "../general/log_manage";
+import { configuration } from "../general/configuration_center";
 
 /* 全局变量 */
 let is_start = true;
@@ -26,7 +26,7 @@ export class data {
 		data.fail = file.readJSON("fail");
 		data.log = file.readJSON("log");
 
-		if (is_start && configurations.first_configuration.page.log.start.remind) {
+		if (is_start && configuration.first_configuration.page.log.start.remind) {
 			is_start = false;
 			log.add();
 		}

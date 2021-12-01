@@ -1,7 +1,7 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import * as log from "../log_set";
-import { data } from "../operator/data_center";
+import * as log from "../general/log_manage";
+import { data } from "./data_center";
 
 /**
  * 重做事项

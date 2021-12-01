@@ -1,5 +1,5 @@
 /* 模块调用 */
-import { data } from "./operator/data_center";
+import { data } from "../data/data_center";
 
 /* 全局变量 */
 export enum did { add, delete, append, edit, accomplish, shut, redo, clear, restart };	// 操作类型

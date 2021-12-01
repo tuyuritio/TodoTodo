@@ -1,6 +1,6 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import * as command from "./command_manage";
+import { extension, list } from "./extension_manage";
 
 /* 激活扩展 */
 export function activate(context: vscode.ExtensionContext) {
@@ -9,17 +9,17 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log("扩展 \"TodoTodo\" 已激活！");
 
 	// 初始化扩展
-	command.initialize(context);
+	extension.initialize(context);
 
 	// 设置事项检测
-	command.list.getRecentItem();
-	setInterval(() => command.list.getRecentItem(), 24 * 60 * 60 * 1000);
-	setInterval(() => command.list.shutOverdueItem(), 1000);
+	list.getRecentItem();
+	setInterval(() => list.getRecentItem(), 24 * 60 * 60 * 1000);
+	setInterval(() => list.shutOverdueItem(), 1000);
 }
 
 /* 停用扩展 */
 export function deactivate() {
-	command.terminate();
+	extension.terminate();
 
 	console.log("扩展 \"TodoTodo\" 已关闭！");
 }
