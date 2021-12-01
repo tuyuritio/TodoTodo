@@ -6,7 +6,7 @@ import { view } from "../extension_manage";
 /* 配置中心 */
 export class configuration {
 	static first_configuration: vscode.WorkspaceConfiguration = configuration.copy(vscode.workspace.getConfiguration("todotodo"));
-	static new_configuration: vscode.WorkspaceConfiguration;
+	static new_configuration: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("todotodo");
 
 	static list_all_item_delete_remind = this.first_configuration.list.todo.item.delete.remind;
 	static list_all_delete_remind = this.first_configuration.list.todo.delete.remind;

@@ -1,8 +1,8 @@
 /* 模块调用 */
 import * as vscode from "vscode";
+import * as date from "../general/date_operator";
 import { data } from "../data/data_center";
 import { getIconPath } from "../general/file_manage";
-import * as date from "../general/date_operator";
 import { configuration } from "../general/configuration_center";
 
 /* 事项元素 */

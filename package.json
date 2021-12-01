@@ -340,7 +340,13 @@
 					"when": "viewItem == fail_item"
 				}
 			]
-		}
+		},
+		"keybindings": [
+			{
+				"command": "page.add",
+				"key": "ctrl+shift+n"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
