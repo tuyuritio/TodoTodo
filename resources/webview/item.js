@@ -49,6 +49,15 @@ function loadOption(data) {
 		label_input.type = "text";
 		label_input.id = "new_type_" + index;
 		label_input.value = data.lists[index].type;
+		label_input.addEventListener("keydown", (key) => {
+			if (key.key == "Enter") {
+				editList(index);
+			}
+
+			if (key.key == "Delete" && key.shiftKey) {
+				label_input.value = "";
+			}
+		});
 		if (!index) {
 			label_input.disabled = "disabled";
 		}
@@ -66,6 +75,11 @@ function loadOption(data) {
 		}
 		new_selector.selectedIndex = data.lists[index].priority;
 		new_selector.id = "new_priority_" + index;
+		new_selector.addEventListener("keydown", (key) => {
+			if (key.key == "Enter") {
+				editList(index);
+			}
+		});
 
 		tabel_data_select.appendChild(new_selector);
 

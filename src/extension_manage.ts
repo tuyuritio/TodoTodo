@@ -25,7 +25,7 @@ export namespace extension {
 		extension_context = context;				// 建立上下文
 		command.register();							// 注册命令
 		new configuration();						// 扩展配置
-		new data();
+		new data();									// 读取数据
 
 		view.todo_tree = todo_tree.create();		// 创建todo_tree视图
 		view.done_tree = done_tree.create();		// 创建done_tree视图
@@ -267,11 +267,9 @@ export class page {
 		if (this.view && this.view.is_visible()) {
 			if (!auto) {
 				this.view.close();
-				this.view = page_view.create();
 			}
 
-			this.view.showLog();
-			this.view.initialize();
+			this.show();
 		}
 	}
 
@@ -281,7 +279,6 @@ export class page {
 	static show(): void {
 		if (!this.view || !this.view.is_visible()) {
 			this.view = page_view.create();
-			this.view.showLog();
 
 			page.view.panel.webview.onDidReceiveMessage((message) => {
 				switch (message.command) {
@@ -314,6 +311,9 @@ export class page {
 		} else {
 			this.view.show();
 		}
+
+		this.view.initialize();
+		this.view.showLog();
 	}
 
 	/**

@@ -59,16 +59,21 @@ function focusEvents() {
 	});
 
 	label.addEventListener("keydown", (key) => {
-		if (key.key == "Enter") {
-			if (key.ctrlKey) {
-				editItem();
+		if (key.key == "Enter" || key.key == "ArrowDown") {
+			if (is_show_detail) {
+				place.focus();
 			} else {
-				if (is_show_detail) {
-					place.focus();
-				} else {
-					editItem();
-				}
+				editItem();
 			}
+		}
+
+		if (key.key == "Enter" && key.ctrlKey) {
+			editItem();
+
+		}
+
+		if (key.key == "Delete" && key.shiftKey) {
+			label.value = "";
 		}
 	});
 
@@ -110,6 +115,10 @@ function focusEvents() {
 				mail.focus();
 			}
 		}
+
+		if (key.key == "Delete" && key.shiftKey) {
+			place.value = "";
+		}
 	});
 
 	mail.addEventListener("keydown", (key) => {
@@ -120,6 +129,10 @@ function focusEvents() {
 				particulars.focus();
 			}
 		}
+
+		if (key.key == "Delete" && key.shiftKey) {
+			mail.value = "";
+		}
 	});
 
 	particulars.addEventListener("keydown", (key) => {
@@ -127,6 +140,10 @@ function focusEvents() {
 			if (key.ctrlKey) {
 				editItem();
 			}
+		}
+
+		if (key.key == "Delete" && key.shiftKey) {
+			particulars.value = "";
 		}
 	});
 }

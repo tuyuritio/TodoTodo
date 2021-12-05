@@ -37,7 +37,7 @@ export function shut(item: any) {
 	}
 
 	let item_data = data.copy(data.todo[item.type].list[item.index]);
-	data.todo.list.splice(item.index, 1);
+	data.todo[item.type].list.splice(item.index, 1);
 
 	item_data.type = item.type;
 	delete item_data.time;

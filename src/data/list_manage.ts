@@ -14,7 +14,7 @@ export function getRecentItem() {
 
 	data.recent = [];
 	for (let list in data.todo) {
-		for (let index = 0; index < data.todo[list].length; index++) {
+		for (let index = 0; index < data.todo[list].list.length; index++) {
 			let item_data = data.copy(data.todo[list].list[index]);
 
 			if (item_data.time && date.toNumber(item_data.time) < date.toNumber(expected_time)) {
@@ -71,17 +71,17 @@ export function sortItem() {
 
 			// 有序则break
 			// pointer在前，index在后
-			while (pointer >= 0) {																																			// 插入排序
+			while (pointer >= 0) {																							// 插入排序
 				if (!data.todo[list].list[pointer].time && item.time || data.todo[list].list[pointer].time && !item.time) {	// 长期不等
 					if (!data.todo[list].list[pointer].time) break;
 				} else {
-					if (data.todo[list].list[pointer].time && item.time) {																			// 同非长期
-						if (date.toNumber(data.todo[list].list[pointer].time) != date.toNumber(item.time)) {											// 时间不同
+					if (data.todo[list].list[pointer].time && item.time) {													// 同非长期
+						if (date.toNumber(data.todo[list].list[pointer].time) != date.toNumber(item.time)) {				// 时间不同
 							if (date.toNumber(data.todo[list].list[pointer].time) < date.toNumber(item.time)) break;
 						} else {
 							if (data.todo[list].list[pointer].priority >= item.priority) break;
 						}
-					} else {																																				// 同长期
+					} else {																								// 同长期
 						if (data.todo[list].list[pointer].priority >= item.priority) break;
 					}
 				}
