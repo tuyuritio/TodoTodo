@@ -15,8 +15,8 @@ function loadOption(data) {
 		list_table.removeChild(list_table.firstElementChild);
 	}
 
-	while (entry_type.children[3]) {
-		entry_type.removeChild(entry_type.children[3]);
+	while (entry_type.children[1]) {
+		entry_type.removeChild(entry_type.children[1]);
 	}
 
 	// 事项类别
@@ -286,7 +286,7 @@ function editItem() {
 				on: true
 			};
 
-			if (!is_new && editing_item.entry[type]) {				// 保留原状态
+			if (!is_new && editing_item.entry && editing_item.entry[type]) {				// 保留原状态
 				entries[type].on = editing_item.entry[type].on;
 			}
 		}

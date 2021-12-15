@@ -112,7 +112,7 @@ export class provider {
 				// 统计条目类型
 				if (item_data.entry) {
 					for (let entry in item_data.entry) {
-						if (!(entry in entry_types) && entry.substring(0, 7) != "__entry") {
+						if (!entry_types.includes(entry) && entry.substring(0, 7) != "__entry") {
 							entry_types.push(entry);
 						}
 					}

@@ -140,10 +140,12 @@ function showLog(log_data) {
 								priority: "优先层级:",
 								cycle: "事项周期:",
 								time: "截止时间:",
-								mail: "目标邮件:",
-								particulars: "事项细节:"
 							}
-							edit_content.innerHTML = property_table[property];
+							if (property in property_table) {
+								edit_content.innerHTML = property_table[property];
+							} else {
+								edit_content.innerHTML = property + ":";
+							}
 						}
 						edit.appendChild(edit_content);
 
@@ -186,14 +188,16 @@ function showLog(log_data) {
 							{
 								let property_table = {
 									label: "事项名称:",
-									type: "事项类别",
-									priority: "优先层级",
-									cycle: "事项周期",
-									time: "截止时间",
-									mail: "目标邮件",
-									particulars: "事项细节"
+									type: "事项类别:",
+									priority: "优先层级:",
+									cycle: "事项周期:",
+									time: "截止时间:",
 								}
-								edit_content.innerHTML = property_table[property];
+								if (property in property_table) {
+									edit_content.innerHTML = property_table[property];
+								} else {
+									edit_content.innerHTML = property + ":";
+								}
 							}
 							edit.appendChild(edit_content);
 

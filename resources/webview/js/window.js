@@ -137,7 +137,10 @@ function addEntry(type, content) {
 		new_entry.appendChild(entry_input);
 	}
 	item_editor.insertBefore(new_entry, add_entry_line);
-	new_entry.childNodes[1].focus();
+
+	if (is_new) {
+		new_entry.childNodes[1].focus();
+	}
 
 	// 恢复默认选项
 	entry_type.selectedIndex = 0;
