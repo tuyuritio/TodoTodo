@@ -28,6 +28,8 @@ class item extends vscode.TreeItem {
 	label: string;
 	type: string;				// 定位清单
 	index: number;				// 定位事项
+	cycle: string | undefined;	// 判断完成时是否需要追加
+	time: string | undefined;	// 追加时需要计算的时间
 	entry: any | undefined;
 
 	/**
@@ -35,7 +37,7 @@ class item extends vscode.TreeItem {
 	 * @param label 事项标题
 	 * @param ItemId 事项元素视图ID
 	 */
-	constructor(ItemId: string, label: string, type: string, index: number, time: string, entry: any) {
+	constructor(ItemId: string, label: string, type: string, index: number, cycle: string, time: string, entry: any) {
 		super(label);
 		this.contextValue = ItemId;
 		this.iconPath = new vscode.ThemeIcon("note");
@@ -43,16 +45,18 @@ class item extends vscode.TreeItem {
 		this.label = label;
 		this.type = type;
 		this.index = index;
+		this.cycle = cycle;
+		this.time = time;
 		this.entry = entry;
 
-		if (time) {
-			this.tooltip = "截止时间: " + time + "\n";
+		if (this.time) {
+			this.tooltip = "截止时间: " + this.time + "\n";
 
-			if (date.isRecent(time)) {
+			if (date.isRecent(this.time)) {
 				this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
-				this.description = time.substring(11, 16);
+				this.description = this.time.substring(11, 16);
 			} else {
-				this.description = time.substring(0, 10);
+				this.description = this.time.substring(0, 10);
 			}
 		} else {
 			this.iconPath = new vscode.ThemeIcon("info");
@@ -145,7 +149,7 @@ export class provider implements vscode.TreeDataProvider<any> {
 			for (let index = 0; index < list_data.list.length; index++) {
 				let item_data = list_data.list[index];
 				let item_id = item_data.gaze ? "gaze_item" : "todo_item";
-				items[index] = new item(item_id, item_data.label, list_data.type, index, item_data.time, item_data.entry);
+				items[index] = new item(item_id, item_data.label, list_data.type, index, item_data.cycle, item_data.time, item_data.entry);
 			}
 		} else if (element instanceof item) {			// 导入条目
 			let entries = todo_data[element.type].list[element.index].entry;

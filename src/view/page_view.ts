@@ -90,8 +90,9 @@ export class provider {
 	 */
 	initialize(): void {
 		let lists: { type: string, priority: number, quantity: number }[] = [];
-		let list_maximum_priority = 0;
-		let item_maximum_priority = 0;
+		let entry_types: string[] = [];
+		let list_maximum_priority: number = 0;
+		let item_maximum_priority: number = 0;
 		for (let list in data.todo) {
 			lists.push({ type: data.todo[list].type, priority: data.todo[list].priority, quantity: data.todo[list].list.length });
 
@@ -100,11 +101,21 @@ export class provider {
 				list_maximum_priority = data.todo[list].priority;
 			}
 
-			// 计算事项最大优先层级
 			for (let i = 0; i < data.todo[list].list.length; i++) {
 				let item_data = data.todo[list].list[i];
+
+				// 计算事项最大优先层级
 				if (item_data.priority > item_maximum_priority) {
 					item_maximum_priority = item_data.priority;
+				}
+
+				// 统计条目类型
+				if (item_data.entry) {
+					for (let entry in item_data.entry) {
+						if (!(entry in entry_types) && entry.substring(0, 7) != "__entry") {
+							entry_types.push(entry);
+						}
+					}
 				}
 			}
 		}
@@ -129,6 +140,7 @@ export class provider {
 
 		let page_data = {
 			lists: lists,
+			entry_types: entry_types,
 			item_maximum_priority: item_maximum_priority,
 			list_maximum_priority: list_maximum_priority
 		}

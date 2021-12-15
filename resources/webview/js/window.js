@@ -123,9 +123,26 @@ function addEntry(type, content) {
 		if (content) {
 			entry_input.value = content;
 		}
+
+		entry_input.addEventListener("keydown", (key) => {
+			if (key.key == "Enter") {
+				if (key.ctrlKey) {
+					editItem();
+				} else {
+					entry_other_type.focus();
+				}
+			}
+		});
+
 		new_entry.appendChild(entry_input);
 	}
 	item_editor.insertBefore(new_entry, add_entry_line);
+	new_entry.childNodes[1].focus();
+
+	// 恢复默认选项
+	entry_type.selectedIndex = 0;
+	entry_other_type.style = "flex";
+	entry_other_type.value = "";
 }
 
 /**

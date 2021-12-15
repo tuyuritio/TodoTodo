@@ -15,6 +15,10 @@ function loadOption(data) {
 		list_table.removeChild(list_table.firstElementChild);
 	}
 
+	while (entry_type.children[3]) {
+		entry_type.removeChild(entry_type.children[3]);
+	}
+
 	// 事项类别
 	lists = data.lists;
 	let select_editing_type = 0;
@@ -121,6 +125,13 @@ function loadOption(data) {
 		new_list.appendChild(tabel_data_button);
 
 		list_table.appendChild(new_list);
+	}
+
+	// 条目类型列表
+	for (let index = 0; index < data.entry_types.length; index++) {
+		let new_option = document.createElement("option");
+		new_option.innerHTML = data.entry_types[index];
+		entry_type.appendChild(new_option, other);
 	}
 }
 

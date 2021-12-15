@@ -312,7 +312,6 @@ export class page {
 	static show(): void {
 		if (!this.view || !this.view.isVisible()) {
 			this.view = page_view.create();
-			this.view.initialize();
 
 			page.view.panel.webview.onDidReceiveMessage((message) => {
 				switch (message.command) {

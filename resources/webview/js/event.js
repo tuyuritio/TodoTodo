@@ -37,18 +37,21 @@ function focusEvents() {
 	// 条目选择
 	entry_type.addEventListener("change", (event) => chooseEntry(event));
 
+	// 关闭事项编辑器
 	item_editor.addEventListener("keydown", (key) => {
 		if (key.key == "Escape") {
 			close("item_editor");
 		}
 	});
 
+	// 关闭清单编辑器
 	list_editor.addEventListener("keydown", (key) => {
 		if (key.key == "Escape") {
 			close("list_editor");
 		}
 	});
 
+	// 输入类别
 	other_type.addEventListener("keydown", (key) => {
 		if (key.key == "Enter") {
 			label.focus();
@@ -57,12 +60,23 @@ function focusEvents() {
 
 	// 事项名称确认
 	label.addEventListener("keydown", (key) => {
-		if (key.key == "Enter" && key.ctrlKey) {
-			editItem();
+		if (key.key == "Enter") {
+			if (key.ctrlKey) {
+				editItem();
+			} else {
+				entry_other_type.focus();
+			}
 		}
 
 		if (key.key == "Delete" && key.shiftKey) {
 			label.value = "";
+		}
+	});
+
+	// 添加条目输入框
+	entry_other_type.addEventListener("keydown", (key) => {
+		if (key.key == "Enter") {
+			addEntry(entry_other_type.value);
 		}
 	});
 }

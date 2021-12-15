@@ -59,8 +59,6 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
 				let todo_data = data.todo[item.type];
 				todo_data.list.splice(item.index, 1);
 
-				// data.setTodo(item.type, todo_data);
-
 				log.add(item, undefined, log.did.delete);
 
 				return true;
