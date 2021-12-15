@@ -94,7 +94,7 @@ export function sortItem() {
 		}
 	}
 }
-
+	
 /**
  * 删除清单
  * @param list 清单对象
@@ -103,21 +103,21 @@ export function sortItem() {
  * @returns Promise<boolean>
  */
 export async function deleteList(list: any, if_remind: boolean, move: string): Promise<boolean> {
-	if (list.type == "默认清单") {
+	if (list.label == "默认清单") {
 		vscode.window.showWarningMessage("默认清单无法删除！");
 		return false;
 	}
 
 	if (if_remind) {
-		return vscode.window.showInformationMessage("确认删除清单 \"" + list.type + "\" 吗？", "确认", "取消").then((action) => {
+		return vscode.window.showInformationMessage("确认删除清单 \"" + list.label + "\" 吗？", "确认", "取消").then((action) => {
 			if (action == "确认") {
 				if (move == "move") {
-					data.todo["默认清单"].list = data.todo["默认清单"].list.concat(data.todo[list.type].list);
+					data.todo["默认清单"].list = data.todo["默认清单"].list.concat(data.todo[list.label].list);
 				}
 
-				delete data.todo[list.type];
+				delete data.todo[list.label];
 
-				log.add({ type: list.type }, undefined, log.did.delete);
+				log.add({ type: list.label }, undefined, log.did.delete);
 
 				return true;
 			} else {
@@ -126,12 +126,12 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
 		});
 	} else {
 		if (move == "move") {
-			data.todo["默认清单"].list = data.todo["默认清单"].list.concat(data.todo[list.type].list);
+			data.todo["默认清单"].list = data.todo["默认清单"].list.concat(data.todo[list.label].list);
 		}
 
-		delete data.todo[list.type];
+		delete data.todo[list.label];
 
-		log.add({ type: list.type }, undefined, log.did.delete);
+		log.add({ type: list.label }, undefined, log.did.delete);
 
 		return true;
 	}

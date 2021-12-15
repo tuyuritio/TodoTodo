@@ -5,46 +5,18 @@ import { data } from "../data/data_center";
 /* 事项元素 */
 class item extends vscode.TreeItem {
 	// 事项参数
-	type: string;
 	index: number = 0;
-	priority: number = 0;
-	place: string | undefined;
-	mail: string | undefined;
-	particulars: string | undefined;
 
-	/**
-	 * 构造方法
-	 * @param label 事项标题
-	 * @param ItemId 事项元素视图ID
-	 * @param type 事项类别
-	 * @param collapsibleState 折叠状态 - **默认：** `非折叠`
-	 */
-	constructor(label: string, type: string, collapsibleState: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None) {
-		super(label, collapsibleState);
+	constructor(label: string, index: number) {
+		super(label);
 		this.contextValue = "fail_item";
 
-		this.type = type;
-		this.iconPath = new vscode.ThemeIcon("circle-slash");
-	}
-
-	/**
-	 * 事项参数设置
-	 * @param index 事项序号(清单内序号)
-	 * @param priority 优先层级
-	 * @param time 截止时间
-	 * @param place 目标地点
-	 */
-	set(index: number, priority: number, place: string, mail: string, particulars: string): void {
 		this.index = index;
-		this.priority = priority;
-
-		this.place = place;
-		this.mail = mail;
-		this.particulars = particulars;
+		this.iconPath = new vscode.ThemeIcon("circle-slash");
 
 		this.command = {
-			command: "page.particulars",
 			title: "显示详情",
+			command: "page.edit",
 			arguments: [this, "fail"]
 		};
 	}
@@ -68,8 +40,8 @@ export class provider implements vscode.TreeDataProvider<item> {
 	getChildren(): vscode.ProviderResult<item[]> {
 		let items: item[] = [];
 		for (let index = 0; index < data.fail.length; index++) {
-			items[index] = new item(data.fail[index].label, data.fail[index].type);
-			items[index].set(index, data.fail[index].priority, data.fail[index].place, data.fail[index].mail, data.fail[index].particulars);
+			let fail_data = data.copy(data.fail[index]);
+			items[index] = new item(fail_data.label, index);
 		}
 
 		return items;

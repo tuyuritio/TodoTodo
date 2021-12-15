@@ -50,16 +50,6 @@
 							"关闭编辑器。"
 						]
 					},
-					"todotodo.page.log.start.remind": {
-						"description": "启动时在日志中显示欢迎文本。",
-						"type": "boolean",
-						"default": true
-					},
-					"todotodo.page.log.color": {
-						"description": "启用日志色彩高亮。",
-						"type": "boolean",
-						"default": true
-					},
 					"todotodo.list.todo.item.delete.remind": {
 						"description": "在删除事项时显示确认对话框。",
 						"type": "boolean",
@@ -79,11 +69,6 @@
 							"图标高亮。",
 							"禁用\"正在办理\"功能。"
 						]
-					},
-					"todotodo.list.todo.item.time.show": {
-						"description": "在事项右侧显示截止时间。",
-						"type": "boolean",
-						"default": true
 					},
 					"todotodo.list.todo.delete.remind": {
 						"description": "在删除清单时显示确认对话框。",
@@ -183,11 +168,6 @@
 				"icon": "$(add)"
 			},
 			{
-				"command": "page.edit",
-				"title": "修改事项",
-				"icon": "$(edit)"
-			},
-			{
 				"command": "page.list",
 				"title": "清单列表",
 				"icon": "$(notebook)"
@@ -227,6 +207,11 @@
 			{
 				"command": "todo.delete",
 				"title": "删除事项",
+				"icon": "$(trash)"
+			},
+			{
+				"command": "todo.remove",
+				"title": "移除条目",
 				"icon": "$(trash)"
 			},
 			{
@@ -302,10 +287,6 @@
 					"when": "viewItem == todo_list"
 				},
 				{
-					"command": "page.edit",
-					"when": "viewItem == todo_item"
-				},
-				{
 					"command": "todo.delete",
 					"when": "viewItem == todo_item"
 				},
@@ -328,6 +309,11 @@
 					"command": "todo.shut",
 					"group": "inline",
 					"when": "viewItem == todo_item"
+				},
+				{
+					"command": "todo.remove",
+					"group": "inline",
+					"when": "viewItem == todo_entry"
 				},
 				{
 					"command": "done.redo",

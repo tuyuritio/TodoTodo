@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src csp_source; img-src csp_source https:; script-src csp_source;">
+
+	<link rel="stylesheet" href="style_path">
+
+	<script src="script_path"></script>
+	<script src="element_path"></script>
+	<script src="item_path"></script>
+	<script src="window_path"></script>
+	<script src="event_path"></script>
+	<script src="log_path"></script>
+
+	<title>Editor</title>
+</head>
+
+<body>
+	<main>
+		<article>
+			<!-- 事项信息 -->
+			<section id="item_information">
+				<div>
+					<h3>事项信息</h3>
+					<img src="close_path" id="close_item">
+				</div>
+				<hr>
+
+				<p id="item_label"><span>事项名称</span><span id="label_value" class="value"></span></p>
+				<p id="item_type"><span>事项类别</span><span id="type_value" class="value"></span></p>
+				<p id="item_status"><span>事项状态</span><span id="status_value" class="value"></span></p>
+				<p id="item_priority"><span>优先层级</span><span id="priority_value" class="value"></span></p>
+				<p id="item_place"><span>目标地点</span><span id="place_value" class="value"></span></p>
+				<p id="item_mail"><span>目标邮箱</span><span id="mail_value" class="value"></span></p>
+				<p id="item_particulars"><span>事项细节</span><span id="particulars_value" class="value"></span></p>
+				<p id="item_time"><span id="time_type">事项时间</span><span id="time_value" class="value"></span></p>
+			</section>
+
+			<!-- 事项编辑器 -->
+			<section id="item_editor">
+				<div>
+					<h3 id="item_editor_title">编辑事项</h3>
+					<img src="close_path" id="close_item_editor">
+				</div>
+				<hr>
+
+				<!-- 类别 -->
+				<label><span>类别：</span>
+					<select id="select_type">
+						<option id="other">其它</option>
+					</select>
+				</label>
+				<label id="other_label"><span class="hide">类别：</span><input type="text" placeholder="事项类别(必填)" id="other_type"></label>
+
+				<!-- 事项名称 -->
+				<label><span>事项：</span><input type="text" placeholder="事项名称(必填)" id="label"></label>
+
+				<!-- 事项周期 -->
+				<label><span>周期：</span>
+					<select id="cycle">
+						<option>长期</option>
+						<option>单次</option>
+						<option>每日</option>
+						<option>每周</option>
+					</select>
+					<select id="weekly">
+						<option>一</option>
+						<option>二</option>
+						<option>三</option>
+						<option>四</option>
+						<option>五</option>
+						<option>六</option>
+						<option>日</option>
+					</select>
+				</label>
+				<label id="once"><span>截至：</span><input type="datetime-local" id="datetime"></label>
+				<label id="daily"><span>截至：</span><input type="time" id="select_time"></label>
+
+				<!-- 展开/收起 -->
+				<button id="show_detail"><span id="action_text">展开</span><img src="down_path" id="arrow_down"><img src="up_path" id="arrow_up"></button>
+
+				<!-- 细节面板 -->
+				<section id="detail_panel">
+					<!-- 优先层级 -->
+					<label><span>层级：</span>
+						<select id="priority">
+							<option id="maximum">0</option>
+						</select>
+					</label>
+
+					<!-- 目标地点 -->
+					<label><span>地点：</span><input type="text" placeholder="目标地点" id="place"></label>
+
+					<!-- 目标邮箱 -->
+					<label><span>邮箱：</span><input type="text" placeholder="目标邮箱" id="mail"></label>
+
+					<!-- 事项细节 -->
+					<label><span>详情：</span><textarea placeholder="事项细节" id="particulars"></textarea></label>
+				</section>
+
+				<!-- 确定 -->
+				<button id="complete_button">确定</button>
+			</section>
+		</article>
+
+		<article>
+			<!-- 列表编辑器 -->
+			<section id="list_editor">
+				<div>
+					<h3>清单列表</h3>
+					<img src="close_path" id="close_list_editor">
+				</div>
+				<hr>
+
+				<table>
+					<thead>
+						<tr>
+							<th id="list_label">清单名称</th>
+							<th>优先层级</th>
+							<th>剩余待办</th>
+							<th>可用操作</th>
+						</tr>
+					</thead>
+					<tbody id="list_table"></tbody>
+				</table>
+			</section>
+		</article>
+	</main>
+
+	<main id="log_panel">
+		<article>
+			<!-- 事项日志 -->
+			<section id="log">
+				<div>
+					<h3>清单日志</h3>
+					<img src="clear_path" id="clear_log">
+				</div>
+				<hr>
+
+				<ul id="log_list"></ul>
+			</section>
+		</article>
+	</main>
+</body>
+
+</html>

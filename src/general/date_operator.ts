@@ -4,11 +4,11 @@
  * @returns Date对象
  */
 export function toDate(time: string) {
-	let year = Number(time.substr(0, 4));
-	let month = Number(time.substr(5, 2));
-	let day = Number(time.substr(8, 2));
-	let hour = Number(time.substr(11, 2));
-	let minute = Number(time.substr(14, 2));
+	let year = Number(time.substring(0, 4));
+	let month = Number(time.substring(5, 7));
+	let day = Number(time.substring(8, 10));
+	let hour = Number(time.substring(11, 13));
+	let minute = Number(time.substring(14, 16));
 
 	return new Date(year, month - 1, day, hour, minute);
 }
@@ -22,11 +22,11 @@ export function toNumber(time: Date | string) {
 	let time_object: Date = new Date();
 
 	if (typeof time == "string") {
-		let year = Number(time.substr(0, 4));
-		let month = Number(time.substr(5, 2));
-		let day = Number(time.substr(8, 2));
-		let hour = Number(time.substr(11, 2));
-		let minute = Number(time.substr(14, 2));
+		let year = Number(time.substring(0, 4));
+		let month = Number(time.substring(5, 7));
+		let day = Number(time.substring(8, 10));
+		let hour = Number(time.substring(11, 13));
+		let minute = Number(time.substring(14, 16));
 
 		time_object = new Date(year, month - 1, day, hour, minute);
 	}

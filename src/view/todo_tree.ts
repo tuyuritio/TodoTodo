@@ -5,85 +5,62 @@ import { data } from "../data/data_center";
 import { getIconPath } from "../general/file_manage";
 import { configuration } from "../general/configuration_center";
 
+/* 清单元素 */
+class list extends vscode.TreeItem {
+	label: string;
+	priority: number = 0;					// 清单排序
+
+	/**
+	 * 构造方法
+	 * @param label 清单类别
+	 */
+	constructor(label: string) {
+		super(label, vscode.TreeItemCollapsibleState.Expanded);
+
+		this.label = label;
+		this.contextValue = "todo_list";
+		this.iconPath = new vscode.ThemeIcon("list-unordered");
+	}
+}
+
 /* 事项元素 */
 class item extends vscode.TreeItem {
-	// 事项参数
-	type: string;
-	index: number = 0;
-	priority: number = 0;
-	cycle: string | undefined;
-	time: string | undefined;
-	place: string | undefined;
-	mail: string | undefined;
-	particulars: string | undefined;
+	label: string;
+	type: string;				// 定位清单
+	index: number;				// 定位事项
+	entry: any | undefined;
 
 	/**
 	 * 构造方法
 	 * @param label 事项标题
 	 * @param ItemId 事项元素视图ID
-	 * @param type 事项类别
-	 * @param collapsibleState 折叠状态 - **默认：** `非折叠`
 	 */
-	constructor(label: string, ItemId: string, type: string, priority: number, collapsibleState: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None) {
-		super(label, collapsibleState);
-
-		this.type = type;
-		this.priority = priority;
+	constructor(ItemId: string, label: string, type: string, index: number, time: string, entry: any) {
+		super(label);
 		this.contextValue = ItemId;
-
-		this.iconPath = new vscode.ThemeIcon("list-unordered");
-	}
-
-	/**
-	 * 事项参数设置
-	 * @param index 事项序号(清单内序号)
-	 * @param priority 优先层级
-	 * @param cycle 事项周期
-	 * @param time 截止时间
-	 * @param place 目标地点
-	 */
-	set(index: number, cycle: string, time: string, place: string, mail: string, particulars: string): void {
-		this.index = index;
-
-		this.cycle = cycle;
-		this.time = time;
-		this.place = place;
-		this.mail = mail;
-		this.particulars = particulars;
-
 		this.iconPath = new vscode.ThemeIcon("note");
 
-		let tips = "";
-		if (this.time) {
-			tips += "截止时间: " + this.time + "\n";
+		this.label = label;
+		this.type = type;
+		this.index = index;
+		this.entry = entry;
 
-			if (date.isRecent(this.time)) {
+		if (time) {
+			this.tooltip = "截止时间: " + time + "\n";
+
+			if (date.isRecent(time)) {
 				this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
-				if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {
-					this.description = this.time.substr(11, 5);
-				}
+				this.description = time.substring(11, 16);
 			} else {
-				if (vscode.workspace.getConfiguration("todotodo").list.todo.item.time.show) {
-					this.description = this.time.substr(0, 10);
-				}
+				this.description = time.substring(0, 10);
 			}
 		} else {
 			this.iconPath = new vscode.ThemeIcon("info");
 		}
 
-		if (this.place) {
-			tips += "目标地点: " + this.place + "\n";
+		if (this.entry) {
+			this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
 		}
-
-		if (this.mail) {
-			tips += "目标邮箱: " + this.mail + "\n";
-		}
-
-		if (this.particulars) {
-			tips += this.particulars + "\n";
-		}
-
-		this.tooltip = tips;
 
 		if (this.contextValue == "gaze_item") {
 			switch (configuration.new_configuration.list.todo.item.gaze.style) {
@@ -103,14 +80,44 @@ class item extends vscode.TreeItem {
 
 		this.command = {
 			title: "显示详情",
-			command: "page.particulars",
+			command: "page.edit",
 			arguments: [this, "todo"]
 		};
 	}
 };
 
+/* 条目元素 */
+class entry extends vscode.TreeItem {
+	root: item;
+	type: string;
+
+	constructor(root: item, type: string, content: string, is_on: boolean) {
+		super(content);
+
+		this.contextValue = "todo_entry";
+		this.type = type;
+		if (type.substring(0, 7) != "__entry") {
+			this.label = type + " : " + content;
+		}
+
+		this.root = root;
+
+		if (is_on) {
+			this.iconPath = new vscode.ThemeIcon("symbol-parameter");
+		} else {
+			this.iconPath = new vscode.ThemeIcon("check");
+		}
+
+		this.command = {
+			title: "状态变更",
+			command: "todo.change",
+			arguments: [this]
+		};
+	}
+}
+
 /* 元素提供器 */
-export class provider implements vscode.TreeDataProvider<item> {
+export class provider implements vscode.TreeDataProvider<any> {
 	ShowEmpty: boolean = false;
 
 	/**
@@ -118,7 +125,7 @@ export class provider implements vscode.TreeDataProvider<item> {
 	 * @param element
 	 * @returns TreeItem
 	 */
-	getTreeItem(element: item): vscode.TreeItem {
+	getTreeItem(element: any): vscode.TreeItem {
 		return element;
 	}
 
@@ -127,36 +134,41 @@ export class provider implements vscode.TreeDataProvider<item> {
 	 * @param element 
 	 * @returns vscode.ProviderResult<item[]>
 	 */
-	getChildren(element?: item): vscode.ProviderResult<item[]> {
+	getChildren(element?: any): vscode.ProviderResult<any[]> {
 		let todo_data = data.todo;
+		let items: any[] = [];
+		let count: number = 0;
 
-		let items: item[] = [];
-		if (element) {
-			let list_data = todo_data[element.type];
+		if (element instanceof list) {					// 导入事项
+			let list_data = todo_data[element.label];
 
 			for (let index = 0; index < list_data.list.length; index++) {
 				let item_data = list_data.list[index];
 				let item_id = item_data.gaze ? "gaze_item" : "todo_item";
-				items[index] = new item(item_data.label, item_id, list_data.type, item_data.priority);
-				items[index].set(index, item_data.cycle, item_data.time, item_data.place, item_data.mail, item_data.particulars);
+				items[index] = new item(item_id, item_data.label, list_data.type, index, item_data.time, item_data.entry);
 			}
-		} else {
+		} else if (element instanceof item) {			// 导入条目
+			let entries = todo_data[element.type].list[element.index].entry;
+
+			for (let property in entries) {
+				items[count] = new entry(element, property, entries[property].content, entries[property].on);
+				count++;
+			}
+		} else {										// 导入清单
 			let count: number = 0;
-			for (let list in todo_data) {
-				if (todo_data[list].list.length != 0 || this.ShowEmpty) {
-					items[count++] = new item(todo_data[list].type, "todo_list", todo_data[list].type, todo_data[list].priority, vscode.TreeItemCollapsibleState.Expanded);
+			for (let list_type in todo_data) {
+				if (todo_data[list_type].list.length != 0 || this.ShowEmpty) {
+					items[count++] = new list(todo_data[list_type].type);
 				}
 			}
 
+			// 清单排序
 			for (let index = 1; index < items.length; index++) {
 				let pointer = index - 1;
 				let list = items[index];
 
 				while (pointer >= 0) {
-					if (list.priority != -1) {
-						if (items[pointer].priority == -1) break;
-						if (items[pointer].priority >= list.priority) break;
-					}
+					if (items[pointer].priority >= list.priority) break;
 
 					items[pointer + 1] = items[pointer];
 					pointer--;
@@ -169,7 +181,7 @@ export class provider implements vscode.TreeDataProvider<item> {
 		return items;
 	}
 
-	event_emitter = new vscode.EventEmitter<item | void>();
+	event_emitter = new vscode.EventEmitter<void>();
 	onDidChangeTreeData = this.event_emitter.event;
 
 	/**

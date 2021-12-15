@@ -2,7 +2,6 @@
 import * as vscode from "vscode";
 import * as file from "../general/file_manage";
 import { data } from "../data/data_center";
-import { configuration } from "../general/configuration_center";
 
 /* Page选项 */
 class option implements vscode.WebviewOptions, vscode.WebviewPanelOptions {
@@ -23,23 +22,24 @@ export class provider {
 		this.panel.iconPath = vscode.Uri.file(file.getIconPath("icon_page"));
 
 		let html = file.getWeb("HTML");
-		html = html.replace("script_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "script", true))).toString());
-		html = html.replace("item_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "item", true))).toString());
-		html = html.replace("window_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "window", true))).toString());
-		html = html.replace("element_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "element", true))).toString());
-		html = html.replace("event_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "event", true))).toString());
-		html = html.replace("log_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("JS", "log", true))).toString());
-		html = html.replace(/close_path/g, this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("close"))).toString());
-		html = html.replace("clear_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("clear-all"))).toString());
-		html = html.replace("up_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-up"))).toString());
-		html = html.replace("down_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getIconPath("chevron-down"))).toString());
-		html = html.replace(/csp_source/g, this.panel.webview.cspSource);
 
-		if (configuration.new_configuration.page.log.color) {
-			html = html.replace("style_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("CSS", "style", true))).toString());
-		} else {
-			html = html.replace("style_path", this.panel.webview.asWebviewUri(vscode.Uri.file(file.getWeb("CSS", "style_colorless", true))).toString());
-		}
+		html = html.replace("style_path", this.toUri(file.getWeb("CSS", "style", true)));
+		html = html.replace("item_editor_path", this.toUri(file.getWeb("CSS", "item_editor", true)));
+		html = html.replace("list_editor_path", this.toUri(file.getWeb("CSS", "list_editor", true)));
+		html = html.replace("log_panel_path", this.toUri(file.getWeb("CSS", "log_panel", true)));
+
+		html = html.replace("script_path", this.toUri(file.getWeb("JS", "script", true)));
+		html = html.replace("item_path", this.toUri(file.getWeb("JS", "item", true)));
+		html = html.replace("window_path", this.toUri(file.getWeb("JS", "window", true)));
+		html = html.replace("element_path", this.toUri(file.getWeb("JS", "element", true)));
+		html = html.replace("event_path", this.toUri(file.getWeb("JS", "event", true)));
+		html = html.replace("log_path", this.toUri(file.getWeb("JS", "log", true)));
+
+		html = html.replace(/close_path/g, this.toUri(file.getIconPath("close")));
+		html = html.replace("clear_path", this.toUri(file.getIconPath("clear-all")));
+		html = html.replace("up_path", this.toUri(file.getIconPath("chevron-up")));
+		html = html.replace("down_path", this.toUri(file.getIconPath("chevron-down")));
+		html = html.replace(/csp_source/g, this.panel.webview.cspSource);
 
 		this.panel.webview.html = html;
 		this.initialize();
@@ -47,6 +47,14 @@ export class provider {
 		this.panel.onDidDispose(() => { this.visible = false });
 
 		this.visible = true;
+	}
+
+	/**
+	 * 转换安全路径
+	 * @param path 
+	 */
+	toUri(path: string) {
+		return this.panel.webview.asWebviewUri(vscode.Uri.file(path)).toString();
 	}
 
 	/**
@@ -146,8 +154,41 @@ export class provider {
 	 * 获取主页是否可见
 	 * @returns 主页是否可见
 	 */
-	is_visible(): boolean {
+	isVisible(): boolean {
 		return this.visible;
+	}
+
+	/**
+	 * 编辑事项 | 事项信息
+	 * @param item 事项对象
+	 * @param status 事项状态
+	 */
+	edit(item: any, status: string) {
+		let item_in_data: any;
+		let item_data: any = {};
+		if (status == "todo") {
+			item_in_data = data.todo[item.type].list[item.index];
+
+			item_data.type = item.type;
+		} else if (status == "done") {
+			item_in_data = data.done[item.index];
+
+			item_data.type = item_in_data.type;
+		} else if (status == "fail") {
+			item_in_data = data.fail[item.index];
+
+			item_data.type = item_in_data.type;
+		}
+
+		item_data.index = item.index;
+		item_data.label = item_in_data.label;
+		item_data.priority = item_in_data.priority;
+		item_data.cycle = item_in_data.cycle;
+		item_data.time = item_in_data.time;
+		item_data.entry = item_in_data.entry;
+		item_data.status = status;
+
+		this.postToPage("edit", item_data);
 	}
 }
 

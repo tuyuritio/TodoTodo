@@ -1,8 +1,8 @@
 /* 模块调用 */
 import * as vscode from "vscode";
 import * as date from "../general/date_operator";
-import { data } from "./data_center";
 import * as log from "../general/log_manage";
+import { data } from "./data_center";
 
 /**
  * 完成事项
@@ -135,6 +135,22 @@ export function undo(item: any) {
 }
 
 /**
+ * 变更条目状态
+ * @param entry 条目对象
+ */
+export function change(entry: any) {
+	data.todo[entry.root.type].list[entry.root.index].entry[entry.type].on = !data.todo[entry.root.type].list[entry.root.index].entry[entry.type].on;
+}
+
+/**
+ * 删除条目
+ * @param entry 条目对象
+ */
+export function remove(entry: any) {
+	delete data.todo[entry.root.type].list[entry.root.index].entry[entry.type];
+}
+
+/**
  * 删除原有事项
  * @param item 原有事项对象
  */
@@ -152,18 +168,14 @@ export function deleteOld(item: any): void {
 export function addNew(item: any): void {
 	let cycle = item.cycle;
 	let time = item.time;
-	let place = item.place;
-	let mail = item.mail;
-	let particulars = item.particulars;
+	let entry = item.entry;
 
 	let item_data = {
 		label: item.label,
 		priority: item.priority,
 		cycle: cycle,
 		time: time,
-		place: place,
-		mail: mail,
-		particulars: particulars
+		entry: entry
 	};
 
 	if (!(item.type in data.todo)) {

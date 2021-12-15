@@ -45,17 +45,24 @@ export namespace extension {
 
 /* 命令管理 */
 export namespace command {
+	/**
+	 * 注册命令
+	 * @param command 命令
+	 * @param action 函数
+	 */
 	function set(command: string, action: (...data: any) => any): void {
 		extension_context.subscriptions.push(vscode.commands.registerCommand(command, (...data) => action(...data)));
 	}
 
+	/**
+	 * 注册所有命令
+	 */
 	export function register(): void {
 		// 注册page命令
 		set("page.show", () => page.show());
-		set("page.add", () => page.add(configuration.page_editor_add_after_action));
-		set("page.edit", (item) => page.edit(item));
-		set("page.particulars", (item, status) => page.particulars(item, status));
 		set("page.list", () => page.showList());
+		set("page.add", () => page.add(configuration.page_editor_add_after_action));
+		set("page.edit", (item, status) => page.edit(item, status));
 
 		// 注册list命令
 		set("list.delete", (item) => list.deleteList(item, configuration.list_all_delete_remind, configuration.list_all_item_delete_method));
@@ -67,6 +74,8 @@ export namespace command {
 		set("todo.delete", (item) => todo.deleteItem(item, configuration.list_all_item_delete_remind));
 		set("todo.gaze", (item) => todo.gaze(item));
 		set("todo.undo", (item) => todo.undo(item));
+		set("todo.change", (item) => todo.change(item));
+		set("todo.remove", (item) => todo.remove(item));
 		set("todo.save", () => todo.save());
 
 		// 注册done_tree命令
@@ -119,6 +128,10 @@ export namespace list {
 		});
 	}
 
+	/**
+	 * 编辑清单
+	 * @param list 清单名称
+	 */
 	export function edit(list: any) {
 		list_manage.editList(list);
 
@@ -177,6 +190,26 @@ export namespace todo {
 	 */
 	export function undo(item: any) {
 		todo_manage.undo(item);
+
+		view.refresh();
+	}
+
+	/**
+	 * 切换条目状态
+	 * @param on 条目状态
+	 */
+	export function change(entry: any) {
+		todo_manage.change(entry);
+
+		view.refresh();
+	}
+
+	/**
+	 * 删除条目
+	 * @param entry 条目对象
+	 */
+	export function remove(entry: any) {
+		todo_manage.remove(entry);
 
 		view.refresh();
 	}
@@ -264,7 +297,7 @@ export class page {
 	 * @param auto 是否强制刷新 - false则强制刷新；false则默认刷新
 	 */
 	static refresh(auto: boolean = true) {
-		if (this.view && this.view.is_visible()) {
+		if (this.view && this.view.isVisible()) {
 			if (!auto) {
 				this.view.close();
 			}
@@ -277,8 +310,9 @@ export class page {
 	* 显示主页
 	*/
 	static show(): void {
-		if (!this.view || !this.view.is_visible()) {
+		if (!this.view || !this.view.isVisible()) {
 			this.view = page_view.create();
+			this.view.initialize();
 
 			page.view.panel.webview.onDidReceiveMessage((message) => {
 				switch (message.command) {
@@ -293,14 +327,17 @@ export class page {
 						todo.addNew(message.data.new_item);
 
 						view.refresh();
+						page.initialize();
 						break;
 
 					case "list":
 						list.edit(message.data);
+						page.initialize();
 						break;
 
 					case "deleteList":
 						list.deleteList(message.data, configuration.list_all_delete_remind, configuration.list_all_item_delete_method);
+						page.initialize();
 						break;
 
 					case "clearLog":
@@ -312,7 +349,6 @@ export class page {
 			this.view.show();
 		}
 
-		this.view.initialize();
 		this.view.showLog();
 	}
 
@@ -344,45 +380,12 @@ export class page {
 	/**
 	 * 编辑事项
 	 * @param item 被点击的事项对象
+	 * @param status 被点击的事项状态
 	 */
-	static edit(item: any): void {
+	static edit(item: any, status: string): void {
 		this.show();
 
-		let data = {
-			type: item.type,
-			index: item.index,
-			label: item.label,
-			priority: item.priority,
-			cycle: item.cycle,
-			time: item.time,
-			place: item.place,
-			mail: item.mail,
-			particulars: item.particulars
-		};
-		this.view.postToPage("edit", data);
-	}
-
-	/**
-	 * 显示事项信息
-	 * @param item 事项对象
-	 * @param status 事项状态
-	 */
-	static particulars(item: any, status: string) {
-		this.show();
-
-		let data = {
-			type: item.type,
-			index: item.index,
-			label: item.label,
-			priority: item.priority,
-			cycle: item.cycle,
-			time: item.time,
-			place: item.place,
-			mail: item.mail,
-			particulars: item.particulars,
-			status: status
-		};
-		this.view.postToPage("information", data);
+		this.view.edit(item, status);
 	}
 
 	/**

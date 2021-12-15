@@ -140,7 +140,6 @@ function showLog(log_data) {
 								priority: "优先层级:",
 								cycle: "事项周期:",
 								time: "截止时间:",
-								place: "目标地点:",
 								mail: "目标邮件:",
 								particulars: "事项细节:"
 							}
@@ -191,7 +190,6 @@ function showLog(log_data) {
 									priority: "优先层级",
 									cycle: "事项周期",
 									time: "截止时间",
-									place: "目标地点",
 									mail: "目标邮件",
 									particulars: "事项细节"
 								}

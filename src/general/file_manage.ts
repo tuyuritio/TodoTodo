@@ -88,7 +88,7 @@ export function readJSON(content: string) {
 /**
  * 获取Web资源 | 获取web资源路径
  * @param type 资源类型 - 可选值为 **"HTML"** 、 **"CSS"** 、 **"JS"**
- * @param name 文件内容 - 当`type`为 **"CSS"** 时可选值为 **"style"** 、 **"style_colorless"**
+ * @param name 文件内容 - 当`type`为 **"CSS"** 时可选值为 **"style"** 、 **"item_editor"** 、 **"list_editor"** 、 **"log_panel"**
  * @param name 文件内容 - 当`type`为 **"JS"** 时可选值为 **"script"** 、 **"item"** 、 **"element"** 、 **"window"** 、 **"event"**
  * @param is_path 是否获取路径 - true则获取路径；false则获取资源。- **默认：** false
  * @returns JSON文件内容
@@ -109,6 +109,8 @@ export function getWeb(type?: string, name?: string, is_path: boolean = false): 
 			}
 
 		case "CSS":
+			directory_path = path.join(directory_path, "css");
+
 			if (is_path) {
 				return path.join(directory_path, name + ".css");
 			} else {
@@ -116,6 +118,8 @@ export function getWeb(type?: string, name?: string, is_path: boolean = false): 
 			}
 
 		case "JS":
+			directory_path = path.join(directory_path, "js");
+
 			if (is_path) {
 				return path.join(directory_path, name + ".js");
 			} else {

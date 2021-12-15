@@ -1,0 +1,116 @@
+main#log_panel {
+    justify-self: flex-end;
+
+    width: 100%;
+    max-width: 600px;
+
+    margin-left: auto;
+}
+
+section#log {
+    width: 100%;
+    height: calc(100vh - 80px);
+
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+
+section#log ul#log_list {
+    overflow: scroll;
+
+    padding-left: 20px;
+}
+
+section#log ul#log_list::-webkit-scrollbar {
+    display: none;
+}
+
+section#log ul#log_list li {
+    margin-bottom: 10px;
+}
+
+section#log ul#log_list li span {
+    display: inline-block;
+}
+
+section#log ul#log_list li span.time_information {
+    font-size: 10px;
+    font-weight: bold;
+    color: #4ec9b0;
+    line-height: 20px;
+}
+
+section#log ul#log_list li span.log_text {
+    margin-left: 10px;
+
+    color: #ce9178;
+}
+
+section#log ul#log_list li span span {
+    margin-left: 10px;
+}
+
+section#log ul#log_list li span span.log_label {
+    margin-left: 10px;
+
+    color: #569cd6;
+}
+
+section#log ul#log_list li span span.log_content {
+    margin-left: 10px;
+
+    color: #9cdcfe;
+}
+
+section#log ul#log_list li span span.connect {
+    color: #dcdcaa;
+}
+
+section#log ul#log_list li span span.change_common {
+    color: #ffd700;
+}
+
+section#log ul#log_list li span span.change_warning {
+    color: #ff0000;
+}
+
+section#log ul#log_list li span span.change_highlight {
+    color: #66ff55;
+}
+
+section#log ul#log_list li ul {
+    margin-left: 95px;
+}
+
+section#log ul#log_list li ul li {
+    margin-bottom: 3px;
+
+    list-style: none;
+}
+
+section#log ul#log_list li ul li span {
+    margin-left: 10px;
+}
+
+section#log ul#log_list li ul li span.edit_type {
+    width: 9px;
+
+    margin-left: 0px;
+
+    font-weight: bold;
+    color: #dcdcaa;
+
+    text-align: center;
+}
+
+section#log ul#log_list li ul li span.edit_content {
+    color: #dcdcaa;
+}
+
+section#log ul#log_list li ul li span.log_data {
+    color: #9cdcfe;
+}
+
+section#log ul#log_list li ul li span.log_change {
+    color: #569cd6;
+}

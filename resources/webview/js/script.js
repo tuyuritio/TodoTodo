@@ -2,7 +2,6 @@
 let vscode = acquireVsCodeApi();
 
 /* 全局变量 */
-let is_show_detail = false;			// 是否展开细节
 let action_after_add = "remain";
 
 let is_new;							// 记录当前编辑器状态为新建或编辑
@@ -25,11 +24,11 @@ window.onload = function () {
  * @returns Date对象
  */
 function toDate(time) {
-	let year = Number(time.substr(0, 4));
-	let month = Number(time.substr(5, 2));
-	let day = Number(time.substr(8, 2));
-	let hour = Number(time.substr(11, 2));
-	let minute = Number(time.substr(14, 2));
+	let year = Number(time.substring(0, 4));
+	let month = Number(time.substring(5, 7));
+	let day = Number(time.substring(8, 10));
+	let hour = Number(time.substring(11, 13));
+	let minute = Number(time.substring(14, 16));
 
 	return new Date(year, month - 1, day, hour, minute);
 }
@@ -43,11 +42,11 @@ function toNumber(time) {
 	let time_object = new Date();
 
 	if (typeof time == "string") {
-		let year = Number(time.substr(0, 4));
-		let month = Number(time.substr(5, 2));
-		let day = Number(time.substr(8, 2));
-		let hour = Number(time.substr(11, 2));
-		let minute = Number(time.substr(14, 2));
+		let year = Number(time.substring(0, 4));
+		let month = Number(time.substring(5, 7));
+		let day = Number(time.substring(8, 10));
+		let hour = Number(time.substring(11, 13));
+		let minute = Number(time.substring(14, 16));
 
 		time_object = new Date(year, month - 1, day, hour, minute);
 	}

@@ -2,12 +2,6 @@
  * 加载事件
  */
 function addEvents() {
-	// 清空日志
-	clear_log.addEventListener("click", () => {
-		clearAllLog();
-		postToExtension("clearLog");
-	});
-
 	// 确认编辑事项
 	complete_button.addEventListener("click", () => editItem());
 
@@ -17,14 +11,14 @@ function addEvents() {
 	// 关闭事项编辑器
 	close_item_editor.addEventListener("click", () => close("item_editor"));
 
-	// 关闭事项详情
-	close_item.addEventListener("click", () => close("item"));
+	// 清空日志
+	clear_log.addEventListener("click", () => {
+		clearAllLog();
+		postToExtension("clearLog");
+	});
 
-	// 展开/收起详情编辑面板
-	show_detail.addEventListener("click", () => showDetailPanel());
-
-	// 自适应高度
-	textarea.addEventListener("input", () => adaptiveHeight());
+	// 新建条目
+	add_entry.addEventListener("click", () => addEntry());
 }
 
 /**
@@ -39,6 +33,9 @@ function focusEvents() {
 
 	// 周次选择
 	weekly.addEventListener("change", () => select_time.focus());
+
+	// 条目选择
+	entry_type.addEventListener("change", (event) => chooseEntry(event));
 
 	item_editor.addEventListener("keydown", (key) => {
 		if (key.key == "Escape") {
@@ -58,92 +55,14 @@ function focusEvents() {
 		}
 	});
 
+	// 事项名称确认
 	label.addEventListener("keydown", (key) => {
-		if (key.key == "Enter" || key.key == "ArrowDown") {
-			if (is_show_detail) {
-				place.focus();
-			} else {
-				editItem();
-			}
-		}
-
 		if (key.key == "Enter" && key.ctrlKey) {
 			editItem();
-
 		}
 
 		if (key.key == "Delete" && key.shiftKey) {
 			label.value = "";
-		}
-	});
-
-	datetime.addEventListener("keydown", (key) => {
-		if (key.key == "Enter") {
-			if (key.ctrlKey) {
-				editItem();
-			} else {
-				if (is_show_detail) {
-					place.focus();
-				} else {
-					editItem();
-				}
-			}
-		}
-	});
-
-	select_time.addEventListener("keydown", (key) => {
-		if (key.key == "Enter") {
-			if (key.ctrlKey) {
-				editItem();
-			} else {
-				if (is_show_detail) {
-					place.focus();
-				} else {
-					editItem();
-				}
-			}
-		}
-	});
-
-	priority.addEventListener("change", () => place.focus());
-
-	place.addEventListener("keydown", (key) => {
-		if (key.key == "Enter") {
-			if (key.ctrlKey) {
-				editItem();
-			} else {
-				mail.focus();
-			}
-		}
-
-		if (key.key == "Delete" && key.shiftKey) {
-			place.value = "";
-		}
-	});
-
-	mail.addEventListener("keydown", (key) => {
-		if (key.key == "Enter") {
-			if (key.ctrlKey) {
-				editItem();
-			} else {
-				particulars.focus();
-			}
-		}
-
-		if (key.key == "Delete" && key.shiftKey) {
-			mail.value = "";
-		}
-	});
-
-	particulars.addEventListener("keydown", (key) => {
-		if (key.key == "Enter") {
-			if (key.ctrlKey) {
-				editItem();
-			}
-		}
-
-		if (key.key == "Delete" && key.shiftKey) {
-			particulars.value = "";
 		}
 	});
 }

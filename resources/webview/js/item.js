@@ -18,11 +18,16 @@ function loadOption(data) {
 	// 事项类别
 	lists = data.lists;
 	let select_editing_type = 0;
+	let exist_type = false;
 	for (let index = 0; index < data.lists.length; index++) {
 		let new_option = document.createElement("option");
 		new_option.innerHTML = lists[index].type;
-		if (editing_item.type == lists[index].type) {
-			select_editing_type = index;
+		if (editing_item) {
+			exist_type = true;
+
+			if (editing_item.type == lists[index].type) {					// 新建类别后保留原有类别选项
+				select_editing_type = index;
+			}
 		}
 		select_type.insertBefore(new_option, other);
 	}
@@ -36,7 +41,9 @@ function loadOption(data) {
 		priority.insertBefore(new_option, maximum);
 	}
 	maximum.innerHTML = data.item_maximum_priority + 1;
-	priority.selectedIndex = editing_item.priority;
+	if (editing_item) {														// 新建事项后保留原有优先级选项
+		priority.selectedIndex = editing_item.priority;
+	}
 
 	// 清单列表
 	for (let index = 0; index < data.lists.length; index++) {
@@ -101,7 +108,7 @@ function loadOption(data) {
 			delete_button.innerHTML = "删除";
 
 			let list_data = {
-				type: data.lists[index].type
+				label: data.lists[index].type
 			};
 
 			delete_button.addEventListener("click", () => postToExtension("deleteList", list_data));
@@ -124,35 +131,23 @@ function loadOption(data) {
 function cover(item) {
 	editing_item = item;
 
-	for (let index = 0; index < lists.length; index++) {
+	let exist_type = false;
+	for (let index = 0; !exist_type && index < lists.length; index++) {
 		if (lists[index].type == item.type) {
 			select_type.selectedIndex = index;
-			break;
+			exist_type = true;
 		}
+	}
+	if (!exist_type) {
+		select_type.selectedIndex = lists.length;
+		other_label.style.display = "flex";
+		other_type.value = item.type;
+	} else {
+		other_label.style.display = "none";
+		other_type.value = "";
 	}
 
 	label.value = item.label;
-	priority.selectedIndex = item.priority;
-
-	if (item.place) {
-		place.value = item.place;
-	} else {
-		place.value = "";
-	}
-
-	if (item.mail) {
-		mail.value = item.mail;
-	} else {
-		mail.value = "";
-	}
-
-	if (item.particulars) {
-		textarea.value = item.particulars;
-	} else {
-		textarea.value = "";
-	}
-	adaptiveHeight();
-
 	priority.selectedIndex = item.priority;
 
 	if (item.cycle) {
@@ -189,6 +184,16 @@ function cover(item) {
 			weekly.style.display = "none";
 		}
 	}
+
+	clearEntry();
+	for (let property in item.entry) {
+		let entry_type = property;
+		if (entry_type.substring(0, 7) == "__entry") {
+			entry_type = "";
+		}
+
+		addEntry(entry_type, item.entry[property].content);
+	}
 }
 
 /**
@@ -200,9 +205,6 @@ function editItem() {
 	let new_time;
 	let time_string;
 	let new_cycle;
-	let new_place;
-	let new_mail;
-	let new_particulars;
 
 	switch (cycle.options[cycle.selectedIndex].text) {
 		case "长期":
@@ -253,21 +255,33 @@ function editItem() {
 	let space_label = label.value.replaceAll(" ", "");
 	let space_type = input_type.value.replaceAll(" ", "");
 
-	if (space_label == "" || space_label == " " || new_type == "其它" && (space_type == "" || space_type == " ")) {
+	if (space_label == "" || new_type == "其它" && space_type == "") {
 		postToExtension("warning", "请输入必填项！");
 		return;
 	}
 
-	if (place.value != "") {
-		new_place = place.value;
-	}
+	// 新建条目
+	let entries = {};
+	let entry_values = document.getElementsByClassName("entry");
+	for (let index = 0; index < entry_values.length; index++) {
+		if (entry_values[index].value.replaceAll(" ", "") != "") {
+			let type = entry_values[index].parentNode.childNodes[0].innerHTML;
+			if (type.replaceAll(" ", "") == "") {
+				type = "__entry_" + index;
+			}
 
-	if (mail.value != "") {
-		new_mail = mail.value;
-	}
+			entries[type] = {
+				content: entry_values[index].value,
+				on: true
+			};
 
-	if (particulars.value != "") {
-		new_particulars = textarea.value;
+			if (!is_new && editing_item.entry[type]) {				// 保留原状态
+				entries[type].on = editing_item.entry[type].on;
+			}
+		}
+	}
+	if (Object.keys(entries).length == 0) {
+		entries = undefined;
 	}
 
 	let new_item = {
@@ -276,12 +290,10 @@ function editItem() {
 		priority: priority.selectedIndex,
 		cycle: new_cycle,
 		time: time_string,
-		place: new_place,
-		mail: new_mail,
-		particulars: new_particulars
+		entry: entries
 	};
 
-	if (is_new) {
+	if (is_new) {						// 因为要保留原先填写的东西，所以要先判断当前编辑器是否在新建状态，防止删除上一个新建的事项
 		editing_item = undefined;
 	}
 
@@ -311,93 +323,6 @@ function editItem() {
 			default:
 				break;
 		}
-	}
-}
-
-/**
- * 显示事项信息
- * @param item 事项对象
- */
-function information(item) {
-	item_information.style.display = "flex";
-
-	label_value.innerHTML = item.label;
-	type_value.innerHTML = item.type;
-	priority_value.innerHTML = item.priority;
-
-	item_time.style.display = "flex";
-	if (item.cycle) {
-
-		let time_text = "";
-
-		switch (item.cycle) {
-			case "daily":
-				time_text += "每日" + item.time.substr(11, 5);
-				break;
-
-			case "weekly":
-				let week_days = "一二三四五六日";
-
-				time_text += "每周"
-				time_text += week_days.charAt((toDate(item.time).getDay() + 6) % 7);
-				time_text += item.time.substr(11, 5);
-
-				break;
-		}
-
-		time_value.innerHTML = time_text;
-	} else if (item.time) {
-		time_value.innerHTML = item.time;
-	} else {
-		item_time.style.display = "none";
-	}
-
-	if (item.place) {
-		item_place.style.display = "flex";
-
-		place_value.innerHTML = item.place;
-	} else {
-		item_place.style.display = "none";
-	}
-
-	if (item.mail) {
-		item_mail.style.display = "flex";
-
-		mail_value.innerHTML = item.mail;
-	} else {
-		item_mail.style.display = "none";
-	}
-
-	if (item.particulars) {
-		item_particulars.style.display = "flex";
-		particulars_value.innerHTML = item.particulars.replaceAll("\n", "<br>");
-	} else {
-		item_particulars.style.display = "none";
-	}
-
-	if (item.status) {
-		item_status.style.display = "flex";
-
-		let status_text = "";
-		switch (item.status) {
-			case "todo":
-				status_text = "待办";
-				time_type.innerHTML = "截止时间";
-				break;
-
-			case "done":
-				status_text = "已办";
-				time_type.innerHTML = "完成时间";
-				break;
-
-			case "fail":
-				status_text = "失效";
-				break;
-		}
-
-		status_value.innerHTML = status_text;
-	} else {
-		item_status.style.display = "none";
 	}
 }
 

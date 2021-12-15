@@ -5,50 +5,20 @@ import { data } from "../data/data_center";
 /* 事项元素 */
 class item extends vscode.TreeItem {
 	// 事项参数
-	type: string;
 	index: number = 0;
-	priority: number = 0;
-	time: string | undefined;
-	place: string | undefined;
-	mail: string | undefined;
-	particulars: string | undefined;
 
-	/**
-	 * 构造方法
-	 * @param label 事项标题
-	 * @param ItemId 事项元素视图ID
-	 * @param type 事项类别
-	 * @param collapsibleState 折叠状态 - **默认：** `非折叠`
-	 */
-	constructor(label: string, type: string, collapsibleState: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None) {
-		super(label, collapsibleState);
+	constructor(label: string, index: number, time: string) {
+		super(label);
 		this.contextValue = "done_item";
 
-		this.type = type;
-		this.iconPath = new vscode.ThemeIcon("note");
-	}
-
-	/**
-	 * 事项参数设置
-	 * @param index 事项序号(清单内序号)
-	 * @param priority 优先层级
-	 * @param time 截止时间
-	 * @param place 目标地点
-	 */
-	set(index: number, priority: number, time: string, place: string, mail: string, particulars: string): void {
 		this.index = index;
-		this.priority = priority;
+		this.iconPath = new vscode.ThemeIcon("note");
 
-		this.time = time;
-		this.place = place;
-		this.mail = mail;
-		this.particulars = particulars;
-
-		this.tooltip = "完成时间: " + this.time + "\n";
+		this.tooltip = "完成时间: " + time + "\n";
 
 		this.command = {
-			command: "page.particulars",
 			title: "显示详情",
+			command: "page.edit",
 			arguments: [this, "done"]
 		};
 	}
@@ -72,8 +42,8 @@ export class provider implements vscode.TreeDataProvider<item> {
 	getChildren(): vscode.ProviderResult<item[]> {
 		let items: item[] = [];
 		for (let index = 0; index < data.done.length; index++) {
-			items[index] = new item(data.done[index].label, data.done[index].type);
-			items[index].set(index, data.done[index].priority, data.done[index].time, data.done[index].place, data.done[index].mail, data.done[index].particulars);
+			let done_data = data.copy(data.done[index]);
+			items[index] = new item(done_data.label, index, done_data.time);
 		}
 
 		return items;
