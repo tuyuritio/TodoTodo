@@ -49,6 +49,7 @@ function setElements() {
 	priority_value = get("priority_value");
 	select_time = get("select_time");
 	select_type = get("select_type");
+	time_title = get("time_title");
 	time_type = get("time_type");
 	time_value = get("time_value");
 	textarea = get("particulars");

@@ -218,6 +218,8 @@ function readyEdit(data) {
 		item_cycle.style.display = "flex";
 
 		item_status.value = "待办";
+
+		time_title.innerHTML = "截止时间";
 	} else {
 		item_editor_title.innerHTML = "事项信息";
 
@@ -227,8 +229,12 @@ function readyEdit(data) {
 
 		if (data.status == "done") {
 			item_status.value = "已办";
+
+			time_title.innerHTML = "完成时间";
 		} else if (data.status == "fail") {
 			item_status.value = "未办";
+
+			time_title.innerHTML = "失效时间";
 		}
 	}
 	cover(data);
