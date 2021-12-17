@@ -40,6 +40,7 @@ export function shut(item: any) {
 	data.todo[item.type].list.splice(item.index, 1);
 
 	item_data.type = item.type;
+	item_data.time = date.toString(new Date());
 	delete item_data.cycle;
 	delete item_data.gaze;
 	data.fail.unshift(item_data);
