@@ -7,6 +7,12 @@ main#log_panel {
     margin-left: auto;
 }
 
+@media screen and (max-width: 1186px) {
+    main#log_panel {
+        margin-left: 0px;
+    }
+}
+
 section#log {
     width: 100%;
     height: calc(100vh - 80px);

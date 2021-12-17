@@ -94,7 +94,7 @@ export function sortItem() {
 		}
 	}
 }
-	
+
 /**
  * 删除清单
  * @param list 清单对象

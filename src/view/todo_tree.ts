@@ -14,10 +14,11 @@ class list extends vscode.TreeItem {
 	 * 构造方法
 	 * @param label 清单类别
 	 */
-	constructor(label: string) {
+	constructor(label: string, priority: number) {
 		super(label, vscode.TreeItemCollapsibleState.Expanded);
 
 		this.label = label;
+		this.priority = priority;
 		this.contextValue = "todo_list";
 		this.iconPath = new vscode.ThemeIcon("list-unordered");
 	}
@@ -162,7 +163,7 @@ export class provider implements vscode.TreeDataProvider<any> {
 			let count: number = 0;
 			for (let list_type in todo_data) {
 				if (todo_data[list_type].list.length != 0 || this.ShowEmpty) {
-					items[count++] = new list(todo_data[list_type].type);
+					items[count++] = new list(todo_data[list_type].type, todo_data[list_type].priority);
 				}
 			}
 
