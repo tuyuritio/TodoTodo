@@ -12,6 +12,8 @@ export enum did { add, delete, append, edit, accomplish, shut, redo, clear, rest
  */
 export function add(old_data?: any, new_data?: any, action?: did): void {
 	let time = new Date();
+	console.log(old_data);
+	
 
 	// 基本日志形式
 	let new_log: { time: string, list?: string, item?: string, action?: string, old: any, new: any } = {
@@ -99,6 +101,8 @@ export function add(old_data?: any, new_data?: any, action?: did): void {
 	}
 
 	if (if_change) {
+		console.log(new_log);
+		
 		data.log.push(new_log);
 	}
 }

@@ -11,6 +11,7 @@ export function restart(item: any) {
 	let item_data = data.copy(data.fail[item.index]);
 	data.fail.splice(item.index, 1);
 
+	delete item_data.time;
 	delete item_data.type;
 
 	if (item.type in data.todo) {
@@ -34,6 +35,7 @@ export async function restartAll() {
 				log.add(item_data, undefined, log.did.restart);
 
 				let type = item_data.type;
+				delete item_data.time;
 				delete item_data.type;
 
 				data.todo[type].list.push(item_data);

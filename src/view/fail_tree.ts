@@ -6,11 +6,13 @@ import { data } from "../data/data_center";
 class item extends vscode.TreeItem {
 	// 事项参数
 	index: number = 0;
+	type: string;
 
-	constructor(label: string, index: number) {
+	constructor(label: string, type: string, index: number) {
 		super(label);
 		this.contextValue = "fail_item";
 
+		this.type = type;
 		this.index = index;
 		this.iconPath = new vscode.ThemeIcon("circle-slash");
 
@@ -41,7 +43,7 @@ export class provider implements vscode.TreeDataProvider<item> {
 		let items: item[] = [];
 		for (let index = 0; index < data.fail.length; index++) {
 			let fail_data = data.copy(data.fail[index]);
-			items[index] = new item(fail_data.label, index);
+			items[index] = new item(fail_data.label, fail_data.type, index);
 		}
 
 		return items;
