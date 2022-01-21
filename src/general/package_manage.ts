@@ -5,7 +5,7 @@ import { getPackage, setPackage } from "./file_manage";
 /**
  * 设置空Todo清单视图提示文本
  */
-export function setEmptyText() {
+export function setEmptyText(): void {
 	let configuration = vscode.workspace.getConfiguration("todotodo");
 	let todo_text = configuration.list.todo.empty.text;
 	let done_text = configuration.list.done.empty.text;

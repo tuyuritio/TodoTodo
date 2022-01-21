@@ -26,7 +26,7 @@ export class configuration {
 			configuration.page_editor_add_after_action = configuration.new_configuration.page.editor.add.after.action;
 
 			if (configuration.new_configuration.path != configuration.first_configuration.path) {
-				vscode.window.showInformationMessage("该设置将在重启工作区后生效，是否立即重启？", "立即重新加载").then((action) => {
+				vscode.window.showInformationMessage("该设置将在重新加载窗口后生效，是否立即重启？", "立即重新加载").then((action) => {
 					if (action == "立即重新加载") {
 						vscode.commands.executeCommand("workbench.action.reloadWindow");
 					}
@@ -58,11 +58,16 @@ export class configuration {
 			}
 
 			package_manage.setEmptyText();
-			view.refresh();
+			view.refresh("other");
 		});
 	}
 
-	static copy(data: any) {
+	/**
+	 * 复制数据对象
+	 * @param object 被复制的数据对象
+	 * @returns 数据对象的值
+	 */
+	static copy(data: any): any {
 		return JSON.parse(JSON.stringify(data));
 	}
 }

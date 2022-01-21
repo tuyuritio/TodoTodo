@@ -1,15 +1,16 @@
 /* 模块调用 */
 import * as vscode from "vscode";
 import * as date from "../general/date_operator";
-import * as todo from "./todo_manage";
 import * as log from "../general/log_manage";
+import * as todo from "./todo_manage";
 import { data } from "./data_center";
+import { page } from "../extension_manage";
 
 /**
  * 检索已经逾期或未来24小时内将要逾期的事项
  */
-export function getRecentItem() {
-	let expected_time = new Date();
+export function getRecentItem(): void {
+	let expected_time: Date = new Date();
 	expected_time.setHours(expected_time.getHours() + 24);
 
 	data.recent = [];
@@ -19,6 +20,7 @@ export function getRecentItem() {
 
 			if (item_data.time && date.toNumber(item_data.time) < date.toNumber(expected_time)) {
 				let item = {
+					id: item_data.id,
 					type: list,
 					index: index,
 					label: item_data.label,
@@ -35,38 +37,77 @@ export function getRecentItem() {
 
 /**
  * 清理逾期事项
+ * @returns 有无事项变动
  */
-export function shutOverdueItem() {
-	let if_shut = false;
-	let current_time = new Date();
+export function shutOverdueItem(): boolean {
+	let if_change: boolean = false;
+
+	let current_time: Date = new Date();
+	let remind_start: Date = new Date();
+	let remind_end: Date = new Date();
+
+	let remind_gap: number = getRemindGap();
+	if (remind_gap < 20 * 60 * 60) {				// 预警间隔是否有效
+		remind_start.setSeconds(remind_start.getSeconds() + remind_gap);
+		remind_end.setSeconds(remind_end.getSeconds() + remind_gap + 1);
+	}
 
 	for (let index = 0; index < data.recent.length; index++) {
 		if (date.toNumber(data.recent[index].time) < date.toNumber(current_time)) {
-			if_shut = true;
+			if_change = true;
 
 			if (data.recent[index].gaze) {
 				todo.accomplish(data.recent[index]);
+				page.synchronize("item", data.recent[index]);
 			} else {
 				todo.shut(data.recent[index]);
+				page.synchronize("item", data.recent[index]);
 				vscode.window.showWarningMessage("事项 \"" + data.recent[index].label + "\" 已逾期！");
 			}
 
 			data.recent.splice(index, 1);
 			index--;
+		} else if (date.toNumber(remind_start) < date.toNumber(data.recent[index].time) && date.toNumber(data.recent[index].time) <= date.toNumber(remind_end)) {
+			vscode.window.showWarningMessage("事项 \"" + data.recent[index].label + "\" 即将逾期！");
 		}
 	}
 
-	return if_shut;
+	return if_change;
+}
+
+/**
+ * 获取预警间隔时间
+ * @returns 预警间隔时间
+ */
+function getRemindGap(): number {
+	let ahead_time_text: string = vscode.workspace.getConfiguration("todotodo").list.todo.item.shut.remind.ahead;
+	let ahead_time: number = 0;
+
+	let figure: number = 0;
+	for (let index = 0; index < ahead_time_text.length; index++) {
+		if (!isNaN(Number(ahead_time_text[index]))) {
+			figure = figure * 10 + Number(ahead_time_text[index]);
+		} else if (ahead_time_text[index] == "h") {
+			ahead_time += figure * 60 * 60;
+			figure = 0;
+		} else if (ahead_time_text[index] == "m") {
+			ahead_time += figure * 60;
+			figure = 0;
+		} else if (ahead_time_text[index] == "s") {
+			ahead_time += figure;
+			figure = 0;
+		}
+	}
+	return ahead_time;
 }
 
 /**
  * 排序事项
  */
-export function sortItem() {
-	let todo = data.todo;
+export function sortItem(): void {
 	for (let list in data.todo) {
 		for (let index = 1; index < data.todo[list].list.length; index++) {
-			let pointer = index - 1;
+			let pointer: number = index - 1;
 			let item = data.copy(data.todo[list].list[index]);
 
 			// 有序则break
@@ -100,7 +141,7 @@ export function sortItem() {
  * @param list 清单对象
  * @param if_remind 是否确认删除
  * @param move 删除清单的方法 - "move"则移动到默认清单；"remove"则直接删除。
- * @returns Promise<boolean>
+ * @returns 是否删除
  */
 export async function deleteList(list: any, if_remind: boolean, move: string): Promise<boolean> {
 	if (list.label == "默认清单") {
@@ -141,14 +182,14 @@ export async function deleteList(list: any, if_remind: boolean, move: string): P
  * 编辑清单
  * @param data 清单对象
  */
-export function editList(list_data: any) {
+export function editList(list_data: any): void {
 	if (list_data.new.priority != list_data.old.priority) {
 		data.todo[list_data.old.type].priority = list_data.new.priority;
 	}
 
 	for (let index = 0; index < list_data.new.type.length; index++) {
 		let character = list_data.new.type[index];
-		let invalid_character = ["\\", "/", ":", "*", "?", "\"", "<", ">", "|"];
+		let invalid_character: string[] = ["\\", "/", ":", "*", "?", "\"", "<", ">", "|"];
 		if (invalid_character.includes(character)) {
 			vscode.window.showWarningMessage("清单名称中禁止包含以下字符：\\, /, :, *, ?, \", <, >, |，请重新输入！");
 			return;

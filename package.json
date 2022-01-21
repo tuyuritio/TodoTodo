@@ -70,6 +70,11 @@
 							"禁用\"正在办理\"功能。"
 						]
 					},
+					"todotodo.list.todo.item.shut.remind.ahead": {
+						"description": "事项逾期预警时间（单位: s）。\n值格式: \"**h**m**s\" (请小于20h00m00s)",
+						"type": "string",
+						"default": "01h00m00s"
+					},
 					"todotodo.list.todo.delete.remind": {
 						"description": "在删除清单时显示确认对话框。",
 						"type": "boolean",
@@ -89,9 +94,9 @@
 						]
 					},
 					"todotodo.list.todo.empty.show": {
+						"description": "是否显示空清单。",
 						"type": "boolean",
-						"default": false,
-						"description": "是否显示空清单。"
+						"default": false
 					},
 					"todotodo.list.todo.empty.text": {
 						"description": "空Todo清单视图提示文本。",
@@ -329,8 +334,18 @@
 		},
 		"keybindings": [
 			{
-				"command": "page.add",
-				"key": "ctrl+shift+n"
+				"key": "ctrl+shift+n",
+				"command": "page.add"
+			},
+			{
+				"key": "ctrl+s",
+				"command": "todo.save",
+				"when": "focusedView == todo_tree"
+			},
+			{
+				"key": "f5",
+				"command": "todo.refresh",
+				"when": "focusedView == todo_tree"
 			}
 		]
 	},

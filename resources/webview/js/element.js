@@ -22,6 +22,7 @@ function setElements() {
 	cycle = get("cycle");
 	daily = get("daily");
 	datetime = get("datetime");
+	delete_button = get("delete_button");
 	entry_type = get("entry_type");
 	entry_input_type = get("entry_other_type");
 	item_editor = get("item_editor");

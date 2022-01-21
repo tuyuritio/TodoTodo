@@ -51,9 +51,10 @@ export class provider {
 
 	/**
 	 * 转换安全路径
-	 * @param path 
+	 * @param path 原始路径
+	 * @returns 安全路径
 	 */
-	toUri(path: string) {
+	toUri(path: string): string {
 		return this.panel.webview.asWebviewUri(vscode.Uri.file(path)).toString();
 	}
 
@@ -151,14 +152,14 @@ export class provider {
 	/**
 	 * 显示清单列表
 	 */
-	showList() {
+	showList(): void {
 		this.postToPage("list");
 	}
 
 	/**
 	 * 显示日志
 	 */
-	showLog() {
+	showLog(): void {
 		this.postToPage("log", data.log);
 	}
 
@@ -175,23 +176,21 @@ export class provider {
 	 * @param item 事项对象
 	 * @param status 事项状态
 	 */
-	edit(item: any, status: string) {
-		let item_in_data: any;
+	edit(item: any, status: string): void {
+		let item_in_data;
 		let item_data: any = {};
 		if (status == "todo") {
 			item_in_data = data.todo[item.type].list[item.index];
-
 			item_data.type = item.type;
 		} else if (status == "done") {
 			item_in_data = data.done[item.index];
-
 			item_data.type = item_in_data.type;
 		} else if (status == "fail") {
 			item_in_data = data.fail[item.index];
-
 			item_data.type = item_in_data.type;
 		}
 
+		item_data.id = item.id;
 		item_data.index = item.index;
 		item_data.label = item_in_data.label;
 		item_data.priority = item_in_data.priority;
@@ -201,6 +200,21 @@ export class provider {
 		item_data.status = status;
 
 		this.postToPage("edit", item_data);
+	}
+
+	/**
+	 * 校验删除事项，与Page同步
+	 * @param type 元素类型 - 可选值为 **"list"** 、 **"item"**
+	 * @param item 校验元素
+	 */
+	synchronize(type: string, item: any): void {
+		if (type == "item") {
+			this.postToPage("synchronize", item.id);
+		} else if (type == "list") {
+			for (let index = 0; index < item.length; index++) {
+				this.postToPage("synchronize", item[index].id);
+			}
+		}
 	}
 }
 

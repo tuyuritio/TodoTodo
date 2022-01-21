@@ -7,7 +7,7 @@ import { data } from "./data_center";
  * 重启事项
  * @param item 事项对象
  */
-export function restart(item: any) {
+export function restart(item: any): void {
 	let item_data = data.copy(data.fail[item.index]);
 	data.fail.splice(item.index, 1);
 
@@ -25,8 +25,9 @@ export function restart(item: any) {
 
 /**
  * 重启所有事项
+ * @returns 是否重启
  */
-export async function restartAll() {
+export async function restartAll(): Promise<boolean> {
 	return vscode.window.showInformationMessage("确认重启全部失效事项吗？", "确认", "取消").then((action) => {
 		if (action == "确认") {
 			for (let index = 0; index < data.fail.length; index++) {
@@ -38,7 +39,11 @@ export async function restartAll() {
 				delete item_data.time;
 				delete item_data.type;
 
-				data.todo[type].list.push(item_data);
+				if (type in data.todo) {
+					data.todo[type].list.push(item_data);
+				} else {
+					data.todo["默认清单"].list.push(item_data);
+				}
 			}
 
 			data.fail = [];

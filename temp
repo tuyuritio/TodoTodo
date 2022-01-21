@@ -1,0 +1,84 @@
+强制刷新
+	读取数据
+	事项排序
+	近期事项
+	页面刷新
+	TodoTree
+	DoneTree
+	FailTree
+	状态栏
+
+清理逾期事项
+	近期事项
+	TodoTree
+	FailTree
+	页面刷新
+	状态栏
+
+删除清单
+	TodoTree
+	页面刷新
+	状态栏
+
+编辑清单
+	TodoTree
+	页面刷新
+
+完成事项
+	TodoTree
+	DoneTree
+	页面刷新
+	状态栏
+
+关闭事项
+	TodoTree
+	FailTree
+	页面刷新
+	状态栏
+
+删除事项
+	TodoTree
+	页面刷新
+	状态栏
+
+新建事项
+	TodoTree
+	事项排序
+	页面刷新
+	状态栏
+
+启动办理事项
+	TodoTree
+
+取消办理事项
+	TodoTree
+
+切换条目状态
+	TodoTree
+
+删除条目
+	TodoTree
+	页面刷新
+
+重做事项
+	TodoTree
+	DoneTree
+	页面刷新
+	状态栏
+
+清空已做事项
+	TodoTree
+	DoneTree
+	页面刷新
+
+重启事项
+	TodoTree
+	FailTree
+	页面刷新
+	状态栏
+
+重启所有事项
+	TodoTree
+	FailTree
+	页面刷新
+	状态栏

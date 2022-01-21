@@ -3,7 +3,7 @@
  * @param time 时间文本
  * @returns Date对象
  */
-export function toDate(time: string) {
+export function toDate(time: string): Date {
 	let year = Number(time.substring(0, 4));
 	let month = Number(time.substring(5, 7));
 	let day = Number(time.substring(8, 10));
@@ -18,7 +18,7 @@ export function toDate(time: string) {
  * @param time Date文本 | Date对象
  * @returns Milliseconds
  */
-export function toNumber(time: Date | string) {
+export function toNumber(time: Date | string): number {
 	let time_object: Date = new Date();
 
 	if (typeof time == "string") {
@@ -52,7 +52,7 @@ export function toString(time: Date): string {
  * @param time 时间文本
  * @returns 是否在过去或未来24小时内
  */
-export function isRecent(time: string) {
+export function isRecent(time: string): boolean {
 	let expected_time = new Date();
 	expected_time.setHours(expected_time.getHours() + 24);
 

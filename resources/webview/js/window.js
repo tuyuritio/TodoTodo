@@ -20,6 +20,7 @@ function initializeItemEditor() {
 	item_cycle.style.display = "flex";
 	add_entry_line.style.display = "flex";
 	complete_button.style.display = "block";
+	delete_button.style.display = "none";
 	clearEntry();
 
 	let current_time = new Date();
@@ -94,24 +95,44 @@ function chooseEntry(event) {
 
 /**
  * 添加条目输入框
+ * @param type 条目名称
+ * @param content 条目内容
  */
 function addEntry(type, content) {
 	let new_entry = document.createElement("label");
 	{
 		let entry_type_text = document.createElement("span");
 		entry_type_text.addEventListener("dblclick", (event) => deleteEntry(event));
-		if (content) {
-			if (type != "") {
-				entry_type_text.innerHTML = type;
+		if (type && content) {							// 生成条目
+			entry_type_text.innerHTML = type;
+			if (type.substring(0, 7) == "__entry") {
+				entry_type_text.className = "default_entry";
 			}
-		} else {
-			if (entry_type.selectedIndex == 0) {
+		} else {										// 新建条目
+			if (entry_type.selectedIndex == 0) {								// 自定义条目名称
 				entry_type_text.innerHTML = entry_input_type.value;
-			} else {
+
+				if (entry_type_text.innerHTML.replaceAll(" ", "") == "") {		// 条目名称为空则生成默认名称
+					entry_type_text.className = "default_entry";
+					let entry_labels = document.getElementsByClassName("default_entry");
+
+					let entry_index;
+					if (entry_labels.length != 0) {
+						entry_index = Number(entry_labels[entry_labels.length - 1].innerHTML.substring(8));
+					} else {
+						entry_index = -1;
+					}
+
+					entry_type_text.innerHTML = "__entry_" + (entry_index + 1);
+				}
+			} else {															// 条目名称选项
 				entry_type_text.innerHTML = entry_type.options[entry_type.selectedIndex].text;
 			}
 		}
-		if (entry_type_text.innerHTML == "") {
+
+		// 默认条目背景填充
+		if (entry_type_text.innerHTML.substring(0, 7) == "__entry") {
+			entry_type_text.style.color = "var(--vscode-activityBar-background)";
 			entry_type_text.style.backgroundColor = "var(--vscode-activityBar-background)";
 		}
 		new_entry.appendChild(entry_type_text);
@@ -138,9 +159,7 @@ function addEntry(type, content) {
 	}
 	item_editor.insertBefore(new_entry, add_entry_line);
 
-	if (is_new) {
-		new_entry.childNodes[1].focus();
-	}
+	new_entry.childNodes[1].focus();
 
 	// 恢复默认选项
 	entry_type.selectedIndex = 0;
@@ -192,8 +211,6 @@ function close(panel) {
  * 设置新建编辑器
  */
 function readyAdd(action) {
-	is_new = true;
-
 	item_editor.style.display = "flex";
 	action_after_add = action;
 
@@ -206,8 +223,7 @@ function readyAdd(action) {
  * 设置修改编辑器
  */
 function readyEdit(data) {
-	is_new = false;
-
+	editing_item = data;
 	item_editor.style.display = "flex";
 
 	if (data.status == "todo") {
@@ -215,6 +231,7 @@ function readyEdit(data) {
 
 		add_entry_line.style.display = "flex";
 		complete_button.style.display = "block";
+		delete_button.style.display = "block";
 		item_cycle.style.display = "flex";
 
 		item_status.value = "待办";
@@ -225,6 +242,7 @@ function readyEdit(data) {
 
 		add_entry_line.style.display = "none";
 		complete_button.style.display = "none";
+		delete_button.style.display = "none";
 		item_cycle.style.display = "none";
 
 		if (data.status == "done") {
@@ -237,7 +255,17 @@ function readyEdit(data) {
 			time_title.innerHTML = "失效时间";
 		}
 	}
-	cover(data);
+	cover(editing_item);
+}
+
+/**
+ * 校验删除事项，与Tree同步
+ * @param item_id 被删除事项的ID
+ */
+function synchronize(item_id) {
+	if (editing_item && item_id == editing_item.id) {
+		close("item_editor");
+	}
 }
 
 /**

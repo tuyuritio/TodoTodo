@@ -1,6 +1,7 @@
 /* 模块调用 */
 import * as vscode from "vscode";
 import { data } from "../data/data_center";
+import { profile } from "../general/profile_center";
 
 /* 进度提供器 */
 export class progress_provider {
@@ -10,12 +11,17 @@ export class progress_provider {
 	 * 显示进度视图
 	 */
 	show(): void {
-		let left: number = this.count_todo();
+		let left: number = this.countTodo();
 
 		if (left == 0) {
 			this.progress.text = "您已完成所有事项！";
 		} else {
-			this.progress.text = "剩余待办：" + this.count_todo() + "件";
+			this.progress.text = "剩余待办：" + this.countTodo() + "件";
+		}
+
+		this.progress.command = {
+			command: "todo.exchange",
+			title: "切换视图"
 		}
 
 		this.progress.show();
@@ -25,7 +31,7 @@ export class progress_provider {
 	 * 统计todo事项
 	 * @returns todo事项总数
 	 */
-	count_todo(): number {
+	countTodo(): number {
 		let todo_data = data.todo;
 		let count: number = 0;
 
@@ -34,6 +40,13 @@ export class progress_provider {
 		}
 
 		return count;
+	}
+
+	/**
+	 * 更改TodoTree样式
+	 */
+	changeView(): void {
+		profile.list_tree = !profile.list_tree;
 	}
 }
 

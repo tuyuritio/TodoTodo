@@ -1,9 +1,12 @@
 /**
  * 加载事件
  */
-function addEvents() {
+function mouseEvents() {
 	// 确认编辑事项
 	complete_button.addEventListener("click", () => editItem());
+
+	// 删除事项
+	delete_button.addEventListener("click", () => postToExtension("delete", editing_item));
 
 	// 关闭清单编辑器
 	close_list_editor.addEventListener("click", () => close("list_editor"));
@@ -19,12 +22,7 @@ function addEvents() {
 
 	// 新建条目
 	add_entry.addEventListener("click", () => addEntry());
-}
 
-/**
- * 聚焦事件
- */
-function focusEvents() {
 	// 事项类型选择
 	select_type.addEventListener("change", (event) => chooseType(event));
 
@@ -34,9 +32,17 @@ function focusEvents() {
 	// 周次选择
 	weekly.addEventListener("change", () => select_time.focus());
 
+	// 优先级选择
+	priority.addEventListener("change", () => entry_other_type.focus());
+
 	// 条目选择
 	entry_type.addEventListener("change", (event) => chooseEntry(event));
+}
 
+/**
+ * 聚焦事件
+ */
+function keyEvents() {
 	// 关闭事项编辑器
 	item_editor.addEventListener("keydown", (key) => {
 		if (key.key == "Escape") {
@@ -51,10 +57,14 @@ function focusEvents() {
 		}
 	});
 
-	// 输入类别
+	// 其它类别确认
 	other_type.addEventListener("keydown", (key) => {
 		if (key.key == "Enter") {
 			label.focus();
+		}
+
+		if (key.key == "Delete" && key.shiftKey) {
+			other_type.value = "";
 		}
 	});
 
@@ -73,10 +83,36 @@ function focusEvents() {
 		}
 	});
 
-	// 添加条目输入框
+	// 完整时间确认
+	datetime.addEventListener("keydown", (key) => {
+		if (key.key == "Enter") {
+			if (key.ctrlKey) {
+				editItem();
+			} else {
+				entry_other_type.focus();
+			}
+		}
+	});
+
+	// 时间确认
+	select_time.addEventListener("keydown", (key) => {
+		if (key.key == "Enter") {
+			if (key.ctrlKey) {
+				editItem();
+			} else {
+				entry_other_type.focus();
+			}
+		}
+	});
+
+	// 条目类别确认
 	entry_other_type.addEventListener("keydown", (key) => {
 		if (key.key == "Enter") {
-			addEntry(entry_other_type.value);
+			if (key.ctrlKey) {
+				editItem();
+			} else {
+				addEntry();
+			};
 		}
 	});
 }
@@ -96,6 +132,10 @@ window.addEventListener("message", (event) => {
 
 		case "edit":
 			readyEdit(message.data);
+			break;
+
+		case "synchronize":
+			synchronize(message.data);
 			break;
 
 		case "information":

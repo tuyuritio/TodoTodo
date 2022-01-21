@@ -9,8 +9,9 @@ import * as list_manage from "./data/list_manage";
 import * as todo_manage from "./data/todo_manage";
 import * as done_manage from "./data/done_manage";
 import * as fail_manage from "./data/fail_manage";
-import { configuration } from "./general/configuration_center";
 import { data } from "./data/data_center";
+import { configuration } from "./general/configuration_center";
+import { profile } from "./general/profile_center";
 
 /* 全局变量 */
 let extension_context: vscode.ExtensionContext;			// 扩展上下文
@@ -25,20 +26,26 @@ export namespace extension {
 		extension_context = context;				// 建立上下文
 		command.register();							// 注册命令
 		new configuration();						// 扩展配置
-		new data();									// 读取数据
+		new profile();								// 基本配置
+		new data();									// 检测路径并读取数据
+		list.sortItem();							// 事项排序
 
 		view.todo_tree = todo_tree.create();		// 创建todo_tree视图
 		view.done_tree = done_tree.create();		// 创建done_tree视图
 		view.fail_tree = fail_tree.create();		// 创建fail_tree视图
 		view.progress = progress_bar.create();		// 创建进度视图
 		view.progress.show();						// 显示进程视图
+
+		// 设置事项检测
+		profile.cycle(() => list.getRecentItem(), 24 * 60 * 60);
+		profile.cycle(() => list.shutOverdueItem());
 	}
 
 	/* 终止扩展 */
 	/**
 	 * 写入日志文件
 	 */
-	export function terminate() {
+	export function terminate(): void {
 		data.write();
 	}
 }
@@ -68,7 +75,8 @@ export namespace command {
 		set("list.delete", (item) => list.deleteList(item, configuration.list_all_delete_remind, configuration.list_all_item_delete_method));
 
 		// 注册todo_tree命令
-		set("todo.refresh", () => view.refresh(false));
+		set("todo.refresh", () => view.refresh("force"));
+		set("todo.exchange", () => view.changeView());
 		set("todo.accomplish", (item) => todo.accomplish(item));
 		set("todo.shut", (item) => todo.shut(item));
 		set("todo.delete", (item) => todo.deleteItem(item, configuration.list_all_item_delete_remind));
@@ -108,9 +116,8 @@ export namespace list {
 	 * 清理逾期事项
 	 */
 	export function shutOverdueItem(): void {
-		let if_shut = list_manage.shutOverdueItem();
-		if (if_shut) {
-			view.refresh();
+		if (list_manage.shutOverdueItem()) {
+			view.refresh("item", "clear");
 		}
 	}
 
@@ -121,9 +128,11 @@ export namespace list {
 	 * @param move 删除清单的方法 - "move"则移动到默认清单；"remove"则直接删除。
 	 */
 	export function deleteList(item: any, if_remind: boolean, move: string): void {
+		let list_data = data.copy(data.todo[item.label].list);
 		list_manage.deleteList(item, if_remind, move).then((if_delete) => {
 			if (if_delete) {
-				view.refresh();
+				view.refresh("list", "delete");
+				page.synchronize("list", list_data);
 			}
 		});
 	}
@@ -132,10 +141,10 @@ export namespace list {
 	 * 编辑清单
 	 * @param list 清单名称
 	 */
-	export function edit(list: any) {
+	export function edit(list: any): void {
 		list_manage.editList(list);
 
-		view.refresh();
+		view.refresh("list", "edit");
 	}
 }
 
@@ -148,7 +157,8 @@ export namespace todo {
 	export function accomplish(item: any): void {
 		todo_manage.accomplish(item);
 
-		view.refresh();
+		view.refresh("item", "done");
+		page.synchronize("item", item);
 	}
 
 	/**
@@ -158,7 +168,8 @@ export namespace todo {
 	export function shut(item: any): void {
 		todo_manage.shut(item);
 
-		view.refresh();
+		view.refresh("item", "fail");
+		page.synchronize("item", item);
 	}
 
 	/**
@@ -169,64 +180,68 @@ export namespace todo {
 	export function deleteItem(item: any, if_remind: boolean): void {
 		todo_manage.deleteItem(item, if_remind).then((if_delete) => {
 			if (if_delete) {
-				view.refresh();
+				view.refresh("item", "delete");
+				page.synchronize("item", item);
 			}
 		});
 	}
 
 	/**
-	 * 当前办理事项
+	 * 启动办理事项
 	 * @param item 事项对象
 	 */
-	export function gaze(item: any) {
+	export function gaze(item: any): void {
 		todo_manage.gaze(item);
 
-		view.refresh();
+		view.refresh("item", "gaze");
 	}
 
 	/**
 	 * 取消办理事项
 	 * @param item 事项对象
 	 */
-	export function undo(item: any) {
+	export function undo(item: any): void {
 		todo_manage.undo(item);
 
-		view.refresh();
+		view.refresh("item", "gaze");
 	}
 
 	/**
 	 * 切换条目状态
 	 * @param on 条目状态
 	 */
-	export function change(entry: any) {
+	export function change(entry: any): void {
 		todo_manage.change(entry);
 
-		view.refresh();
+		view.refresh("entry", "change");
 	}
 
 	/**
-	 * 删除条目
+	 * 移除条目
 	 * @param entry 条目对象
 	 */
-	export function remove(entry: any) {
+	export function remove(entry: any): void {
 		todo_manage.remove(entry);
 
-		view.refresh();
+		view.refresh("entry", "remove");
+		page.synchronize("item", entry.root);
 	}
 
 	/**
 	 * 新建事项
 	 * @param item 事项对象
 	 */
-	export function addNew(item: any) {
+	export function addNew(item: any): void {
 		todo_manage.addNew(item);
+
+		view.refresh("item", "add");
 	}
 
 	/**
 	 * 删除原有事项
 	 * @param item 原有事项对象
 	 */
-	export function deleteOld(item: any) {
+	export function deleteOld(item: any): void {
 		todo_manage.deleteOld(item);
 	}
 
@@ -235,8 +250,6 @@ export namespace todo {
 	 */
 	export function save(): void {
 		todo_manage.save();
-
-		view.refresh();
 	}
 }
 
@@ -249,7 +262,7 @@ export namespace done {
 	export function redo(item: any): void {
 		done_manage.redo(item);
 
-		view.refresh();
+		view.refresh("item", "done");
 	}
 
 	/**
@@ -258,7 +271,7 @@ export namespace done {
 	export function clear(): void {
 		done_manage.clear().then((if_clear) => {
 			if (if_clear) {
-				view.refresh();
+				view.refresh("item", "done");
 			}
 		});
 	}
@@ -273,7 +286,7 @@ export namespace fail {
 	export function restart(item: any): void {
 		fail_manage.restart(item);
 
-		view.refresh();
+		view.refresh("item", "fail");
 	}
 
 	/**
@@ -282,7 +295,7 @@ export namespace fail {
 	export function restartAll(): void {
 		fail_manage.restartAll().then((if_restart) => {
 			if (if_restart) {
-				view.refresh();
+				view.refresh("item", "fail");
 			}
 		});
 	}
@@ -294,15 +307,11 @@ export class page {
 
 	/**
 	 * 刷新视图
-	 * @param auto 是否强制刷新 - false则强制刷新；false则默认刷新
 	 */
-	static refresh(auto: boolean = true) {
+	static refresh(): void {
 		if (this.view && this.view.isVisible()) {
-			if (!auto) {
-				this.view.close();
-			}
-
-			this.show();
+			this.initialize();
+			this.view.showLog();
 		}
 	}
 
@@ -324,19 +333,18 @@ export class page {
 							todo.deleteOld(message.data.old_item);
 						}
 						todo.addNew(message.data.new_item);
+						break;
 
-						view.refresh();
-						page.initialize();
+					case "delete":
+						todo.deleteItem(message.data, configuration.list_all_item_delete_remind);
 						break;
 
 					case "list":
 						list.edit(message.data);
-						page.initialize();
 						break;
 
 					case "deleteList":
 						list.deleteList(message.data, configuration.list_all_delete_remind, configuration.list_all_item_delete_method);
-						page.initialize();
 						break;
 
 					case "clearLog":
@@ -349,13 +357,6 @@ export class page {
 		}
 
 		this.view.showLog();
-	}
-
-	/**
-	 * 关闭主页
-	 */
-	static close() {
-		this.view.close();
 	}
 
 	/**
@@ -388,9 +389,18 @@ export class page {
 	}
 
 	/**
+	 * 校验删除事项，与Page同步
+	 * @param type 元素类型 - 可选值为 **"list"** 、 **"item"**
+	 * @param item 校验元素
+	 */
+	static synchronize(type: string, item: any): void {
+		this.view.synchronize(type, item);
+	}
+
+	/**
 	 * 显示清单列表
 	 */
-	static showList() {
+	static showList(): void {
 		this.show();
 
 		this.view.showList();
@@ -405,22 +415,109 @@ export class view {
 	static progress: progress_bar.progress_provider;
 
 	/**
-	 * 刷新全局视图
-	 * @param auto 刷新时是否读写本地数据并刷新网页 - true则仅执行刷新；false则在刷新前读写本地数据
+	 * 刷新视图
+	 * @param type 刷新类型 - 可选值为 **"force"** 、 **"list"** 、 **"item"** 、 **"entry"** 、 **"other"**
+	 * @param action 类型行为 - 当`type`为 **"list"** 时可选值为 **"delete"** 、 **"edit"**
+	 * @param action 类型行为 - 当`type`为 **"item"** 时可选值为 **"add"** 、 **"done"** 、 **"fail"** 、 **"delete"** 、 **"gaze"** 、 **"clear"**
+	 * @param action 类型行为 - 当`type`为 **"entry"** 时可选值为 **"change"** 、 **"remove"**
 	 */
-	static refresh(auto: boolean = true): void {
-		if (!auto) {
-			new data();
+	static refresh(type: string, action?: string): void {
+		let code: number;
+
+		switch (type) {
+			case "force":
+				code = 0b11111111;
+				break;
+
+			case "list":
+				switch (action) {
+					case "delete":
+						code = 0b00011001;
+						break;
+
+					case "edit":
+						code = 0b00011000;
+						break;
+
+					default:
+						code = 0b00000000;
+						break;
+				}
+				break;
+
+			case "item":
+				switch (action) {
+					case "add":
+						code = 0b01111001;
+						break;
+
+					case "done":
+						code = 0b00011101;
+						break;
+
+					case "fail":
+						code = 0b00011011;
+						break;
+
+					case "delete":
+						code = 0b00011001;
+						break;
+
+					case "gaze":
+						code = 0b00101000;
+						break;
+
+					case "clear":
+						code = 0b00111111;
+						break;
+
+					default:
+						code = 0b00000000;
+						break;
+				}
+				break;
+
+			case "entry":
+				switch (action) {
+					case "change":
+						code = 0b00001000;
+						break;
+
+					case "remove":
+						code = 0b00011000;
+						break;
+
+					default:
+						code = 0b00000000;
+						break;
+				}
+				break;
+
+			case "other":
+				code = 0b00001000;
+				break;
+
+			default:
+				code = 0b00000000;
+				break;
 		}
 
-		list.getRecentItem();
-		list.sortItem();
+		if (code >> 7 & 1) data.read();
+		if (code >> 6 & 1) list.sortItem();
+		if (code >> 5 & 1) list.getRecentItem();
+		if (code >> 4 & 1) page.refresh();
+		if (code >> 3 & 1) view.todo_tree.refresh(configuration.list_all_empty_show);
+		if (code >> 2 & 1) view.done_tree.refresh();
+		if (code >> 1 & 1) view.fail_tree.refresh();
+		if (code >> 0 & 1) view.progress.show();
+	}
 
-		page.refresh(auto);
+	/**
+	 * 更改TodoTree样式
+	 */
+	static changeView(): void {
+		this.progress.changeView();
 
-		view.todo_tree.refresh(configuration.list_all_empty_show);
-		view.done_tree.refresh();
-		view.fail_tree.refresh();
-		view.progress.show();
+		this.refresh("other");
 	}
 }

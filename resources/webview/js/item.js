@@ -1,5 +1,6 @@
 /**
  * 加载选项
+ * @param data 选项数据
  */
 function loadOption(data) {
 	// 选项清空
@@ -22,16 +23,11 @@ function loadOption(data) {
 	// 事项类别
 	lists = data.lists;
 	let select_editing_type = 0;
-	let exist_type = false;
 	for (let index = 0; index < data.lists.length; index++) {
 		let new_option = document.createElement("option");
 		new_option.innerHTML = lists[index].type;
-		if (editing_item) {
-			exist_type = true;
-
-			if (editing_item.type == lists[index].type) {					// 新建类别后保留原有类别选项
-				select_editing_type = index;
-			}
+		if (option_data.type == lists[index].type) {				// 新建类别后保留原有类别选项
+			select_editing_type = index;
 		}
 		select_type.insertBefore(new_option, other);
 	}
@@ -45,9 +41,7 @@ function loadOption(data) {
 		priority.insertBefore(new_option, maximum);
 	}
 	maximum.innerHTML = data.item_maximum_priority + 1;
-	if (editing_item) {														// 新建事项后保留原有优先级选项
-		priority.selectedIndex = editing_item.priority;
-	}
+	priority.selectedIndex = option_data.priority;					// 新建事项后保留原有优先级选项
 
 	// 清单列表
 	for (let index = 0; index < data.lists.length; index++) {
@@ -137,19 +131,18 @@ function loadOption(data) {
 
 /**
  * 覆盖文本数据
- * @param item 事项对象
  */
 function cover(item) {
-	editing_item = item;
-
-	let exist_type = false;
-	for (let index = 0; !exist_type && index < lists.length; index++) {
+	let exist_type = -1;
+	for (let index = 0; index < lists.length; index++) {
 		if (lists[index].type == item.type) {
 			select_type.selectedIndex = index;
-			exist_type = true;
+			exist_type = 0;
+
+			break;
 		}
 	}
-	if (!exist_type) {
+	if (exist_type == -1) {
 		select_type.selectedIndex = lists.length;
 		other_label.style.display = "flex";
 		other_type.value = item.type;
@@ -197,14 +190,11 @@ function cover(item) {
 	}
 
 	clearEntry();
-	for (let property in item.entry) {
-		let entry_type = property;
-		if (entry_type.substring(0, 7) == "__entry") {
-			entry_type = "";
-		}
-
-		addEntry(entry_type, item.entry[property].content);
+	for (let entry_type in item.entry) {
+		addEntry(entry_type, item.entry[entry_type].content);
 	}
+
+	label.focus();
 }
 
 /**
@@ -271,23 +261,25 @@ function editItem() {
 		return;
 	}
 
-	// 新建条目
+	// 编辑条目
 	let entries = {};
 	let entry_values = document.getElementsByClassName("entry");
 	for (let index = 0; index < entry_values.length; index++) {
-		if (entry_values[index].value.replaceAll(" ", "") != "") {
+		if (entry_values[index].value.replaceAll(" ", "") != "") {							// 检测空条目内容
 			let type = entry_values[index].parentNode.childNodes[0].innerHTML;
-			if (type.replaceAll(" ", "") == "") {
-				type = "__entry_" + index;
-			}
 
-			entries[type] = {
-				content: entry_values[index].value,
-				on: true
-			};
-
-			if (!is_new && editing_item.entry && editing_item.entry[type]) {				// 保留原状态
-				entries[type].on = editing_item.entry[type].on;
+			if (editing_item && editing_item.entry && editing_item.entry[type]) {			// 原条目存在
+				entries[type] = copy(editing_item.entry[type]);
+				if (entries[type].content != entry_values[index].value) {					// 条目更改
+					entries[type].content = entry_values[index].value;
+					entries[type].on = true;
+				}
+			} else {
+				entries[type] = {
+					id: code(8),
+					content: entry_values[index].value,
+					on: true
+				};
 			}
 		}
 	}
@@ -296,6 +288,7 @@ function editItem() {
 	}
 
 	let new_item = {
+		id: editing_item ? editing_item.id : code(8),
 		type: new_type,
 		label: label.value,
 		priority: priority.selectedIndex,
@@ -304,10 +297,6 @@ function editItem() {
 		entry: entries
 	};
 
-	if (is_new) {						// 因为要保留原先填写的东西，所以要先判断当前编辑器是否在新建状态，防止删除上一个新建的事项
-		editing_item = undefined;
-	}
-
 	let data = {
 		old_item: editing_item,			// 将要删除的原有事项
 		new_item: new_item
@@ -315,12 +304,16 @@ function editItem() {
 
 	postToExtension("add", data);
 
-	if (!is_new) {
+	if (editing_item) {
 		close("item_editor");
 	} else {
 		switch (action_after_add) {
 			case "remain":
-				editing_item = new_item;
+				option_data = {
+					type: new_item.type,
+					priority: new_item.priority
+				};
+				cover(new_item);
 				break;
 
 			case "clear":
@@ -328,7 +321,7 @@ function editItem() {
 				break;
 
 			case "close":
-				closeEditor();
+				close("item_editor");
 				break;
 
 			default:

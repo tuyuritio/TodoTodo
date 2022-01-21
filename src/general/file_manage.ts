@@ -11,7 +11,7 @@ let data_path: string;							// 文件基准路径
 /**
  * 检查文件路径
  */
-export function checkPath() {
+export function checkPath(): void {
 	data_path = configuration.first_configuration.path;
 
 	if (data_path.replace(" ", "") == "") {
@@ -50,7 +50,7 @@ export function checkPath() {
 
 	file_path = path.join(file_path, "默认清单.json");
 	if (!fs.existsSync(file_path)) {
-		let default_list = { type: "默认清单", priority: 1, list: [{ label: "样例事项", priority: 0, time: "2050/01/01/-00:00", place: "在这里记录目标地点", mail: "在这里记录目标邮箱", particulars: "在这里记录事项细节" }] };
+		let default_list = { type: "默认清单", priority: 1, list: [] };
 		writeJSON(file_path, default_list);
 	}
 }
@@ -69,7 +69,7 @@ function writeJSON(file_path: string, data: any): void {
  * @param content JSON文件类别 - 可选值为 **"todo"** 、 **"done"** 、 **"fail"** 、 "log"
  * @returns JSON内容
  */
-export function readJSON(content: string) {
+export function readJSON(content: string): any {
 	if (content == "todo") {
 		let todo_data = [];
 		let index: number = 0;
@@ -185,7 +185,7 @@ export function setPackage(data: any): void {
  * @param done_data Done数据
  * @param fail_data Fail数据
  */
-export function writeData(todo_data: any, done_data: any, fail_data: any, log_data: any) {
+export function writeData(todo_data: any, done_data: any, fail_data: any, log_data: any): void {
 	writeJSON(path.join(data_path, "done.json"), done_data);
 	writeJSON(path.join(data_path, "fail.json"), fail_data);
 	writeJSON(path.join(data_path, "log.json"), log_data);
@@ -198,4 +198,6 @@ export function writeData(todo_data: any, done_data: any, fail_data: any, log_da
 	for (let list in todo_data) {
 		writeJSON(path.join(data_path, "TodoData", list + ".json"), todo_data[list]);
 	}
+
+	vscode.window.showInformationMessage("TodoTodo数据已保存！");
 }

@@ -25,8 +25,9 @@ export function redo(item: any): void {
 
 /**
  * 清空已办事项
+ * @returns 是否清空
  */
-export async function clear() {
+export async function clear(): Promise<boolean> {
 	return vscode.window.showInformationMessage("确认清空已办事项吗？", "确认", "取消").then((action) => {
 		if (action == "确认") {
 			data.done = [];

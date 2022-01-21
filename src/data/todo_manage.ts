@@ -2,13 +2,14 @@
 import * as vscode from "vscode";
 import * as date from "../general/date_operator";
 import * as log from "../general/log_manage";
+import { profile } from "../general/profile_center";
 import { data } from "./data_center";
 
 /**
  * 完成事项
  * @param item 事项对象
  */
-export function accomplish(item: any) {
+export function accomplish(item: any): void {
 	log.add(item, undefined, log.did.accomplish);
 
 	if (item.cycle) {
@@ -29,7 +30,7 @@ export function accomplish(item: any) {
  * 关闭事项
  * @param item 事项对象
  */
-export function shut(item: any) {
+export function shut(item: any): void {
 	log.add(item, undefined, log.did.shut);
 
 	if (item.cycle) {
@@ -50,7 +51,7 @@ export function shut(item: any) {
  * 删除事项
  * @param item 事项对象
  * @param if_remind 是否确认删除
- * @returns Promise<boolean>
+ * @returns 是否删除
  */
 export async function deleteItem(item: any, if_remind: boolean): Promise<boolean> {				// 跟delete重名了，我也很无奈
 	if (if_remind) {
@@ -79,7 +80,7 @@ export async function deleteItem(item: any, if_remind: boolean): Promise<boolean
  * 新建下一个周期的循环事项
  * @param cycle_item 循环事项对象
  */
-export function newCycle(cycle_item: any) {
+export function newCycle(cycle_item: any): void {
 	let current_time = new Date();
 	let cycle_time = date.toDate(cycle_item.time);
 
@@ -112,15 +113,21 @@ export function newCycle(cycle_item: any) {
 	let new_item = data.copy(todo_data.list[cycle_item.index]);
 	new_item.time = date.toString(cycle_time);
 
+	if (new_item.entry) {
+		for (let property in new_item.entry) {
+			new_item.entry[property].on = true;
+		}
+	}
+
 	data.todo[cycle_item.type].list.push(new_item);
 	log.add(undefined, cycle_item, log.did.append);
 }
 
 /**
- * 当前办理事项
+ * 启动办理事项
  * @param item 事项对象
  */
-export function gaze(item: any) {
+export function gaze(item: any): void {
 	data.todo[item.type].list[item.index].gaze = true;
 }
 
@@ -128,7 +135,7 @@ export function gaze(item: any) {
  * 取消办理事项
  * @param item 事项对象
  */
-export function undo(item: any) {
+export function undo(item: any): void {
 	delete data.todo[item.type].list[item.index].gaze;
 }
 
@@ -136,26 +143,40 @@ export function undo(item: any) {
  * 变更条目状态
  * @param entry 条目对象
  */
-export function change(entry: any) {
+export function change(entry: any): void {
 	data.todo[entry.root.type].list[entry.root.index].entry[entry.type].on = !data.todo[entry.root.type].list[entry.root.index].entry[entry.type].on;
 }
 
 /**
- * 删除条目
+ * 直接移除条目
  * @param entry 条目对象
  */
-export function remove(entry: any) {
-	delete data.todo[entry.root.type].list[entry.root.index].entry[entry.type];
+export function remove(entry: any): void {
+	let new_item = data.todo[entry.root.type].list[entry.root.index];
+	let old_data = data.copy(new_item);
+
+	delete new_item.entry[entry.type];
+
+	if (Object.keys(new_item.entry).length == 0) {
+		new_item.entry = undefined;
+	}
+
+	let new_data = data.copy(new_item);
+	new_data.type = entry.root.type;
+	old_data.type = entry.root.type;
+
+	log.add(old_data, new_data, log.did.edit);
 }
+
+let old_item: any;			// 保留原有事项
 
 /**
  * 删除原有事项
  * @param item 原有事项对象
  */
-let old_item: any;				// 保留原有事项
 export function deleteOld(item: any): void {
 	old_item = item;
-
+	
 	data.todo[item.type].list.splice(item.index, 1);
 }
 
@@ -169,6 +190,7 @@ export function addNew(item: any): void {
 	let entry = item.entry;
 
 	let item_data = {
+		id: item.id,
 		label: item.label,
 		priority: item.priority,
 		cycle: cycle,
@@ -180,6 +202,7 @@ export function addNew(item: any): void {
 		log.add(undefined, { type: item.type }, log.did.add);
 
 		data.todo[item.type] = {
+			id: profile.code(8),
 			type: item.type,
 			priority: 0,
 			list: []
@@ -204,6 +227,6 @@ export function addNew(item: any): void {
 /**
  * 保存数据
  */
-export function save() {
+export function save(): void {
 	data.write();
 }
