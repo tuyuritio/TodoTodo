@@ -394,7 +394,9 @@ export class page {
 	 * @param item 校验元素
 	 */
 	static synchronize(type: string, item: any): void {
-		this.view.synchronize(type, item);
+		if (this.view && this.view.isVisible()) {
+			this.view.synchronize(type, item);
+		}
 	}
 
 	/**
