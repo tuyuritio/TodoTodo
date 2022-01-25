@@ -112,9 +112,11 @@ export function newCycle(cycle_item: any): void {
 	let todo_data = data.todo[cycle_item.type];
 	let new_item = data.copy(todo_data.list[cycle_item.index]);
 	new_item.time = date.toString(cycle_time);
+	new_item.id = profile.code(8);
 
 	if (new_item.entry) {
 		for (let property in new_item.entry) {
+			new_item.entry[property].id = profile.code(8);
 			new_item.entry[property].on = true;
 		}
 	}
@@ -176,7 +178,7 @@ let old_item: any;			// 保留原有事项
  */
 export function deleteOld(item: any): void {
 	old_item = item;
-	
+
 	data.todo[item.type].list.splice(item.index, 1);
 }
 

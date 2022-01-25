@@ -1,6 +1,6 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import { extension, list } from "./extension_manage";
+import { extension } from "./extension_manage";
 
 /* 激活扩展 */
 export function activate(context: vscode.ExtensionContext): void {
