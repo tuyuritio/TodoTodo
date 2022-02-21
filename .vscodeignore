@@ -1,14 +1,13 @@
 .vscode/**
 .vscode-test/**
-src/**
 .gitignore
+.VSCodeCounter/**
 .yarnrc
 vsc-extension-quickstart.md
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
-**/*.ts
 TodoTodoData/**
-!TodoTodoData/log.json
+!TodoTodoData/.keep
 PersonalAccessToken.ini
 css_configuration.json
