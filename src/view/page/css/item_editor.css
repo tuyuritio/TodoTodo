@@ -1,0 +1,74 @@
+section#item_editor {
+    display: none;
+
+    width: 240px;
+}
+
+section#item_editor label {
+    display: flex;
+
+    flex-wrap: wrap;
+    align-items: center;
+
+    margin: 3px 0px;
+}
+
+section#item_editor label span {
+    display: inline-block;
+
+    width: 52px;
+    height: 18px;
+
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--vscode-activityBar-background);
+    padding: 3px;
+
+    text-align: center;
+    overflow: hidden;
+}
+
+section#item_editor label input {
+    width: 160px;
+}
+
+section#item_editor label input#state {
+    width: 70px;
+}
+
+section#item_editor label input#time {
+    width: 70px;
+}
+
+section#item_editor label select {
+    width: 80px;
+}
+
+section#item_editor label select#select_type {
+    width: 170px;
+}
+
+section#item_editor label select#weekly {
+    width: 85px;
+}
+
+section#item_editor label#input_type_label {
+    margin-left: 62px;
+}
+
+section#item_editor div#add_entry_line {
+    display: flex;
+
+    align-items: center;
+
+    margin: 3px 0px;
+}
+
+section#item_editor div#add_entry_line button {
+    margin: 0px;
+    padding: 5px;
+}
+
+section#item_editor div#add_entry_line input#entry_input_type {
+    width: 70px;
+}

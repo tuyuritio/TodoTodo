@@ -1,14 +1,13 @@
 /* 模块调用 */
-import * as vscode from "vscode";
-import { extension } from "./extension_manage";
+import { ExtensionContext } from "vscode";
+import { controller } from "./control_center";
 
 /* 激活扩展 */
-export function activate(context: vscode.ExtensionContext): void {
-	// 初始化扩展
-	extension.initialize(context);
+export function activate(context: ExtensionContext): void {
+	controller.initialize(context);				// 全局通信
 }
 
 /* 停用扩展 */
 export function deactivate(): void {
-	extension.terminate();
+	controller.terminate();
 }

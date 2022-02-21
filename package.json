@@ -4,7 +4,9 @@
 	"description": "VSCode Sidebar Todo",
 	"keywords": [
 		"todo",
-		"todolist"
+		"todolist",
+		"item manage",
+		"待办事项"
 	],
 	"icon": "resources/icon/icon.png",
 	"version": "1.0.3",
@@ -35,7 +37,7 @@
 						"description": "清单文件目录路径（绝对路径）。若为空则使用默认路径。\n注：使用默认路径在插件更新时本地事项将被清空！",
 						"type": "string"
 					},
-					"todotodo.page.editor.add.after.action": {
+					"todotodo.page.editor.add.action": {
 						"description": "编辑器在新建事项后的行为。",
 						"type": "string",
 						"default": "remain",
@@ -50,68 +52,28 @@
 							"关闭编辑器。"
 						]
 					},
-					"todotodo.list.todo.item.delete.remind": {
-						"description": "在删除事项时显示确认对话框。",
-						"type": "boolean",
-						"default": true
-					},
-					"todotodo.list.todo.item.gaze.style": {
-						"description": "正在办理事项的提示方式",
-						"type": "string",
-						"default": "flash",
-						"enum": [
-							"flash",
-							"highlight",
-							"disabled"
-						],
-						"enumDescriptions": [
-							"图标闪烁。",
-							"图标高亮。",
-							"禁用\"正在办理\"功能。"
-						]
-					},
-					"todotodo.list.todo.item.shut.remind.ahead": {
-						"description": "事项逾期预警时间（单位: s）。\n值格式: \"**h**m**s\" (请小于20h00m00s)",
-						"type": "string",
-						"default": "01h00m00s"
-					},
-					"todotodo.list.todo.delete.remind": {
-						"description": "在删除清单时显示确认对话框。",
-						"type": "boolean",
-						"default": true
-					},
-					"todotodo.list.todo.delete.method": {
-						"description": "删除清单时，原有事项的处理方法。",
-						"type": "string",
-						"default": "move",
-						"enum": [
-							"move",
-							"remove"
-						],
-						"enumDescriptions": [
-							"移动至默认清单。",
-							"全部删除。"
-						]
-					},
-					"todotodo.list.todo.empty.show": {
+					"todotodo.list.empty.show": {
 						"description": "是否显示空清单。",
 						"type": "boolean",
 						"default": false
 					},
-					"todotodo.list.todo.empty.text": {
-						"description": "空Todo清单视图提示文本。",
-						"type": "string",
-						"default": "暂时没有待办事项，芜湖起飞！"
+					"todotodo.list.remove.remind": {
+						"description": "在删除清单时显示确认对话框。",
+						"type": "boolean",
+						"default": true
 					},
-					"todotodo.list.done.empty.text": {
-						"description": "空Done清单视图提示文本。",
-						"type": "string",
-						"default": "暂时没有已办事项，加油冲冲冲！"
+					"todotodo.list.todo.gaze.enable": {
+						"description": "是否启用专注事项。",
+						"type": "boolean",
+						"default": true
 					},
-					"todotodo.list.fail.empty.text": {
-						"description": "空Fail清单视图提示文本。",
+					"todotodo.list.todo.shut.remind.ahead": {
+						"description": "事项逾期预警时间。\n格式: \"HH:MM\" (请小于20:00)",
 						"type": "string",
-						"default": "暂时没有失效事项，不错加油！"
+						"default": "01:00"
+					},
+					"todotodo.list.delete.remind": {
+						"description": "在删除事项时显示确认对话框。"
 					}
 				}
 			}
@@ -127,6 +89,12 @@
 		},
 		"views": {
 			"todo_bar": [
+				{
+					"id": "task_tree",
+					"name": "每日打卡",
+					"visibility": "collapsed",
+					"icon": "resources/icon/icon_task.svg"
+				},
 				{
 					"id": "todo_tree",
 					"name": "待办事项",
@@ -149,184 +117,224 @@
 		},
 		"viewsWelcome": [
 			{
+				"view": "task_tree",
+				"contents": "当前暂无打卡任务。"
+			},
+			{
 				"view": "todo_tree",
-				"contents": "暂时没有待办事项，芜湖起飞！\n[$(add) 新增待办事项](command:page.add)"
+				"contents": "当前暂无待办事项。\n[$(add) 新建待办事项](command:todotodo.list.edit_item)"
 			},
 			{
 				"view": "done_tree",
-				"contents": "暂时没有已办事项，加油冲冲冲！"
+				"contents": "当前暂无已办事项。"
 			},
 			{
 				"view": "fail_tree",
-				"contents": "暂时没有失效事项，不错加油！"
+				"contents": "当前暂无失效事项。"
 			}
 		],
 		"commands": [
 			{
-				"command": "page.show",
+				"command": "todotodo.file.write",
+				"title": "保存数据",
+				"icon": "$(save)"
+			},
+			{
+				"command": "todotodo.refresh",
+				"title": "刷新视图",
+				"icon": "refresh"
+			},
+			{
+				"command": "todotodo.page.show",
 				"title": "事项主页",
 				"icon": "$(window)"
 			},
 			{
-				"command": "page.add",
-				"title": "新增待办事项",
+				"command": "todotodo.task.change_all",
+				"title": "变更所有任务状态",
+				"icon": "$(check-all)"
+			},
+			{
+				"command": "todotodo.task.establish",
+				"title": "创建任务",
 				"icon": "$(add)"
 			},
 			{
-				"command": "page.list",
+				"command": "todotodo.task.calendar",
+				"title": "打卡日历",
+				"icon": "$(calendar)"
+			},
+			{
+				"command": "todotodo.task.terminate",
+				"title": "终止任务",
+				"icon": "$(trash)"
+			},
+			{
+				"command": "todotodo.list.remove",
+				"title": "移除清单",
+				"icon": "$(trash)"
+			},
+			{
+				"command": "todotodo.list.show",
 				"title": "清单列表",
 				"icon": "$(notebook)"
 			},
 			{
-				"command": "list.delete",
-				"title": "删除清单",
-				"icon": "$(trash)"
+				"command": "todotodo.list.edit_item",
+				"title": "添加事项",
+				"icon": "$(add)"
 			},
 			{
-				"command": "todo.refresh",
-				"title": "刷新列表",
-				"icon": "$(refresh)",
-				"shortTitle": "RefreshTree",
-				"category": "待办事项"
-			},
-			{
-				"command": "todo.accomplish",
-				"title": "已完成",
-				"icon": "$(pass)"
-			},
-			{
-				"command": "todo.gaze",
-				"title": "当前办理",
-				"icon": "$(play)"
-			},
-			{
-				"command": "todo.undo",
-				"title": "取消办理",
-				"icon": "$(stop-circle)"
-			},
-			{
-				"command": "todo.shut",
-				"title": "未完成",
-				"icon": "$(error)"
-			},
-			{
-				"command": "todo.delete",
+				"command": "todotodo.todo.delete",
 				"title": "删除事项",
 				"icon": "$(trash)"
 			},
 			{
-				"command": "todo.remove",
+				"command": "todotodo.todo.accomplish",
+				"title": "已完成",
+				"icon": "$(pass)"
+			},
+			{
+				"command": "todotodo.todo.shut",
+				"title": "未完成",
+				"icon": "$(error)"
+			},
+			{
+				"command": "todotodo.todo.gaze",
+				"title": "事项专注",
+				"icon": "$(play)"
+			},
+			{
+				"command": "todotodo.todo.undo",
+				"title": "取消专注",
+				"icon": "$(stop-circle)"
+			},
+			{
+				"command": "todotodo.todo.remove",
 				"title": "移除条目",
 				"icon": "$(trash)"
 			},
 			{
-				"command": "todo.save",
-				"title": "保存数据",
-				"icon": "${save}"
-			},
-			{
-				"command": "todo.read",
-				"title": "读取数据",
-				"icon": "${symbol-constant}"
-			},
-			{
-				"command": "done.clear",
-				"title": "清空已办事项",
-				"icon": "$(clear-all)",
-				"category": "已办事项"
-			},
-			{
-				"command": "done.redo",
+				"command": "todotodo.done.redo",
 				"title": "重做事项",
 				"icon": "$(redo)"
 			},
 			{
-				"command": "fail.restart",
+				"command": "todotodo.done.clear",
+				"title": "清空已办事项",
+				"icon": "#(clear-all)"
+			},
+			{
+				"command": "todotodo.fail.restart",
 				"title": "重启事项",
 				"icon": "$(reply)"
 			},
 			{
-				"command": "fail.restart_all",
+				"command": "todotodo.fail.restart_all",
 				"title": "重启全部未办事项",
 				"icon": "$(clock)"
+			},
+			{
+				"command": "todotodo.fail.delete",
+				"title": "删除事项",
+				"icon": "$(trash)"
 			}
 		],
 		"menus": {
 			"view/title": [
 				{
-					"command": "page.show",
+					"command": "todotodo.file.write",
 					"when": "view == todo_tree"
 				},
 				{
-					"command": "page.list",
+					"command": "todotodo.page.show",
+					"when": "view == todo_tree"
+				},
+				{
+					"command": "todotodo.task.establish",
+					"group": "navigation",
+					"when": "view == task_tree"
+				},
+				{
+					"command": "todotodo.task.change_all",
+					"group": "navigation",
+					"when": "view == task_tree"
+				},
+				{
+					"command": "todotodo.list.show",
 					"group": "navigation",
 					"when": "view == todo_tree"
 				},
 				{
-					"command": "page.add",
+					"command": "todotodo.list.edit_item",
 					"group": "navigation",
 					"when": "view == todo_tree"
 				},
 				{
-					"command": "todo.refresh",
+					"command": "todotodo.refresh",
 					"when": "view == todo_tree"
 				},
 				{
-					"command": "todo.save",
-					"when": "view == todo_tree"
-				},
-				{
-					"command": "done.clear",
+					"command": "todotodo.done.clear",
 					"group": "navigation",
 					"when": "view == done_tree"
 				},
 				{
-					"command": "fail.restart_all",
+					"command": "todotodo.fail.restart_all",
 					"group": "navigation",
 					"when": "view == fail_tree"
 				}
 			],
 			"view/item/context": [
 				{
-					"command": "list.delete",
+					"command": "todotodo.task.calendar",
+					"group": "inline",
+					"when": "viewItem == task_item"
+				},
+				{
+					"command": "todotodo.task.terminate",
+					"when": "viewItem == task_item"
+				},
+				{
+					"command": "todotodo.list.remove",
 					"when": "viewItem == todo_list"
 				},
 				{
-					"command": "todo.delete",
+					"command": "todotodo.todo.delete",
 					"when": "viewItem == todo_item"
 				},
 				{
-					"command": "todo.gaze",
+					"command": "todotodo.todo.gaze",
 					"group": "inline",
-					"when": "viewItem == todo_item && config.todotodo.list.todo.item.gaze.style != disabled"
+					"when": "viewItem == todo_item && config.todotodo.list.todo.gaze.enable"
 				},
 				{
-					"command": "todo.undo",
+					"command": "todotodo.todo.undo",
 					"group": "inline",
 					"when": "viewItem == gaze_item"
 				},
 				{
-					"command": "todo.accomplish",
+					"command": "todotodo.todo.accomplish",
 					"group": "inline",
 					"when": "viewItem == todo_item || viewItem == gaze_item"
 				},
 				{
-					"command": "todo.shut",
+					"command": "todotodo.todo.shut",
 					"group": "inline",
 					"when": "viewItem == todo_item"
 				},
 				{
-					"command": "todo.remove",
+					"command": "todotodo.todo.remove",
 					"group": "inline",
 					"when": "viewItem == todo_entry"
 				},
 				{
-					"command": "done.redo",
+					"command": "todotodo.done.redo",
 					"group": "inline",
 					"when": "viewItem == done_item"
 				},
 				{
-					"command": "fail.restart",
+					"command": "todotodo.fail.restart",
 					"group": "inline",
 					"when": "viewItem == fail_item"
 				}
@@ -335,17 +343,17 @@
 		"keybindings": [
 			{
 				"key": "ctrl+shift+n",
-				"command": "page.add"
+				"command": "todotodo.list.edit_item"
 			},
 			{
 				"key": "ctrl+s",
-				"command": "todo.save",
-				"when": "focusedView == todo_tree"
+				"command": "todotodo.file.write",
+				"when": "focusedView == todo_tree || focusedView == task_tree"
 			},
 			{
 				"key": "f5",
-				"command": "todo.refresh",
-				"when": "focusedView == todo_tree"
+				"command": "todotodo.refresh",
+				"when": "focusedView == todo_tree || focusedView == task_tree"
 			}
 		]
 	},
