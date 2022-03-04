@@ -15,12 +15,16 @@ window.addEventListener("message", (event) => {
 			loadTaskEditor(data);
 			break;
 
+		case "list":
+			loadListEditor();
+			break;
+
 		case "item":
 			loadItemEditor(data);
 			break;
 
-		case "list":
-			loadListEditor();
+		default:
+			send("page.message", "Page命令\"" + command + "\"不存在。");
 			break;
 	}
 });

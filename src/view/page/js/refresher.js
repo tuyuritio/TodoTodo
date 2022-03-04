@@ -29,7 +29,7 @@ function loadTaskPriority(maximum_priority) {
 	for (let index = 0; index <= maximum_priority; index++) {
 		let new_priority = $$("option");
 		new_priority.innerHTML = index;
-		priority.insertBefore(new_priority, $("task_maximum_priority"));
+		$B($("task_maximum_priority"), new_priority);
 	}
 	$("task_maximum_priority").innerHTML = maximum_priority + 1;
 	priority.selectedIndex = remain_task.priority;					// 保留优先级选项
@@ -44,17 +44,16 @@ function loadItemType() {
 		$R(select_type.firstElementChild);
 	}
 
+	let type_option = -1;											// 保留类别选项
 	for (let index = 0; index < lists.length; index++) {
 		let new_type = $$("option");
 		new_type.innerHTML = lists[index].label;
-		select_type.insertBefore(new_type, $("other_type"));
+		$B($("other_type"), new_type);
 
-		let type_option = -1;										// 保留类别选项
-		if (remain_item.type == lists[index].label) {
-			type_option = index;
-		}
-		select_type.selectedIndex = type_option != -1 ? type_option : 0;
+		if (remain_item.type == lists[index].label) type_option = index;
 	}
+	select_type.selectedIndex = type_option != -1 ? type_option : 0;
+
 	$("input_type").value = "";
 	if (select_type.options[select_type.selectedIndex].innerHTML == "其它") {
 		$("input_type_label").style.display = "flex";
@@ -76,7 +75,7 @@ function loadItemPriority(maximum_priority) {
 	for (let index = 0; index <= maximum_priority; index++) {
 		let new_priority = $$("option");
 		new_priority.innerHTML = index;
-		priority.insertBefore(new_priority, $("maximum_priority"));
+		$B($("maximum_priority"), new_priority);
 	}
 
 	$("maximum_priority").innerHTML = maximum_priority + 1;

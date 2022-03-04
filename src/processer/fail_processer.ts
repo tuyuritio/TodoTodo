@@ -1,6 +1,6 @@
 /* 模块调用 */
+import { transceiver, message, date } from "../tool";
 import { data } from "../data_center";
-import { transceiver, message } from "../tool";
 
 export namespace fail_processer {
 	/**
@@ -15,11 +15,18 @@ export namespace fail_processer {
 			let item_data = original_data;
 			item_data.cycle = "secular";
 			item_data.gaze = false;
-			delete item_data.time;
+			item_data.time = date.parse(new Date());
 
-			data.list.todo[item.if_delete] = item_data;
+			data.list.todo[item.id] = item_data;
+
+			if (!(item_data.type in data.profile.list_priority)) {
+				transceiver.send("list.create", item_data.type);
+			}
 		}
-		transceiver.send("refresh", "item", "fail");
+		transceiver.send("view.todo");
+		transceiver.send("view.fail");
+		transceiver.send("view.hint");
+		transceiver.send("page.close");
 	}
 
 	/**
@@ -27,14 +34,8 @@ export namespace fail_processer {
 	 * @returns 是否重启
 	 */
 	export async function restartAll(): Promise<void> {
-		let if_restart: boolean = false;
-		if (await message.show("information", "确认重启全部失效事项吗？", "确认", "取消") == "确认") if_restart = true;
-
-		if (if_restart) {
-			fail_processer.restartAll();
+		if (await message.show("information", "确认重启全部失效事项吗？", "确认", "取消") == "确认") {
 			for (let id in data.list.fail) restart({ id: id });
-
-			transceiver.send("refresh", "item", "remake");
 		}
 	}
 
@@ -51,7 +52,8 @@ export namespace fail_processer {
 
 		if (if_delete) {
 			delete data.list.fail[item.id];
-			transceiver.send("refresh", "item", "delete");
+			transceiver.send("view.fail");
+			transceiver.send("page.close");
 		}
 	}
 }

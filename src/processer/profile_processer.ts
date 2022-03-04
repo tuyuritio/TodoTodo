@@ -1,4 +1,5 @@
 /* 模块调用 */
+import { transceiver } from "../tool";
 import { data } from "../data_center";
 
 export namespace profile_processer {
@@ -30,5 +31,6 @@ export namespace profile_processer {
 	 */
 	export function changeTree(): void {
 		data.profile.tree_type = !data.profile.tree_type;
+		transceiver.send("view.todo");
 	}
 }

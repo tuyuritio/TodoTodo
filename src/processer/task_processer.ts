@@ -9,6 +9,7 @@ export namespace task_processer {
 	 * 创建任务
 	 */
 	export function establish(): void {
+		transceiver.send("page.show");
 		transceiver.send("page.post", "task");
 	}
 
@@ -25,6 +26,7 @@ export namespace task_processer {
 		delete task_data.start;
 		delete task_data.duration;
 
+		transceiver.send("page.show");
 		transceiver.send("page.post", "task", task_data);
 	}
 
@@ -37,7 +39,7 @@ export namespace task_processer {
 		let start: Date = new Date(task.start);
 		start.setDate(start.getDate() + task.duration);			// 最后一个打卡日的00:00
 
-		let gap_day: number = (new Date().getTime() - start.getTime()) / (24 * 60 * 60 * 1000);
+		let gap_day: number = (date.parse(new Date()) - date.parse(start)) / (24 * 60 * 60 * 1000);
 
 		if (gap_day > 2 && task.duration != -1) {	// 昨日未打卡
 			task.history.push(task.start + "+" + task.duration);
@@ -67,9 +69,7 @@ export namespace task_processer {
 			if (today != task.today) if_change = true;
 		}
 
-		if (if_change) {
-			transceiver.send("refresh", "task");
-		}
+		if (if_change) transceiver.send("view.task");
 	}
 
 	/**
@@ -87,7 +87,7 @@ export namespace task_processer {
 			task_data.today = true;
 		}
 
-		transceiver.send("refresh", "task");
+		transceiver.send("view.task");
 	}
 
 	/**
@@ -96,23 +96,26 @@ export namespace task_processer {
 	export function changeAll() {
 		default_all_state = !default_all_state;
 
-		let if_change: boolean = false;
+		let last_changed: any = undefined;
 		for (let id in data.task.task) {
 			let task_data = data.task.task[id];
 			if (!check(task_data) && default_all_state) {
-				if_change = true;
-				
 				task_data.duration++;
 				task_data.today = true;
-			} else if (check(task_data) && !default_all_state) {
-				if_change = true;
 
+				last_changed = task_data;
+			} else if (check(task_data) && !default_all_state) {
 				task_data.duration--;
 				task_data.today = false;
+
+				last_changed = task_data;
 			}
 		}
 
-		if (if_change) transceiver.send("refresh", "task");
+		if (last_changed) {
+
+			transceiver.send("view.task");
+		}
 	}
 
 	/**
@@ -144,7 +147,7 @@ export namespace task_processer {
 			data.task.task[id] = task_data;
 		}
 
-		transceiver.send("refresh", "task");
+		transceiver.send("view.task");
 	}
 
 	/**
@@ -159,8 +162,7 @@ export namespace task_processer {
 
 		if (if_delete) {
 			delete data.task.task[task.id];
-			transceiver.send("refresh", "task");
-			transceiver.send("page.post", "synchronize_item", task.id);
+			transceiver.send("view.task");
 		}
 	}
 }

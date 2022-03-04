@@ -50,3 +50,12 @@ function $R(element) {
 function $I(element, child) {
 	if (child) element.appendChild(child);
 }
+
+/**
+ * 在兄弟元素前插入元素
+ * @param {HTMLElement} sibling 兄弟元素
+ * @param {HTMLElement} element 元素
+ */
+function $B(sibling, element) {
+	sibling.parentElement.insertBefore(element, sibling);
+}

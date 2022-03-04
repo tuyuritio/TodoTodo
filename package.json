@@ -73,7 +73,9 @@
 						"default": "01:00"
 					},
 					"todotodo.list.delete.remind": {
-						"description": "在删除事项时显示确认对话框。"
+						"description": "在删除事项时显示确认对话框。",
+						"type": "boolean",
+						"default": true
 					}
 				}
 			}
@@ -135,19 +137,14 @@
 		],
 		"commands": [
 			{
+				"command": "todotodo.file.read",
+				"title": "读取数据",
+				"icon": "$(refresh)"
+			},
+			{
 				"command": "todotodo.file.write",
 				"title": "保存数据",
 				"icon": "$(save)"
-			},
-			{
-				"command": "todotodo.refresh",
-				"title": "刷新视图",
-				"icon": "refresh"
-			},
-			{
-				"command": "todotodo.page.show",
-				"title": "事项主页",
-				"icon": "$(window)"
 			},
 			{
 				"command": "todotodo.task.change_all",
@@ -247,10 +244,6 @@
 					"when": "view == todo_tree"
 				},
 				{
-					"command": "todotodo.page.show",
-					"when": "view == todo_tree"
-				},
-				{
 					"command": "todotodo.task.establish",
 					"group": "navigation",
 					"when": "view == task_tree"
@@ -271,7 +264,7 @@
 					"when": "view == todo_tree"
 				},
 				{
-					"command": "todotodo.refresh",
+					"command": "todotodo.file.read",
 					"when": "view == todo_tree"
 				},
 				{
@@ -337,6 +330,11 @@
 					"command": "todotodo.fail.restart",
 					"group": "inline",
 					"when": "viewItem == fail_item"
+				},
+				{
+					"command": "todotodo.fail.delete",
+					"group": "inline",
+					"when": "viewItem == fail_item"
 				}
 			]
 		},
@@ -348,12 +346,12 @@
 			{
 				"key": "ctrl+s",
 				"command": "todotodo.file.write",
-				"when": "focusedView == todo_tree || focusedView == task_tree"
+				"when": "focusedView == todo_tree || focusedView == done_tree || focusedView == fail_tree || focusedView == task_tree"
 			},
 			{
 				"key": "f5",
-				"command": "todotodo.refresh",
-				"when": "focusedView == todo_tree || focusedView == task_tree"
+				"command": "todotodo.file.read",
+				"when": "focusedView == todo_tree || focusedView == done_tree || focusedView == fail_tree || focusedView == task_tree"
 			}
 		]
 	},

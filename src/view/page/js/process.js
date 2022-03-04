@@ -35,12 +35,13 @@ function editItem() {
 		switch ($("cycle_type").selectedIndex) {
 			case 0:
 				new_cycle = "secular";
+				new_time = parseTime(current_time);
 				break;
 
 			case 1:
 				new_cycle = "once";
-				new_time = $("datetime").value.replaceAll("-", "/").replace("T", "-");
-				if (parseTime(new_time) < parseTime(current_time)) {			// 检测输入时间是否逾期
+				new_time = parseTime(new Date($("datetime").value));
+				if (new_time < parseTime(current_time)) {			// 检测输入时间是否逾期
 					send("page.message", { type: "warning", text: "请选择一个未来的时间！" });
 					return;
 				}
@@ -50,7 +51,7 @@ function editItem() {
 				new_cycle = "daily";
 				time = new Date(current_time.getFullYear(), current_time.getMonth(), current_time.getDate(), parseInt($("time").value.substr(0, 2)), parseInt($("time").value.substr(3, 2)));
 				while (parseTime(time) < parseTime(current_time)) time.setDate(time.getDate() + 1);
-				new_time = textualizeTime(time);
+				new_time = parseTime(time);
 				break;
 
 			case 3:
@@ -58,7 +59,7 @@ function editItem() {
 				let week_day = weekly.selectedIndex;
 				time = new Date(current_time.getFullYear(), current_time.getMonth(), current_time.getDate() - current_time.getDay() + week_day, parseInt($("time").value.substr(0, 2)), parseInt($("time").value.substr(3, 2)));
 				while (parseTime(time) < parseTime(current_time)) time.setDate(time.getDate() + 7);
-				new_time = toString(time);
+				new_time = parseTime(time);
 				break;
 		}
 		new_item.cycle = new_cycle;

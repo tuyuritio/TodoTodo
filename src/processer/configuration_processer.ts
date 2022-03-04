@@ -58,13 +58,4 @@ export namespace configuration_processer {
 			command.execute("workbench.action.openSettings", "todotodo.path");
 		}
 	}
-
-	/**
-	 * 重新加载窗口
-	 */
-	export async function reload(): Promise<void> {
-		if (await message.show("information", "该设置将在重新加载窗口后生效，是否立即重启？", "立即重新加载") == "立即重新加载") {
-			command.execute("workbench.action.reloadWindow");
-		}
-	}
 }

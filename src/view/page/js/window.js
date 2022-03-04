@@ -10,20 +10,18 @@ function loadListEditor() {
  * @param {{item_data:any,state:string}} data 解析数据
  */
 function loadItemEditor(data) {
-	// 优先清空
 	$("item_editor").style.display = "flex";
+
+	// 清空所有控件
 	$("input_type").value = "";
+	$("label").value = "";
 	$("input_type_label").style.display = "none";
-	$("complete_button").style.display = "none";
-	$("add_entry_line").style.display = "none";
 	$("cycle").style.display = "none";
+	$("weekly").style.display = "none";
 	$("once").style.display = "none";
 	$("daily").style.display = "none";
-	$("weekly").style.display = "none";
-	$("cycle_type").selectedIndex = 0;
-	$("select_type").selectedIndex = 0;
-	$("priority").selectedIndex = 0;
-	$("label").value = "";
+	$("add_entry_line").style.display = "none";
+	$("complete_button").style.display = "none";
 	clearEntry();
 
 	if (data.item_data) {
@@ -37,28 +35,27 @@ function loadItemEditor(data) {
  * 以新建形式加载事项编辑器
  */
 function loadAdd() {
-	remain_item.type = undefined;
-	remain_item.priority = undefined;
-	remain_item.id = undefined;
-	remain_item.label = undefined;
-	remain_item.entry = {};
+	remain_item = { id: undefined, type: undefined, label: undefined, priority: undefined, entry: {} };
+
+	$("item_editor_title").innerHTML = "新建事项";
+
+	$("select_type").selectedIndex = 0;
+	if (select_type.options[select_type.selectedIndex].id == "other_type") {
+		$("input_type_label").style.display = "flex";
+	}
+
+	$("priority").selectedIndex = 0;
+
+	$("cycle").style.display = "flex";
+	$("cycle_type").selectedIndex = 0;
 
 	let current_time = new Date();
 	$("weekly").selectedIndex = current_time.getDay();
 	$("datetime").value = current_time.getFullYear() + "-" + (current_time.getMonth() + 1).toString().padStart(2, "0") + "-" + current_time.getDate().toString().padStart(2, "0") + "T" + current_time.getHours().toString().padStart(2, "0") + ":" + (current_time.getMinutes() + 1).toString().padStart(2, "0");	// 往后加1分钟
 	$("time").value = current_time.getHours().toString().padStart(2, "0") + ":" + current_time.getMinutes().toString().padStart(2, "0");
 
-	$("item_editor").style.display = "flex";
-	$("item_editor_title").innerHTML = "新建事项";
-	$("state").value = "待办";
-
-	$("cycle").style.display = "flex";
 	$("add_entry_line").style.display = "flex";
 	$("complete_button").style.display = "block";
-
-	if (select_type.options[select_type.selectedIndex].id == "other_type") {
-		$("input_type_label").style.display = "flex";
-	}
 
 	$("label").focus();
 }
@@ -78,22 +75,19 @@ function loadEdit(data, state) {
 		case "todo":
 			$("item_editor_title").innerHTML = "编辑事项";
 			$("time_title").innerHTML = "截止时间";
-			$("state").value = "待办";
 			$("cycle").style.display = "flex";
 			$("add_entry_line").style.display = "flex";
 			$("complete_button").style.display = "block";
 			break;
 
 		case "done":
-			$("item_editor_title").innerHTML = "事项信息";
+			$("item_editor_title").innerHTML = "已办事项";
 			$("time_title").innerHTML = "完成时间";
-			$("state").value = "已办";
 			break;
 
 		case "fail":
-			$("item_editor_title").innerHTML = "事项信息";
+			$("item_editor_title").innerHTML = "失效失效";
 			$("time_title").innerHTML = "失效时间";
-			$("state").value = "未办";
 			break;
 	}
 
@@ -119,6 +113,7 @@ function loadEdit(data, state) {
 	$("priority").selectedIndex = data.priority;
 
 	// 事项周期与截止时间
+	data.time = textualizeTime(new Date(data.time));
 	switch (data.cycle) {
 		case "secular":
 			break;
@@ -161,13 +156,12 @@ function addEntry(label, content, id) {
 		{	// 条目标题
 			let entry_label = $$("span");
 			entry_label.innerHTML = label ? label : $("entry_input_type").value;
-			if (entry_label.innerHTML.replaceAll(" ", "") == "") {		// 条目名称为空则生成默认名称
-				entry_label.innerHTML = "__entry";
+			if (entry_label.innerHTML.replaceAll(" ", "") == "") {		// 条目名称为空
+				entry_label.innerHTML = "";
 			}
-			// 默认条目背景填充
-			if (entry_label.innerHTML == "__entry") {
-				entry_label.style.color = "var(--vscode-activityBar-background)";
-				entry_label.style.backgroundColor = "var(--vscode-activityBar-background)";
+			// 空名称条目背景填充
+			if (entry_label.innerHTML == "") {
+				entry_label.className = "empty_entry_label";
 			}
 			$E.doubleClick(entry_label, (event) => $R(event.target.parentElement));
 			$I(new_entry, entry_label);
@@ -193,7 +187,7 @@ function addEntry(label, content, id) {
 			$I(new_entry, entry_input);
 		}
 	}
-	$("item_editor").insertBefore(new_entry, $("add_entry_line"));
+	$B($("add_entry_line"), new_entry);
 
 	new_entry.focus();
 	$("entry_input_type").value = "";
@@ -266,7 +260,7 @@ function createCalendar(year, month, days) {
 						let end = new Date(start);
 						end.setDate(start.getDate() + duration);
 
-						if (pointer_day.getTime() >= start.getTime() && pointer_day.getTime() <= end.getTime()) {
+						if (parseTime(pointer_day) >= parseTime(start) && parseTime(pointer_day) <= parseTime(end)) {
 							day.classList.add("check");
 						}
 					}
@@ -284,24 +278,4 @@ function createCalendar(year, month, days) {
  */
 function close(window) {
 	$(window).style.display = "none";
-}
-
-/**
- * 同步任务编辑器
- * @param {string} task 任务ID
- */
-function synchronizeTaskEditor(task) {
-	if (task == remain_task.id) {
-		close("task_editor");
-	}
-}
-
-/**
- * 同步事项编辑器
- * @param {string} item 事项ID
- */
-function synchronizeItemEditor(item) {
-	if (item == remain_item.id) {
-		close("item_editor");
-	}
 }

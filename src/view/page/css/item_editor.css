@@ -56,6 +56,11 @@ section#item_editor label#input_type_label {
     margin-left: 62px;
 }
 
+section#item_editor label span.empty_entry_label {
+    color: var(--vscode-activityBar-background);
+    background-color: var(--vscode-activityBar-background);
+}
+
 section#item_editor div#add_entry_line {
     display: flex;
 

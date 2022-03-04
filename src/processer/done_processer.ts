@@ -1,6 +1,6 @@
 /* 模块调用 */
 import { data } from "../data_center";
-import { transceiver, message } from "../tool";
+import { transceiver, message, date } from "../tool";
 
 export namespace done_processer {
 	/**
@@ -15,11 +15,18 @@ export namespace done_processer {
 			let item_data = original_data;
 			item_data.cycle = "secular";
 			item_data.gaze = false;
-			delete item_data.time;
+			item_data.time = date.parse(new Date());
 
 			data.list.todo[item.id] = item_data;
+
+			if (!(item_data.type in data.profile.list_priority)) {
+				transceiver.send("list.create", item_data.type);
+			}
 		}
-		transceiver.send("refresh", "item", "done");
+		transceiver.send("view.todo");
+		transceiver.send("view.done");
+		transceiver.send("view.hint");
+		transceiver.send("page.close");
 	}
 
 	/**
@@ -31,7 +38,8 @@ export namespace done_processer {
 
 		if (if_clear) {
 			data.list.done = {};
-			transceiver.send("refresh", "item", "clear");
+			transceiver.send("view.done");
+			transceiver.send("page.close");
 		}
 	}
 }

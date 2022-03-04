@@ -1,24 +1,21 @@
 /* 模块调用 */
 import { workspace } from "vscode";
-import { data } from "../data_center";
 import { transceiver } from "../tool";
+import { data } from "../data_center";
 
 export namespace workspace_interface {
-	let last_path: any;
-
 	/**
 	 * 获取工作区数据、建立工作区数据更新
 	 */
-	export function initialize() {
+	export function initialize(): void {
 		load();
 		update();
-		last_path = data.copy(data.configuration.path);
 	}
 
 	/**
 	 * 载入工作区数据
 	 */
-	function load() {
+	function load(): void {
 		let workspace_data = workspace.getConfiguration("todotodo");
 		data.configuration.path = workspace_data.path;
 		data.configuration.add_action = workspace_data.page.editor.add.action;
@@ -31,14 +28,10 @@ export namespace workspace_interface {
 	/**
 	 * 更新工作区数据
 	 */
-	function update() {
+	function update(): void {
 		workspace.onDidChangeConfiguration(() => {
 			load();
-			if (last_path != data.configuration.path) {
-				transceiver.send("configuration.reload");
-				last_path = data.copy(data.configuration.path);
-			}
-			transceiver.send("refresh", "view");
+			transceiver.send("file.read");
 		});
 	}
 }

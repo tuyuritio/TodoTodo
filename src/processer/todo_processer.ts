@@ -17,7 +17,9 @@ export namespace todo_processer {
 			transceiver.send("list.create", item.type);
 		}
 
-		transceiver.send("refresh", "item", "edit");
+		transceiver.send("view.todo");
+		transceiver.send("view.hint");
+		transceiver.send("view.page");
 	}
 
 	/**
@@ -33,7 +35,9 @@ export namespace todo_processer {
 
 		if (if_delete) {
 			delete data.list.todo[item.id];
-			transceiver.send("refresh", "item", "delete");
+			transceiver.send("view.todo");
+			transceiver.send("view.hint");
+			transceiver.send("page.close");
 		}
 	}
 
@@ -47,7 +51,7 @@ export namespace todo_processer {
 			delete data.list.todo[item.id];
 
 			let item_data = data.copy(original_data);
-			item_data.time = date.textualize(new Date());
+			item_data.time = date.parse(new Date());
 			item_data.cycle = "once";
 			delete item_data.gaze;
 
@@ -58,7 +62,10 @@ export namespace todo_processer {
 			newCycle(original_data);
 		}
 
-		transceiver.send("refresh", "item", "done");
+		transceiver.send("view.todo");
+		transceiver.send("view.done");
+		transceiver.send("view.hint");
+		transceiver.send("page.close");
 	}
 
 	/**
@@ -71,7 +78,7 @@ export namespace todo_processer {
 			delete data.list.todo[item.id];
 
 			let item_data = data.copy(original_data);
-			item_data.time = date.textualize(new Date());
+			item_data.time = date.parse(new Date());
 			item_data.cycle = "once";
 			delete item_data.gaze;
 
@@ -82,7 +89,10 @@ export namespace todo_processer {
 			newCycle(original_data);
 		}
 
-		transceiver.send("refresh", "item", "fail");
+		transceiver.send("view.todo");
+		transceiver.send("view.fail");
+		transceiver.send("view.hint");
+		transceiver.send("page.close");
 	}
 
 	/**
@@ -97,13 +107,13 @@ export namespace todo_processer {
 			case "daily":
 				do {
 					cycle_time.setDate(cycle_time.getDate() + 1);
-				} while (cycle_time.getTime() < current_time.getTime());
+				} while (date.parse(cycle_time) < date.parse(current_time));
 				break;
 
 			case "weekly":
 				do {
 					cycle_time.setDate(cycle_time.getDate() + 7);
-				} while (cycle_time.getTime() < current_time.getTime());
+				} while (date.parse(cycle_time) < date.parse(current_time));
 				break;
 		}
 		cycle_item.time = date.textualize(cycle_time);
@@ -127,7 +137,7 @@ export namespace todo_processer {
 		let item_data = data.list.todo[item.id];
 		item_data.gaze = !item_data.gaze;
 
-		transceiver.send("refresh", "item", "gaze");
+		transceiver.send("view.todo");
 	}
 
 	/**
@@ -135,10 +145,11 @@ export namespace todo_processer {
 	 * @param entry 条目对象
 	 */
 	export function change(entry: any): void {
-		let entry_data = data.list.todo[entry.root.id].entry[entry.id];
+		let entry_data = data.list.todo[entry.root].entry[entry.id];
+
 		entry_data.done = !entry_data.done;
 
-		transceiver.send("refresh", "entry", "change");
+		transceiver.send("view.todo");
 	}
 
 	/**
@@ -146,7 +157,8 @@ export namespace todo_processer {
 	 * @param entry 条目对象
 	 */
 	export function remove(entry: any): void {
-		delete data.list.todo[entry.root.id].entry[entry.id];
-		transceiver.send("refresh", "entry", "remove");
+		delete data.list.todo[entry.root].entry[entry.id];
+		transceiver.send("view.todo");
+		transceiver.send("page.close");
 	}
 }

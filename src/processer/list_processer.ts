@@ -19,6 +19,7 @@ export namespace list_processer {
 			item_data = undefined;
 		}
 
+		transceiver.send("page.show");
 		transceiver.send("page.post", "item", { item_data: item_data, state: state });
 	}
 
@@ -34,6 +35,7 @@ export namespace list_processer {
 	 * 显示清单列表
 	 */
 	export function alter_send(): void {
+		transceiver.send("page.show");
 		transceiver.send("page.post", "list");
 	}
 
@@ -62,7 +64,8 @@ export namespace list_processer {
 		delete data.profile.list_priority[list.old.label];
 		data.profile.list_priority[list.new.label] = list.new.priority;
 
-		transceiver.send("refresh", "list", "alter");
+		transceiver.send("view.todo");
+		transceiver.send("view.page");
 	}
 
 	/**
@@ -86,7 +89,9 @@ export namespace list_processer {
 
 				delete data.profile.list_priority[list.label];
 			}
-			transceiver.send("refresh", "list", "remove");
+			transceiver.send("view.todo");
+			transceiver.send("view.hint");
+			transceiver.send("page.close");
 		}
 	}
 
@@ -107,15 +112,17 @@ export namespace list_processer {
 		let todo = data.copy(data.list.todo);
 		for (let id in todo) {
 			let item_data = todo[id];
-			if (date.parse(item_data.time) < date.parse(current_time)) {
-				if (item_data.gaze) {
-					transceiver.send("todo.accomplish", { id: id });
-				} else {
-					transceiver.send("todo.shut", { id: id });
-					message.show("warning", "事项 \"" + item_data.label + "\" 已逾期！");
+			if (item_data.cycle != "secular") {
+				if (date.parse(item_data.time) < date.parse(current_time)) {
+					if (item_data.gaze) {
+						transceiver.send("todo.accomplish", { id: id });
+					} else {
+						transceiver.send("todo.shut", { id: id });
+						message.show("warning", "事项 \"" + item_data.label + "\" 已逾期！");
+					}
+				} else if (date.parse(remind_start) < date.parse(item_data.time) && date.parse(item_data.time) <= date.parse(remind_end)) {
+					message.show("warning", "事项 \"" + item_data.label + "\" 即将逾期！");
 				}
-			} else if (date.parse(remind_start) < date.parse(item_data.time) && date.parse(item_data.time) <= date.parse(remind_end)) {
-				message.show("warning", "事项 \"" + item_data.label + "\" 即将逾期！");
 			}
 		}
 	}

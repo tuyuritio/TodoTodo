@@ -118,12 +118,14 @@ export namespace date {
 	}
 
 	/**
-	 * 将Date对象转换为时间文本
-	 * @param time Date对象
-	 * @param time_unit 时间精确单位 - **默认：** unit.minute
+	 * 将Date对象转换为时间文本 | 将时间整型转换为时间文本
+	 * @param time Date对象 | 时间整型
+	 * @param time_unit 时间精确单位 - **默认:** unit.minute
 	 * @returns 时间文本
 	 */
-	export function textualize(time: Date, time_unit: unit = "minute"): string {
+	export function textualize(time: Date | number, time_unit: unit = "minute"): string {
+		if (typeof time == "number") time = new Date(time);
+
 		let time_text: string = "";
 
 		switch (time_unit) {
