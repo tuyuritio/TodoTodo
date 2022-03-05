@@ -1,16 +1,18 @@
 /* 模块调用 */
 import * as vscode from "vscode";
+import { transceiver } from "../../tool";
 
 export namespace task_tree {
-	let view: tree;
-	let tree_data: task[];
+	let view: Tree;
+	let tree_data: Task[];
 
 	/**
 	 * 建立视图
 	 */
 	export function initialize() {
-		view = new tree();
+		view = new Tree();
 		vscode.window.createTreeView("task_tree", { showCollapseAll: false, treeDataProvider: view });
+		transceiver.send("view.task");
 	}
 
 	/**
@@ -27,13 +29,13 @@ export namespace task_tree {
 				tree_data[index] = tree_data[index - 1];
 				index--;
 			}
-			tree_data.unshift(new task(id, task_item.label, task_item.today, task_item.duration));
+			tree_data.unshift(new Task(id, task_item.label, task_item.today, task_item.duration));
 		}
 
 		view.event_emitter.fire();
 	}
 
-	class task extends vscode.TreeItem {
+	class Task extends vscode.TreeItem {
 		constructor(id: string, label: string, today: boolean, duration: number) {
 			super(label);
 			this.id = id;
@@ -58,15 +60,15 @@ export namespace task_tree {
 		}
 	};
 
-	class tree implements vscode.TreeDataProvider<task> {
+	class Tree implements vscode.TreeDataProvider<Task> {
 		// 刷新事件
-		event_emitter = new vscode.EventEmitter<task | void>();
+		event_emitter = new vscode.EventEmitter<Task | void>();
 		onDidChangeTreeData = this.event_emitter.event;
 
 		/**
 		 * 意义不明，没有不行
 		 */
-		getTreeItem(element: task): vscode.TreeItem | Thenable<vscode.TreeItem> {
+		getTreeItem(element: Task): vscode.TreeItem | Thenable<vscode.TreeItem> {
 			return element;
 		}
 
@@ -74,7 +76,7 @@ export namespace task_tree {
 		 * 获取子元素
 		 * @returns 子元素
 		 */
-		getChildren(): vscode.ProviderResult<task[]> {
+		getChildren(): vscode.ProviderResult<Task[]> {
 			return tree_data;
 		}
 	};

@@ -6,28 +6,64 @@ export namespace task_processer {
 	let default_all_state: boolean = false;
 
 	/**
-	 * 创建任务
+	 * 准备调整任务
+	 * @param task 任务对象
 	 */
-	export function establish(): void {
-		transceiver.send("page.show");
-		transceiver.send("page.post", "task");
+	export function load(task?: any): void {
+		let maximum_priority: number = 0;
+
+		for (let id in data.task.task) {
+			let task_data = data.task.task[id];
+			if (task_data.priority > maximum_priority) maximum_priority = task_data.priority;
+		}
+
+		if (task) {
+			transceiver.send("input.task", maximum_priority, task.id, data.task.task[task.id]);
+		} else {
+			transceiver.send("input.task", maximum_priority);
+		}
 	}
 
 	/**
-	 * 显示打卡日历
+	 * 调整任务
 	 * @param task 任务对象
 	 */
-	export function calendar(task: any) {
-		let task_data = data.copy(data.task.task[task.id]);
-		task_data.id = task.id;
-		if (task_data.duration != -1) {
-			task_data.history.push(date.textualize(new Date(task_data.start), "date") + "+" + task_data.duration);
-		}
-		delete task_data.start;
-		delete task_data.duration;
+	export function adjust(id: string, task: any): void {
+		let task_data: any;
 
-		transceiver.send("page.show");
-		transceiver.send("page.post", "task", task_data);
+		if (data.task.task[id]) {
+			task_data = data.task.task[task.id];
+			task_data.label = task.label;
+			task_data.priority = task.priority;
+		} else {
+			task_data = {
+				label: task.label,
+				priority: task.priority,
+				today: false,
+				start: date.textualize(new Date(), "date"),
+				duration: -1,
+				history: []
+			}
+		}
+		data.task.task[id] = task_data;
+
+		transceiver.send("view.task");
+	}
+
+	/**
+	 * 终止任务
+	 * @param task 任务对象
+	 */
+	export async function terminate(task: any): Promise<void> {
+		let if_delete: boolean = true;
+		if (await message.show("information", "确认终止任务 \"" + task.label + "\" 吗？", "确认", "取消") == "取消") {
+			if_delete = false;
+		}
+
+		if (if_delete) {
+			delete data.task.task[task.id];
+			transceiver.send("view.task");
+		}
 	}
 
 	/**
@@ -96,73 +132,22 @@ export namespace task_processer {
 	export function changeAll() {
 		default_all_state = !default_all_state;
 
-		let last_changed: any = undefined;
+		let if_changed: boolean = false;
 		for (let id in data.task.task) {
 			let task_data = data.task.task[id];
 			if (!check(task_data) && default_all_state) {
 				task_data.duration++;
 				task_data.today = true;
 
-				last_changed = task_data;
+				if_changed = true;
 			} else if (check(task_data) && !default_all_state) {
 				task_data.duration--;
 				task_data.today = false;
 
-				last_changed = task_data;
+				if_changed = true;
 			}
 		}
 
-		if (last_changed) {
-
-			transceiver.send("view.task");
-		}
-	}
-
-	/**
-	 * 调整任务
-	 * @param task 任务对象
-	 */
-	export function adjust(task: any): void {
-		let task_data: any;
-		{
-			if (data.copy(data.task.task[task.id])) {
-				task_data = data.task.task[task.id];
-				if (task.label == task_data.label && task.priority == task_data.priority) return;
-
-				task_data.label = task.label;
-				task_data.priority = task.priority;
-			} else {
-				task_data = {
-					label: task.label,
-					priority: task.priority,
-					today: false,
-					start: date.textualize(new Date(), "date"),
-					duration: -1,
-					history: []
-				}
-			}
-
-			let id = task.id;
-			delete task.id;
-			data.task.task[id] = task_data;
-		}
-
-		transceiver.send("view.task");
-	}
-
-	/**
-	 * 终止任务
-	 * @param task 任务对象
-	 */
-	export async function terminate(task: any): Promise<void> {
-		let if_delete: boolean = true;
-		if (await message.show("information", "确认终止任务 \"" + task.label + "\" 吗？", "确认", "取消") == "取消") {
-			if_delete = false;
-		}
-
-		if (if_delete) {
-			delete data.task.task[task.id];
-			transceiver.send("view.task");
-		}
+		if (if_changed) transceiver.send("view.task");
 	}
 }

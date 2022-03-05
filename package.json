@@ -37,30 +37,10 @@
 						"description": "清单文件目录路径（绝对路径）。若为空则使用默认路径。\n注：使用默认路径在插件更新时本地事项将被清空！",
 						"type": "string"
 					},
-					"todotodo.page.editor.add.action": {
-						"description": "编辑器在新建事项后的行为。",
-						"type": "string",
-						"default": "remain",
-						"enum": [
-							"remain",
-							"clear",
-							"close"
-						],
-						"enumDescriptions": [
-							"保留已填信息。",
-							"清空已填信息。",
-							"关闭编辑器。"
-						]
-					},
 					"todotodo.list.empty.show": {
 						"description": "是否显示空清单。",
 						"type": "boolean",
 						"default": false
-					},
-					"todotodo.list.remove.remind": {
-						"description": "在删除清单时显示确认对话框。",
-						"type": "boolean",
-						"default": true
 					},
 					"todotodo.list.todo.gaze.enable": {
 						"description": "是否启用专注事项。",
@@ -72,10 +52,14 @@
 						"type": "string",
 						"default": "01:00"
 					},
-					"todotodo.list.delete.remind": {
-						"description": "在删除事项时显示确认对话框。",
-						"type": "boolean",
-						"default": true
+					"todotodo.hint.position": {
+						"description": "剩余待办显示位置。\n( 注: 该项将在重启窗口后生效。)",
+						"type": "string",
+						"default": "left",
+						"enum": [
+							"left",
+							"right"
+						]
 					}
 				}
 			}
@@ -124,7 +108,7 @@
 			},
 			{
 				"view": "todo_tree",
-				"contents": "当前暂无待办事项。\n[$(add) 新建待办事项](command:todotodo.list.edit_item)"
+				"contents": "当前暂无待办事项。\n[$(add) 新建待办事项](command:todotodo.todo.add)"
 			},
 			{
 				"view": "done_tree",
@@ -147,6 +131,11 @@
 				"icon": "$(save)"
 			},
 			{
+				"command": "todotodo.input.panel",
+				"title": "命令面板",
+				"icon": "$(preview)"
+			},
+			{
 				"command": "todotodo.task.change_all",
 				"title": "变更所有任务状态",
 				"icon": "$(check-all)"
@@ -157,14 +146,14 @@
 				"icon": "$(add)"
 			},
 			{
-				"command": "todotodo.task.calendar",
-				"title": "打卡日历",
-				"icon": "$(calendar)"
-			},
-			{
 				"command": "todotodo.task.terminate",
 				"title": "终止任务",
 				"icon": "$(trash)"
+			},
+			{
+				"command": "todotodo.list.load",
+				"title": "修改清单",
+				"icon": "$(pencil)"
 			},
 			{
 				"command": "todotodo.list.remove",
@@ -172,14 +161,9 @@
 				"icon": "$(trash)"
 			},
 			{
-				"command": "todotodo.list.show",
-				"title": "清单列表",
-				"icon": "$(notebook)"
-			},
-			{
-				"command": "todotodo.list.edit_item",
-				"title": "添加事项",
-				"icon": "$(add)"
+				"command": "todotodo.todo.load",
+				"title": "编辑事项",
+				"icon": "$(pencil)"
 			},
 			{
 				"command": "todotodo.todo.delete",
@@ -207,8 +191,18 @@
 				"icon": "$(stop-circle)"
 			},
 			{
-				"command": "todotodo.todo.remove",
-				"title": "移除条目",
+				"command": "todotodo.entry.add",
+				"title": "新增条目",
+				"icon": "$(add)"
+			},
+			{
+				"command": "todotodo.entry.load",
+				"title": "编辑条目",
+				"icon": "$(pencil)"
+			},
+			{
+				"command": "todotodo.entry.delete",
+				"title": "删除条目",
 				"icon": "$(trash)"
 			},
 			{
@@ -219,7 +213,7 @@
 			{
 				"command": "todotodo.done.clear",
 				"title": "清空已办事项",
-				"icon": "#(clear-all)"
+				"icon": "$(clear-all)"
 			},
 			{
 				"command": "todotodo.fail.restart",
@@ -240,7 +234,13 @@
 		"menus": {
 			"view/title": [
 				{
+					"command": "todotodo.file.read",
+					"group": "navigation",
+					"when": "view == todo_tree"
+				},
+				{
 					"command": "todotodo.file.write",
+					"group": "navigation",
 					"when": "view == todo_tree"
 				},
 				{
@@ -254,17 +254,8 @@
 					"when": "view == task_tree"
 				},
 				{
-					"command": "todotodo.list.show",
+					"command": "todotodo.input.panel",
 					"group": "navigation",
-					"when": "view == todo_tree"
-				},
-				{
-					"command": "todotodo.list.edit_item",
-					"group": "navigation",
-					"when": "view == todo_tree"
-				},
-				{
-					"command": "todotodo.file.read",
 					"when": "view == todo_tree"
 				},
 				{
@@ -280,17 +271,20 @@
 			],
 			"view/item/context": [
 				{
-					"command": "todotodo.task.calendar",
-					"group": "inline",
-					"when": "viewItem == task_item"
-				},
-				{
 					"command": "todotodo.task.terminate",
 					"when": "viewItem == task_item"
 				},
 				{
+					"command": "todotodo.list.load",
+					"when": "viewItem == todo_list"
+				},
+				{
 					"command": "todotodo.list.remove",
 					"when": "viewItem == todo_list"
+				},
+				{
+					"command": "todotodo.todo.load",
+					"when": "viewItem == todo_item"
 				},
 				{
 					"command": "todotodo.todo.delete",
@@ -317,7 +311,16 @@
 					"when": "viewItem == todo_item"
 				},
 				{
-					"command": "todotodo.todo.remove",
+					"command": "todotodo.entry.add",
+					"when": "viewItem == todo_item"
+				},
+				{
+					"command": "todotodo.entry.load",
+					"group": "inline",
+					"when": "viewItem == todo_entry"
+				},
+				{
+					"command": "todotodo.entry.delete",
 					"group": "inline",
 					"when": "viewItem == todo_entry"
 				},
@@ -341,7 +344,7 @@
 		"keybindings": [
 			{
 				"key": "ctrl+shift+n",
-				"command": "todotodo.list.edit_item"
+				"command": "todotodo.input.panel"
 			},
 			{
 				"key": "ctrl+s",

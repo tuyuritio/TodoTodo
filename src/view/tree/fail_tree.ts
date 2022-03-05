@@ -1,17 +1,18 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import { date } from "../../tool";
+import { date, transceiver } from "../../tool";
 
 export namespace fail_tree {
-	let view: tree;
-	let tree_data: item[];
+	let view: Tree;
+	let tree_data: Item[];
 
 	/**
 	 * 建立视图
 	 */
 	export function initialize() {
-		view = new tree();
+		view = new Tree();
 		vscode.window.createTreeView("fail_tree", { showCollapseAll: false, treeDataProvider: view });
+		transceiver.send("view.fail");
 	}
 
 	/**
@@ -22,13 +23,13 @@ export namespace fail_tree {
 		tree_data = [];
 		for (let id in fail_data) {
 			let item_data = fail_data[id];
-			tree_data.unshift(new item(id, item_data.label, date.textualize(item_data.time)));
+			tree_data.unshift(new Item(id, item_data.label, date.textualize(item_data.time)));
 		}
 
 		view.event_emitter.fire();
 	}
 
-	class item extends vscode.TreeItem {
+	class Item extends vscode.TreeItem {
 		constructor(id: string, label: string, time: string) {
 			super(label);
 			this.id = id;
@@ -43,15 +44,15 @@ export namespace fail_tree {
 		}
 	};
 
-	class tree implements vscode.TreeDataProvider<item> {
+	class Tree implements vscode.TreeDataProvider<Item> {
 		// 刷新事件
-		event_emitter = new vscode.EventEmitter<item | void>();
+		event_emitter = new vscode.EventEmitter<Item | void>();
 		onDidChangeTreeData = this.event_emitter.event;
 
 		/**
 		 * 意义不明，没有不行
 		 */
-		getTreeItem(element: item): vscode.TreeItem | Thenable<vscode.TreeItem> {
+		getTreeItem(element: Item): vscode.TreeItem | Thenable<vscode.TreeItem> {
 			return element;
 		}
 
@@ -59,7 +60,7 @@ export namespace fail_tree {
 		 * 获取子元素
 		 * @returns 子元素
 		 */
-		getChildren(): vscode.ProviderResult<item[]> {
+		getChildren(): vscode.ProviderResult<Item[]> {
 			return tree_data;
 		}
 	};

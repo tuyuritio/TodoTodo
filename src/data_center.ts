@@ -10,16 +10,15 @@ export namespace data {
 
 	export namespace configuration {
 		export let path: string;
-		export let add_action: string;
-		export let item_delete_remind: boolean;
-		export let list_remove_remind: boolean;
 		export let shut_ahead: string;
 		export let empty_list: boolean;
+		export let hint_position: string;
 	}
 
 	export namespace profile {
-		export let list_priority: any;
+		export let list: any;
 		export let tree_type: boolean;
+		export let empty_list: boolean;
 	}
 
 	export namespace task {
@@ -30,12 +29,5 @@ export namespace data {
 		export let todo: any;
 		export let done: any;
 		export let fail: any;
-	}
-
-	export namespace page {
-		export let html: string;
-		export let css: any;
-		export let js: any;
-		export let icon: any;
 	}
 }

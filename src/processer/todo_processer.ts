@@ -4,40 +4,45 @@ import { data } from "../data_center";
 
 export namespace todo_processer {
 	/**
-	 * 编辑事项
+	 * 准备编辑事项
 	 * @param item 事项对象
 	 */
-	export function edit(item: any): void {
-		let id = item.id;
-		delete item.id;
-		item.gaze = false;
-		data.list.todo[id] = item;
+	export function load(item?: any): void {
+		let maximum_priority: number = 0;
 
-		if (!(item.type in data.profile.list_priority)) {
-			transceiver.send("list.create", item.type);
+		for (let id in data.list.todo) {
+			let item_data = data.list.todo[id];
+			if (item_data.priority > maximum_priority) maximum_priority = item_data.priority;
 		}
+
+		if (item) {
+			transceiver.send("input.item", data.profile.list, maximum_priority, item.id, data.list.todo[item.id]);
+		} else {
+			transceiver.send("input.item", data.profile.list, maximum_priority);
+		}
+	}
+
+	/**
+	 * 编辑事项
+	 * @param id 事项ID
+	 * @param item 事项数据
+	 */
+	export function edit(id: string, item: any): void {
+		data.list.todo[id] = item;
 
 		transceiver.send("view.todo");
 		transceiver.send("view.hint");
-		transceiver.send("view.page");
 	}
 
 	/**
 	 * 删除事项
 	 * @param item 事项对象
-	 * @param if_remind 是否确认删除
 	 */
-	export async function deleteItem(item: any, if_remind: boolean): Promise<void> {
-		let if_delete: boolean = true;
-		if (if_remind && await message.show("information", "确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消") == "取消") {
-			if_delete = false;
-		}
-
-		if (if_delete) {
+	export async function deleteItem(item: any): Promise<void> {
+		if (await message.show("information", "确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消") == "确认") {
 			delete data.list.todo[item.id];
 			transceiver.send("view.todo");
 			transceiver.send("view.hint");
-			transceiver.send("page.close");
 		}
 	}
 
@@ -46,26 +51,22 @@ export namespace todo_processer {
 	 * @param item 事项对象
 	 */
 	export function accomplish(item: any): void {
-		let original_data = data.copy(data.list.todo[item.id]);
-		{
-			delete data.list.todo[item.id];
+		let item_data = data.copy(data.list.todo[item.id]);
 
-			let item_data = data.copy(original_data);
-			item_data.time = date.parse(new Date());
-			item_data.cycle = "once";
-			delete item_data.gaze;
-
-			data.list.done[item.id] = item_data;
+		if (item_data.cycle == "daily" || item_data.cycle == "weekly") {
+			newCycle(item_data);
 		}
 
-		if (original_data.cycle == "daily" || original_data.cycle == "weekly") {
-			newCycle(original_data);
-		}
+		item_data.time = date.parse(new Date());
+		delete item_data.cycle;
+		delete item_data.gaze;
+		data.list.done[item.id] = item_data;
+
+		delete data.list.todo[item.id];
 
 		transceiver.send("view.todo");
 		transceiver.send("view.done");
 		transceiver.send("view.hint");
-		transceiver.send("page.close");
 	}
 
 	/**
@@ -73,26 +74,22 @@ export namespace todo_processer {
 	 * @param item 事项对象
 	 */
 	export function shut(item: any): void {
-		let original_data = data.copy(data.list.todo[item.id]);
-		{
-			delete data.list.todo[item.id];
+		let item_data = data.copy(data.list.todo[item.id]);
 
-			let item_data = data.copy(original_data);
-			item_data.time = date.parse(new Date());
-			item_data.cycle = "once";
-			delete item_data.gaze;
-
-			data.list.fail[item.id] = item_data;
+		if (item_data.cycle == "daily" || item_data.cycle == "weekly") {
+			newCycle(item_data);
 		}
 
-		if (original_data.cycle == "daily" || original_data.cycle == "weekly") {
-			newCycle(original_data);
-		}
+		item_data.time = date.parse(new Date());
+		delete item_data.cycle;
+		delete item_data.gaze;
+		data.list.fail[item.id] = item_data;
+
+		delete data.list.todo[item.id];
 
 		transceiver.send("view.todo");
 		transceiver.send("view.fail");
 		transceiver.send("view.hint");
-		transceiver.send("page.close");
 	}
 
 	/**
@@ -139,6 +136,44 @@ export namespace todo_processer {
 
 		transceiver.send("view.todo");
 	}
+}
+
+export namespace entry_processer {
+	/**
+	 * 准备编辑条目
+	 * @param element 条目对象
+	 */
+	export function load(element: any) {
+		if (element.root) {
+			transceiver.send("input.entry", element.root, element.id, data.list.todo[element.root].entry[element.id]);
+		} else {
+			transceiver.send("input.entry", element.id);
+		}
+	}
+
+	/**
+	 * 编辑条目
+	 * @param root 事项ID
+	 * @param id 条目ID
+	 * @param entry 条目数据
+	 */
+	export function edit(root: string, id: string, entry: any): void {
+		data.list.todo[root].entry[id] = {
+			label: entry.label,
+			content: entry.content,
+			done: false
+		}
+		transceiver.send("view.todo");
+	}
+
+	/**
+	 * 删除条目
+	 * @param entry 条目对象
+	 */
+	export function deleteEntry(entry: any) {
+		delete data.list.todo[entry.root].entry[entry.id];
+		transceiver.send("view.todo");
+	}
 
 	/**
 	 * 变更条目状态
@@ -146,19 +181,7 @@ export namespace todo_processer {
 	 */
 	export function change(entry: any): void {
 		let entry_data = data.list.todo[entry.root].entry[entry.id];
-
 		entry_data.done = !entry_data.done;
-
 		transceiver.send("view.todo");
-	}
-
-	/**
-	 * 直接移除条目
-	 * @param entry 条目对象
-	 */
-	export function remove(entry: any): void {
-		delete data.list.todo[entry.root].entry[entry.id];
-		transceiver.send("view.todo");
-		transceiver.send("page.close");
 	}
 }

@@ -1,0 +1,89 @@
+/* 模块调用 */
+import { code, inputer, transceiver } from "../tool";
+
+export namespace list_inputer {
+	let title: string;
+	let total_option: number = 2;
+
+	let maximum_priority: number;
+
+	let list_id: string
+	let list_label: string;
+	let list_priority: number | string;
+
+	/**
+	 * 显示清单编辑器
+	 * @param priority 清单最大优先层级
+	 * @param id 清单ID
+	 * @param list 清单数据
+	 */
+	export function start(priority: number, id?: string, list?: any): void {
+		maximum_priority = priority;
+
+		if (id) {
+			title = "修改清单";
+			list_id = id;
+			list_label = list.label;
+			list_priority = list.priority;
+		} else {
+			title = "新建清单";
+			list_id = code.generate(8);
+			list_label = "";
+			list_priority = "";
+		}
+
+		editLabel();
+	}
+
+	/**
+	 * 编辑清单名称
+	 */
+	function editLabel(): void {
+		let box = inputer.text(title, list_label, "清单名称", "请输入清单名称", total_option, 1);
+
+		box.onDidAccept(() => {
+			list_label = box.value;
+
+			if (list_label.replace(/\s/g, "") != "") {
+				editPriority();
+			} else {
+				box.validationMessage = "清单名称不能为空！";
+			}
+		});
+
+		box.show();
+	}
+
+	/**
+	 * 编辑清单优先层级
+	 */
+	function editPriority(): void {
+		let box = inputer.pick(title, String(list_priority), "优先层级", total_option, 3);
+
+		let priorities: inputer.PickItem[] = [];
+		for (let index = 0; index <= maximum_priority + 1; index++) {
+			priorities.push(new inputer.PickItem(String(index)));
+		}
+		box.items = priorities;
+
+		box.onDidChangeSelection(item => {
+			list_priority = Number(item[0].label);
+			box.hide();
+			consolidate();
+		});
+
+		box.show();
+	}
+
+	/**
+	 * 整合输入数据
+	 */
+	function consolidate(): void {
+		let data = {
+			label: list_label,
+			priority: list_priority
+		}
+
+		transceiver.send("list.alter", list_id, data);
+	}
+}

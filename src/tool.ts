@@ -65,6 +65,62 @@ export namespace command {
 	}
 }
 
+export namespace inputer {
+	/**
+	 * 生成输入框
+	 * @param title 标题
+	 * @param total_step 总步骤
+	 * @param step 步骤
+	 * @param value 值
+	 * @returns 输入框
+	 */
+	export function text(title: string, value: string, placeholder: string, prompt?: string, total_step?: number, step?: number): vscode.InputBox {
+		let box = vscode.window.createInputBox();
+		box.title = title;
+		box.totalSteps = total_step;
+		box.step = step;
+		box.value = value;
+		box.placeholder = placeholder;
+		box.prompt = prompt;
+		box.onDidHide(() => box.dispose());
+		box.onDidChangeValue(() => box.validationMessage = undefined);
+		return box;
+	}
+
+	/**
+	 * 生成选择框
+	 * @param title 标题
+	 * @param total_step 总步骤
+	 * @param step 步骤
+	 * @param value 值
+	 * @returns 选择框
+	 */
+	export function pick(title: string, value: string, placeholder: string, total_step?: number, step?: number): vscode.QuickPick<PickItem>{
+		let box = vscode.window.createQuickPick<PickItem>();
+		box.title = title;
+		box.totalSteps = total_step;
+		box.step = step;
+		box.value = value;
+		box.placeholder = placeholder;
+		box.onDidHide(() => box.dispose());
+		return box;
+	}
+
+	export class PickItem implements vscode.QuickPickItem {
+		label: string;
+		detail?: string;
+		description?: string;
+		information?: string;
+
+		constructor(label: string, information?: string, description?: string, detail?: string) {
+			this.label = label;
+			this.detail = detail;
+			this.description = description;
+			this.information = information;
+		}
+	}
+}
+
 export namespace transceiver {
 	let extension_context: vscode.ExtensionContext;			// 扩展上下文
 	let listener: events.EventEmitter;						// 事件监听器
@@ -102,6 +158,15 @@ export namespace transceiver {
 			vscode.window.showErrorMessage("命令\"" + command + "\"未注册。");
 		}
 	}
+
+	/**
+	 * 销毁事件
+	 * @param command 命令
+	 * @param callback 函数
+	 */
+	export function dispose(command: string, callback: (...argument: any[]) => any) {
+		listener.removeListener(command, callback);
+	}
 }
 
 export namespace date {
@@ -120,7 +185,7 @@ export namespace date {
 	/**
 	 * 将Date对象转换为时间文本 | 将时间整型转换为时间文本
 	 * @param time Date对象 | 时间整型
-	 * @param time_unit 时间精确单位 - **默认:** unit.minute
+	 * @param time_unit 时间精确单位 - **默认:** "minute"
 	 * @returns 时间文本
 	 */
 	export function textualize(time: Date | number, time_unit: unit = "minute"): string {

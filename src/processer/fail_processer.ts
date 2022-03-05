@@ -8,25 +8,18 @@ export namespace fail_processer {
 	 * @param item 事项对象
 	 */
 	export function restart(item: any): void {
-		let original_data = data.copy(data.list.fail[item.id]);
-		{
-			delete data.list.fail[item.id];
+		let item_data = data.copy(data.list.fail[item.id]);
+		item_data.time = date.parse(new Date());
+		item_data.cycle = "secular";
+		item_data.gaze = false;
+		if (!(item_data.type in data.profile.list)) item_data.type = "__untitled";
+		data.list.todo[item.id] = item_data;
 
-			let item_data = original_data;
-			item_data.cycle = "secular";
-			item_data.gaze = false;
-			item_data.time = date.parse(new Date());
+		delete data.list.fail[item.id];
 
-			data.list.todo[item.id] = item_data;
-
-			if (!(item_data.type in data.profile.list_priority)) {
-				transceiver.send("list.create", item_data.type);
-			}
-		}
 		transceiver.send("view.todo");
 		transceiver.send("view.fail");
 		transceiver.send("view.hint");
-		transceiver.send("page.close");
 	}
 
 	/**
@@ -42,18 +35,11 @@ export namespace fail_processer {
 	/**
 	 * 删除事项
 	 * @param item 事项对象
-	 * @param if_remind 是否确认删除
 	 */
-	export async function deleteItem(item: any, if_remind: boolean): Promise<void> {				// 跟delete重名了，我也很无奈
-		let if_delete: boolean = true;
-		if (if_remind && await message.show("information", "确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消") == "取消") {
-			if_delete = false;
-		}
-
-		if (if_delete) {
+	export async function deleteItem(item: any): Promise<void> {
+		if (await message.show("information", "确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消") == "确定") {
 			delete data.list.fail[item.id];
 			transceiver.send("view.fail");
-			transceiver.send("page.close");
 		}
 	}
 }

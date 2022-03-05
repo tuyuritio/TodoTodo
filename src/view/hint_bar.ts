@@ -1,5 +1,6 @@
 /* 模块调用 */
 import * as vscode from "vscode";
+import { transceiver } from "../tool";
 
 export namespace hint_bar {
 	let view: vscode.StatusBarItem;
@@ -7,12 +8,13 @@ export namespace hint_bar {
 	/**
 	 * 建立视图
 	 */
-	export function initialize() {
-		view = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 20000);
+	export function initialize(position: string) {
+		view = vscode.window.createStatusBarItem(position == "left" ? vscode.StatusBarAlignment.Left : vscode.StatusBarAlignment.Right, Number.MAX_SAFE_INTEGER);
 		view.command = {
-			command: "todotodo.todo.change_view",
+			command: "todotodo.view.change",
 			title: "切换视图"
 		}
+		transceiver.send("view.hint");
 	}
 
 	/**
