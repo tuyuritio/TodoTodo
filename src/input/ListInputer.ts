@@ -1,7 +1,7 @@
 /* 模块调用 */
-import { code, inputer, transceiver } from "../tool";
+import { Code, Inputer, Transceiver } from "../Tool";
 
-export namespace list_inputer {
+export namespace ListInputer {
 	let title: string;
 	let total_option: number = 2;
 
@@ -17,7 +17,7 @@ export namespace list_inputer {
 	 * @param id 清单ID
 	 * @param list 清单数据
 	 */
-	export function start(priority: number, id?: string, list?: any): void {
+	export function Start(priority: number, id?: string, list?: any): void {
 		maximum_priority = priority;
 
 		if (id) {
@@ -27,25 +27,25 @@ export namespace list_inputer {
 			list_priority = list.priority;
 		} else {
 			title = "新建清单";
-			list_id = code.generate(8);
+			list_id = Code.Generate(8);
 			list_label = "";
 			list_priority = "";
 		}
 
-		editLabel();
+		EditLabel();
 	}
 
 	/**
 	 * 编辑清单名称
 	 */
-	function editLabel(): void {
-		let box = inputer.text(title, list_label, "清单名称", "请输入清单名称", total_option, 1);
+	function EditLabel(): void {
+		let box = Inputer.Text(title, list_label, "清单名称", "请输入清单名称", total_option, 1);
 
 		box.onDidAccept(() => {
 			list_label = box.value;
 
 			if (list_label.replace(/\s/g, "") != "") {
-				editPriority();
+				EditPriority();
 			} else {
 				box.validationMessage = "清单名称不能为空！";
 			}
@@ -57,19 +57,19 @@ export namespace list_inputer {
 	/**
 	 * 编辑清单优先层级
 	 */
-	function editPriority(): void {
-		let box = inputer.pick(title, String(list_priority), "优先层级", total_option, 3);
+	function EditPriority(): void {
+		let box = Inputer.Pick(title, String(list_priority), "优先层级", total_option, 3);
 
-		let priorities: inputer.PickItem[] = [];
+		let priorities: Inputer.PickItem[] = [];
 		for (let index = 0; index <= maximum_priority + 1; index++) {
-			priorities.push(new inputer.PickItem(String(index)));
+			priorities.push(new Inputer.PickItem(String(index)));
 		}
 		box.items = priorities;
 
 		box.onDidChangeSelection(item => {
 			list_priority = Number(item[0].label);
 			box.hide();
-			consolidate();
+			Consolidate();
 		});
 
 		box.show();
@@ -78,12 +78,12 @@ export namespace list_inputer {
 	/**
 	 * 整合输入数据
 	 */
-	function consolidate(): void {
+	function Consolidate(): void {
 		let data = {
 			label: list_label,
 			priority: list_priority
 		}
 
-		transceiver.send("list.alter", list_id, data);
+		Transceiver.Send("list.alter", list_id, data);
 	}
 }

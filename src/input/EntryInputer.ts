@@ -1,7 +1,7 @@
 /* 模块调用 */
-import { code, inputer, transceiver } from "../tool";
+import { Code, Inputer, Transceiver } from "../Tool";
 
-export namespace entry_inputer {
+export namespace EntryInputer {
 	let title: string;
 	let total_option: number = 2;
 
@@ -16,7 +16,7 @@ export namespace entry_inputer {
 	 * @param id 条目ID
 	 * @param entry 条目对象
 	 */
-	export function start(root: string, id?: string, entry?: any): void {
+	export function Start(root: string, id?: string, entry?: any): void {
 		entry_root = root;
 
 		if (id) {
@@ -26,23 +26,23 @@ export namespace entry_inputer {
 			entry_content = entry.content;
 		} else {
 			title = "新建条目";
-			entry_id = code.generate(8);
+			entry_id = Code.Generate(8);
 			entry_label = "";
 			entry_content = "";
 		}
 
-		editLabel();
+		EditLabel();
 	}
 
 	/**
 	 * 编辑条目名称
 	 */
-	function editLabel(): void {
-		let box = inputer.text(title, entry_label, "条目名称", "请输入条目名称", total_option, 1);
+	function EditLabel(): void {
+		let box = Inputer.Text(title, entry_label, "条目名称", "请输入条目名称", total_option, 1);
 
 		box.onDidAccept(() => {
 			entry_label = box.value;
-			editContent();
+			EditContent();
 		});
 
 		box.show();
@@ -51,14 +51,14 @@ export namespace entry_inputer {
 	/**
 	 * 编辑条目内容
 	 */
-	function editContent(): void {
-		let box = inputer.text(title, entry_content, "条目内容(必填)", "请输入条目内容", total_option, 2);
+	function EditContent(): void {
+		let box = Inputer.Text(title, entry_content, "条目内容(必填)", "请输入条目内容", total_option, 2);
 
 		box.onDidAccept(() => {
 			entry_content = box.value;
 			if (entry_content.replace(/\s/g, "") != "") {
 				box.hide();
-				consolidate();
+				Consolidate();
 			} else {
 				box.validationMessage = "条目内容不能为空！";
 			}
@@ -70,12 +70,12 @@ export namespace entry_inputer {
 	/**
 	 * 整合输入数据
 	 */
-	function consolidate(): void {
+	function Consolidate(): void {
 		let data = {
 			label: entry_label,
 			content: entry_content
 		}
 
-		transceiver.send("entry.edit", entry_root, entry_id, data);
+		Transceiver.Send("entry.edit", entry_root, entry_id, data);
 	}
 }

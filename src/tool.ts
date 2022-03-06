@@ -1,28 +1,28 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import * as file_system from "fs";
-import * as path_system from "path";
+import * as FileSystem from "fs";
+import * as PathSystem from "path";
 import * as events from "events";
 
-export namespace action {
+export namespace Action {
 	/**
 	 * 循环执行函数
-	 * @param callback 需要循环执行的函数
-	 * @param seconds 循环间隔的秒数
+	 * @param Callback 回调函数
+	 * @param seconds 循环间隔描述
 	 */
-	export function cycle(callback: (...argument: any[]) => void, seconds: number = 1): void {
-		callback();
-		setInterval(callback, seconds * 1000);
+	export function Cycle(Callback: (...argument: any[]) => void, seconds: number = 1): void {
+		Callback();
+		setInterval(Callback, seconds * 1000);
 	}
 }
 
-export namespace code {
+export namespace Code {
 	/**
 	 * 生成指定长度的随机码
 	 * @param length 字符长度
 	 * @returns 随机码
 	 */
-	export function generate(length: number): string {
+	export function Generate(length: number): string {
 		let character_table: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefgijklmnopqrstuvwxyz";
 
 		let code_text = "";
@@ -34,13 +34,13 @@ export namespace code {
 	}
 }
 
-export namespace message {
+export namespace Message {
 	/**
 	 * 弹出信息
-	 * @param text 信息内容
 	 * @param type 信息类型
+	 * @param text 信息内容
 	 */
-	export function show(type: "error" | "warning" | "information", text: string, ...items: string[]): Thenable<string | undefined> {
+	export function Show(type: "error" | "warning" | "information", text: string, ...items: string[]): Thenable<string | undefined> {
 		switch (type) {
 			case "error":
 				return vscode.window.showErrorMessage(text, ...items);
@@ -54,27 +54,29 @@ export namespace message {
 	}
 }
 
-export namespace command {
+export namespace Command {
 	/**
 	 * 执行VSCode命令
 	 * @param command 命令文本
-	 * @param argument 参数
+	 * @param argument 参数序列
 	 */
-	export function execute(command: string, ...argument: any[]) {
+	export function Execute(command: string, ...argument: any[]): void {
 		vscode.commands.executeCommand(command, ...argument);
 	}
 }
 
-export namespace inputer {
+export namespace Inputer {
 	/**
 	 * 生成输入框
 	 * @param title 标题
+	 * @param value 覆盖值
+	 * @param placeholder 占位符
+	 * @param prompt 提示
 	 * @param total_step 总步骤
-	 * @param step 步骤
-	 * @param value 值
+	 * @param step 当前步骤
 	 * @returns 输入框
 	 */
-	export function text(title: string, value: string, placeholder: string, prompt?: string, total_step?: number, step?: number): vscode.InputBox {
+	export function Text(title: string, value: string, placeholder: string, prompt?: string, total_step?: number, step?: number): vscode.InputBox {
 		let box = vscode.window.createInputBox();
 		box.title = title;
 		box.totalSteps = total_step;
@@ -90,12 +92,13 @@ export namespace inputer {
 	/**
 	 * 生成选择框
 	 * @param title 标题
+	 * @param value 覆盖值
+	 * @param placeholder 占位符
 	 * @param total_step 总步骤
-	 * @param step 步骤
-	 * @param value 值
+	 * @param step 当前步骤
 	 * @returns 选择框
 	 */
-	export function pick(title: string, value: string, placeholder: string, total_step?: number, step?: number): vscode.QuickPick<PickItem>{
+	export function Pick(title: string, value: string, placeholder: string, total_step?: number, step?: number): vscode.QuickPick<PickItem>{
 		let box = vscode.window.createQuickPick<PickItem>();
 		box.title = title;
 		box.totalSteps = total_step;
@@ -121,7 +124,7 @@ export namespace inputer {
 	}
 }
 
-export namespace transceiver {
+export namespace Transceiver {
 	let extension_context: vscode.ExtensionContext;			// 扩展上下文
 	let listener: events.EventEmitter;						// 事件监听器
 
@@ -129,7 +132,7 @@ export namespace transceiver {
 	 * 新建监听器，建立上下文
 	 * @param context 扩展上下文
 	 */
-	export function initialize(context: vscode.ExtensionContext): void {
+	export function Initialize(context: vscode.ExtensionContext): void {
 		extension_context = context;
 		listener = new events.EventEmitter();
 	}
@@ -137,13 +140,13 @@ export namespace transceiver {
 	/**
 	 * 注册事件
 	 * @param command 命令
-	 * @param callback 函数
+	 * @param Callback 回调函数
 	 * @param outside 是否外部命令 - **默认:** false
 	 */
-	export function register(command: string, callback: (...argument: any[]) => any, outside: boolean = false): void {
-		listener.addListener(command, callback);
+	export function Register(command: string, Callback: (...argument: any[]) => any, outside: boolean = false): void {
+		listener.addListener(command, Callback);
 
-		if (outside) extension_context.subscriptions.push(vscode.commands.registerCommand("todotodo." + command, (...argument) => send(command, ...argument)));
+		if (outside) extension_context.subscriptions.push(vscode.commands.registerCommand("todotodo." + command, (...argument) => Send(command, ...argument)));
 	}
 
 	/**
@@ -151,7 +154,7 @@ export namespace transceiver {
 	 * @param command 命令
 	 * @param argument 参数序列
 	 */
-	export function send(command: string, ...argument: any[]): void {
+	export function Send(command: string, ...argument: any[]): void {
 		if (listener.eventNames().includes(command)) {
 			listener.emit(command, ...argument);
 		} else {
@@ -162,23 +165,23 @@ export namespace transceiver {
 	/**
 	 * 销毁事件
 	 * @param command 命令
-	 * @param callback 函数
+	 * @param callback 回调函数
 	 */
-	export function dispose(command: string, callback: (...argument: any[]) => any) {
+	export function Dispose(command: string, callback: (...argument: any[]) => any): void {
 		listener.removeListener(command, callback);
 	}
 }
 
-export namespace date {
+export namespace Time {
 	/* 全局变量 */
 	type unit = "year" | "month" | "date" | "hour" | "minute" | "second" | "millisecond";
 
 	/**
-	 * 将"YYYY/MM/DD-hh:mm"转换为时间整型 | 将Date对象转换为时间整型
+	 * 将时间文本转换为时间整型 | 将Date对象转换为时间整型
 	 * @param time 时间文本 | Date对象
 	 * @returns 时间整型
 	 */
-	export function parse(time: string | Date) {
+	export function Parse(time: string | Date): number {
 		return new Date(time).getTime();
 	}
 
@@ -188,7 +191,7 @@ export namespace date {
 	 * @param time_unit 时间精确单位 - **默认:** "minute"
 	 * @returns 时间文本
 	 */
-	export function textualize(time: Date | number, time_unit: unit = "minute"): string {
+	export function Textualize(time: Date | number, time_unit: unit = "minute"): string {
 		if (typeof time == "number") time = new Date(time);
 
 		let time_text: string = "";
@@ -229,22 +232,22 @@ export namespace date {
 	 * @param time 时间文本
 	 * @returns 是否在过去或未来24小时内
 	 */
-	export function isRecent(time: string): boolean {
+	export function In24(time: string): boolean {
 		let expected_time = new Date();
 		expected_time.setHours(expected_time.getHours() + 24);
 
-		return parse(time) < parse(expected_time);
+		return Parse(time) < Parse(expected_time);
 	}
 }
 
-export namespace path {
+export namespace Path {
 	/**
 	 * 连接路径序列
 	 * @param paths 路径序列
 	 * @returns 
 	 */
-	export function link(...paths: string[]): string {
-		return path_system.join(...paths);
+	export function Link(...paths: string[]): string {
+		return PathSystem.join(...paths);
 	}
 
 	/**
@@ -252,16 +255,16 @@ export namespace path {
 	 * @param path 文件路径
 	 * @returns 文件内容
 	 */
-	export function readFile(path: string): string {
-		return file_system.readFileSync(path, "utf8");
+	export function ReadFile(path: string): string {
+		return FileSystem.readFileSync(path, "utf8");
 	}
 
 	/**
 	 * 创建目录
 	 * @param path 目录路径
 	 */
-	export function makeDirectory(path: string): void {
-		file_system.mkdirSync(path);
+	export function MakeDirectory(path: string): void {
+		FileSystem.mkdirSync(path);
 	}
 
 	/**
@@ -269,16 +272,16 @@ export namespace path {
 	 * @param path 目录路径
 	 * @returns 文件名序列
 	 */
-	export function readDirectory(path: string): string[] {
-		return file_system.readdirSync(path);
+	export function ReadDirectory(path: string): string[] {
+		return FileSystem.readdirSync(path);
 	}
 
 	/**
 	 * 读取JSON数据
-	 * @param file_path JSON文件路径
+	 * @param path JSON文件路径
 	 */
-	export function readJSON(path: string): any {
-		return JSON.parse(file_system.readFileSync(path, "utf8"));
+	export function ReadJSON(path: string): any {
+		return JSON.parse(FileSystem.readFileSync(path, "utf8"));
 	}
 
 	/**
@@ -286,8 +289,8 @@ export namespace path {
 	 * @param file_path JSON文件路径
 	 * @param data JSON文件数据
 	 */
-	export function writeJSON(file_path: string, data: any): void {
-		file_system.writeFileSync(file_path, JSON.stringify(data, null, "\t"));
+	export function WriteJSON(file_path: string, data: any): void {
+		FileSystem.writeFileSync(file_path, JSON.stringify(data, null, "\t"));
 	}
 
 	/**
@@ -295,24 +298,24 @@ export namespace path {
 	 * @param path 文件或目录路径
 	 * @returns 是否存在
 	 */
-	export function exist(path: string): boolean {
-		return file_system.existsSync(path);
+	export function Exist(path: string): boolean {
+		return FileSystem.existsSync(path);
 	}
 
 	/**
 	 * 删除文件
 	 * @param path 文件路径
 	 */
-	export function removeFile(path: string): void {
-		file_system.unlinkSync(path);
+	export function RemoveFile(path: string): void {
+		FileSystem.unlinkSync(path);
 	}
 
 	/**
 	 * 移除目录
 	 * @param path 目录路径
 	 */
-	export function removeDirectory(path: string): void {
-		file_system.rmdirSync(path);
+	export function RemoveDirectory(path: string): void {
+		FileSystem.rmdirSync(path);
 	}
 
 	/**
@@ -320,7 +323,7 @@ export namespace path {
 	 * @param old_path 旧路径
 	 * @param new_path 新路径
 	 */
-	export function rename(old_path: string, new_path: string) {
-		file_system.renameSync(old_path, new_path);
+	export function Rename(old_path: string, new_path: string): void {
+		FileSystem.renameSync(old_path, new_path);
 	}
 }

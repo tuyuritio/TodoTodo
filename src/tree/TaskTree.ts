@@ -1,35 +1,35 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import { transceiver } from "../../tool";
+import { Transceiver } from "../Tool";
 
-export namespace task_tree {
+export namespace TaskTree {
 	let view: Tree;
 	let tree_data: Task[];
 
 	/**
 	 * 建立视图
 	 */
-	export function initialize() {
+	export function Initialize(): void {
 		view = new Tree();
 		vscode.window.createTreeView("task_tree", { showCollapseAll: false, treeDataProvider: view });
-		transceiver.send("view.task");
+		Transceiver.Send("view.task");
 	}
 
 	/**
 	 * 解析数据并刷新视图
-	 * @param task_data 原始数据
+	 * @param data 原始数据
 	 */
-	export function parseData(task_data: any) {
+	export function ParseData(data: any): void {
 		tree_data = [];
-		for (let id in task_data) {
-			let task_item = task_data[id];
+		for (let id in data) {
+			let task_item = data[id];
 
 			let index = tree_data.length;
-			while (index > 0 && task_item.priority > task_data[String(tree_data[index - 1].id)].priority) {
+			while (index > 0 && task_item.priority > data[String(tree_data[index - 1].id)].priority) {
 				tree_data[index] = tree_data[index - 1];
 				index--;
 			}
-			tree_data.unshift(new Task(id, task_item.label, task_item.today, task_item.duration));
+			tree_data[index] = new Task(id, task_item.label, task_item.today, task_item.duration);
 		}
 
 		view.event_emitter.fire();

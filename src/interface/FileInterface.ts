@@ -1,18 +1,18 @@
 /* 模块调用 */
-import { code, command, date, message, path } from "../tool";
-import { data } from "../data_center";
+import { Code, Command, Time, Message, Path } from "../Tool";
+import { Data } from "../DataCenter";
 
-export namespace file_interface {
+export namespace FileInterface {
 	/**
 	 * 检查文件路径
 	 * @param data_path 文件路径
 	 * @returns 文件路径 | undefined
 	 */
-	function checkPath(data_path: string): string | undefined {
+	function CheckPath(data_path: string): string | undefined {
 		if (data_path.replace(" ", "") == "") {
-			return path.link(__dirname, "..", "..", "TodoTodoData");
-		} else if (!path.exist(data_path)) {
-			setPath();
+			return Path.Link(__dirname, "..", "..", "TodoTodoData");
+		} else if (!Path.Exist(data_path)) {
+			SetPath();
 			return undefined;
 		} else {
 			return data_path;
@@ -22,13 +22,13 @@ export namespace file_interface {
 	/**
 	 * 读取本地数据
 	 */
-	export function read(): void {
+	export function Read(): void {
 		let local_data: any = {};
-		let data_path = checkPath(data.configuration.path);
+		let data_path = CheckPath(Data.Configuration.path);
 		if (data_path) {
 			for (let file_name of ["task", "todo", "done", "fail", "profile"]) {
-				if (path.exist(path.link(data_path, file_name + ".json"))) {
-					local_data[file_name] = path.readJSON(path.link(data_path, file_name + ".json"));
+				if (Path.Exist(Path.Link(data_path, file_name + ".json"))) {
+					local_data[file_name] = Path.ReadJSON(Path.Link(data_path, file_name + ".json"));
 				}
 			}
 		}
@@ -39,7 +39,7 @@ export namespace file_interface {
 					local_data.profile.list = { __untitled: { label: "暂存清单", priority: -1 } };
 
 					for (let label in local_data.profile.list_priority) {
-						local_data.profile.list[code.generate(8)] = {
+						local_data.profile.list[Code.Generate(8)] = {
 							label: label,
 							priority: local_data.profile.list_priority[label]
 						}
@@ -79,7 +79,7 @@ export namespace file_interface {
 
 			for (let id in local_data.todo) {
 				let item = local_data.todo[id];
-				item.time = date.parse(item.time ? item.time : new Date());
+				item.time = Time.Parse(item.time ? item.time : new Date());
 				delete item.id;
 
 				for (let id in item.entry) {
@@ -91,7 +91,7 @@ export namespace file_interface {
 
 			for (let id in local_data.done) {
 				let item = local_data.done[id];
-				item.time = date.parse(item.time ? item.time : "2020/01/01-00:00");
+				item.time = Time.Parse(item.time ? item.time : "2020/01/01-00:00");
 				delete item.cycle;
 				delete item.gaze;
 				delete item.id;
@@ -105,7 +105,7 @@ export namespace file_interface {
 							} else {
 								item.entry[id].label = id;
 							}
-							item.entry[code.generate(8)] = data.copy(item.entry[id]);
+							item.entry[Code.Generate(8)] = Data.Copy(item.entry[id]);
 							delete item.entry[id];
 						}
 					}
@@ -116,7 +116,7 @@ export namespace file_interface {
 
 			for (let id in local_data.fail) {
 				let item = local_data.fail[id];
-				item.time = date.parse(item.time ? item.time : "2020/01/01-00:00");
+				item.time = Time.Parse(item.time ? item.time : "2020/01/01-00:00");
 				delete item.cycle;
 				delete item.gaze;
 				delete item.id;
@@ -130,7 +130,7 @@ export namespace file_interface {
 							} else {
 								item.entry[id].label = id;
 							}
-							item.entry[code.generate(8)] = data.copy(item.entry[id]);
+							item.entry[Code.Generate(8)] = Data.Copy(item.entry[id]);
 							delete item.entry[id];
 
 						}
@@ -142,71 +142,71 @@ export namespace file_interface {
 		}
 
 		if (local_data.profile) {
-			data.profile.list = local_data.profile.list;
-			data.profile.tree_type = local_data.profile.tree_type;
-			data.profile.empty_list = local_data.profile.empty_list;
+			Data.Profile.list = local_data.profile.list;
+			Data.Profile.tree_type = local_data.profile.tree_type;
+			Data.Profile.empty_list = local_data.profile.empty_list;
 		} else {
-			data.profile.list = {};
-			data.profile.tree_type = true;
-			data.profile.empty_list = false;
+			Data.Profile.list = {};
+			Data.Profile.tree_type = true;
+			Data.Profile.empty_list = false;
 		}
 
 		if (local_data.task) {
-			data.task.task = local_data.task;
+			Data.Task.task = local_data.task;
 		} else {
-			data.task.task = {};
+			Data.Task.task = {};
 		}
 
 		if (local_data.todo) {
-			data.list.todo = local_data.todo;
+			Data.List.todo = local_data.todo;
 		} else {
-			data.list.todo = {};
+			Data.List.todo = {};
 		}
 
 		if (local_data.done) {
-			data.list.done = local_data.done;
+			Data.List.done = local_data.done;
 		} else {
-			data.list.done = {};
+			Data.List.done = {};
 		}
 
 		if (local_data.fail) {
-			data.list.fail = local_data.fail;
+			Data.List.fail = local_data.fail;
 		} else {
-			data.list.fail = {};
+			Data.List.fail = {};
 		}
 	}
 
 	/**
 	 * 写入数据
 	 */
-	export function write(): void {
+	export function Write(): void {
 		let written_data: any = {
 			profile: {
-				list: data.profile.list,
-				tree_type: data.profile.tree_type,
-				empty_list: data.profile.empty_list
+				list: Data.Profile.list,
+				tree_type: Data.Profile.tree_type,
+				empty_list: Data.Profile.empty_list
 			},
-			task: data.task.task,
-			todo: data.list.todo,
-			done: data.list.done,
-			fail: data.list.fail
+			task: Data.Task.task,
+			todo: Data.List.todo,
+			done: Data.List.done,
+			fail: Data.List.fail
 		};
 
-		if (checkPath(data.configuration.path)) {
+		if (CheckPath(Data.Configuration.path)) {
 			for (let file_name in written_data) {
-				path.writeJSON(path.link(data.configuration.path, file_name + ".json"), written_data[file_name]);
+				Path.WriteJSON(Path.Link(Data.Configuration.path, file_name + ".json"), written_data[file_name]);
 			}
 		} else {
-			setPath();
+			SetPath();
 		}
 	}
 
 	/**
 	 * 设置路径
 	 */
-	async function setPath(): Promise<void> {
-		if (await message.show("error", "自定义文件目录路径无效，请检查！", "前往设置") == "前往设置") {
-			command.execute("workbench.action.openSettings", "todotodo.path");
+	async function SetPath(): Promise<void> {
+		if (await Message.Show("error", "自定义文件目录路径无效，请检查！", "前往设置") == "前往设置") {
+			Command.Execute("workbench.action.openSettings", "todotodo.path");
 		}
 	}
 }

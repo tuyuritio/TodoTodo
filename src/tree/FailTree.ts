@@ -1,29 +1,29 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import { date, transceiver } from "../../tool";
+import { Time, Transceiver } from "../Tool";
 
-export namespace fail_tree {
+export namespace FailTree {
 	let view: Tree;
 	let tree_data: Item[];
 
 	/**
 	 * 建立视图
 	 */
-	export function initialize() {
+	export function Initialize(): void {
 		view = new Tree();
 		vscode.window.createTreeView("fail_tree", { showCollapseAll: false, treeDataProvider: view });
-		transceiver.send("view.fail");
+		Transceiver.Send("view.fail");
 	}
 
 	/**
 	 * 解析数据并刷新视图
-	 * @param fail_data 原始数据
+	 * @param data 原始数据
 	 */
-	export function parseData(fail_data: any) {
+	export function ParseData(data: any): void {
 		tree_data = [];
-		for (let id in fail_data) {
-			let item_data = fail_data[id];
-			tree_data.unshift(new Item(id, item_data.label, date.textualize(item_data.time)));
+		for (let id in data) {
+			let item_data = data[id];
+			tree_data.unshift(new Item(id, item_data.label, Time.Textualize(item_data.time)));
 		}
 
 		view.event_emitter.fire();
@@ -36,11 +36,6 @@ export namespace fail_tree {
 			this.contextValue = "fail_item";
 			this.tooltip = "失效时间: " + time;
 			this.iconPath = new vscode.ThemeIcon("circle-slash");
-			this.command = {
-				title: "显示详情",
-				command: "todotodo.list.edit_item",
-				arguments: [this, "fail"]
-			};
 		}
 	};
 

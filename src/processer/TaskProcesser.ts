@@ -1,26 +1,26 @@
 /* 模块调用 */
-import { date, message, transceiver } from "../tool";
-import { data } from "../data_center";
+import { Time, Message, Transceiver } from "../Tool";
+import { Data } from "../DataCenter";
 
-export namespace task_processer {
+export namespace TaskProcesser {
 	let default_all_state: boolean = false;
 
 	/**
 	 * 准备调整任务
 	 * @param task 任务对象
 	 */
-	export function load(task?: any): void {
+	export function Load(task?: any): void {
 		let maximum_priority: number = 0;
 
-		for (let id in data.task.task) {
-			let task_data = data.task.task[id];
+		for (let id in Data.Task.task) {
+			let task_data = Data.Task.task[id];
 			if (task_data.priority > maximum_priority) maximum_priority = task_data.priority;
 		}
 
 		if (task) {
-			transceiver.send("input.task", maximum_priority, task.id, data.task.task[task.id]);
+			Transceiver.Send("input.task", maximum_priority, task.id, Data.Task.task[task.id]);
 		} else {
-			transceiver.send("input.task", maximum_priority);
+			Transceiver.Send("input.task", maximum_priority);
 		}
 	}
 
@@ -28,41 +28,38 @@ export namespace task_processer {
 	 * 调整任务
 	 * @param task 任务对象
 	 */
-	export function adjust(id: string, task: any): void {
-		let task_data: any;
-
-		if (data.task.task[id]) {
-			task_data = data.task.task[task.id];
+	export function Adjust(id: string, task: any): void {
+		if (Data.Task.task[id]) {
+			let task_data = Data.Task.task[id];
 			task_data.label = task.label;
 			task_data.priority = task.priority;
 		} else {
-			task_data = {
+			Data.Task.task[id] = {
 				label: task.label,
 				priority: task.priority,
 				today: false,
-				start: date.textualize(new Date(), "date"),
+				start: Time.Textualize(new Date(), "date"),
 				duration: -1,
 				history: []
-			}
+			};
 		}
-		data.task.task[id] = task_data;
 
-		transceiver.send("view.task");
+		Transceiver.Send("view.task");
 	}
 
 	/**
 	 * 终止任务
 	 * @param task 任务对象
 	 */
-	export async function terminate(task: any): Promise<void> {
+	export async function Terminate(task: any): Promise<void> {
 		let if_delete: boolean = true;
-		if (await message.show("information", "确认终止任务 \"" + task.label + "\" 吗？", "确认", "取消") == "取消") {
+		if (await Message.Show("information", "确认终止任务 \"" + task.label + "\" 吗？", "确认", "取消") == "取消") {
 			if_delete = false;
 		}
 
 		if (if_delete) {
-			delete data.task.task[task.id];
-			transceiver.send("view.task");
+			delete Data.Task.task[task.id];
+			Transceiver.Send("view.task");
 		}
 	}
 
@@ -71,15 +68,15 @@ export namespace task_processer {
 	 * @param task 任务数据
 	 * @returns 今日是否打卡
 	 */
-	function check(task: any): boolean {
+	function Check(task: any): boolean {
 		let start: Date = new Date(task.start);
 		start.setDate(start.getDate() + task.duration);			// 最后一个打卡日的00:00
 
-		let gap_day: number = (date.parse(new Date()) - date.parse(start)) / (24 * 60 * 60 * 1000);
+		let gap_day: number = (Time.Parse(new Date()) - Time.Parse(start)) / (24 * 60 * 60 * 1000);
 
 		if (gap_day > 2 && task.duration != -1) {	// 昨日未打卡
 			task.history.push(task.start + "+" + task.duration);
-			task.start = date.textualize(new Date(), "date");
+			task.start = Time.Textualize(new Date(), "date");
 			task.duration = -1;
 		}
 
@@ -93,29 +90,29 @@ export namespace task_processer {
 	/**
 	 * 检查所有任务数据
 	 */
-	export function checkAll(): void {
+	export function CheckAll(): void {
 		let if_change: boolean = false;
 
-		let task_data = data.task.task;
+		let task_data = Data.Task.task;
 		for (let id in task_data) {
 			let task = task_data[id];
-			let today: boolean = data.copy(task.today);
+			let today: boolean = Data.Copy(task.today);
 
-			task.today = check(task);
+			task.today = Check(task);
 			if (today != task.today) if_change = true;
 		}
 
-		if (if_change) transceiver.send("view.task");
+		if (if_change) Transceiver.Send("view.task");
 	}
 
 	/**
 	 * 变更任务状态
 	 * @param task 任务对象
 	 */
-	export function change(task: any): void {
-		let task_data = data.task.task[task.id];
+	export function Change(task: any): void {
+		let task_data = Data.Task.task[task.id];
 
-		if (check(task_data)) {
+		if (Check(task_data)) {
 			task_data.duration--;
 			task_data.today = false;
 		} else {
@@ -123,24 +120,24 @@ export namespace task_processer {
 			task_data.today = true;
 		}
 
-		transceiver.send("view.task");
+		Transceiver.Send("view.task");
 	}
 
 	/**
 	 * 变更全部任务状态
 	 */
-	export function changeAll() {
+	export function ChangeAll(): void {
 		default_all_state = !default_all_state;
 
 		let if_changed: boolean = false;
-		for (let id in data.task.task) {
-			let task_data = data.task.task[id];
-			if (!check(task_data) && default_all_state) {
+		for (let id in Data.Task.task) {
+			let task_data = Data.Task.task[id];
+			if (!Check(task_data) && default_all_state) {
 				task_data.duration++;
 				task_data.today = true;
 
 				if_changed = true;
-			} else if (check(task_data) && !default_all_state) {
+			} else if (Check(task_data) && !default_all_state) {
 				task_data.duration--;
 				task_data.today = false;
 
@@ -148,6 +145,6 @@ export namespace task_processer {
 			}
 		}
 
-		if (if_changed) transceiver.send("view.task");
+		if (if_changed) Transceiver.Send("view.task");
 	}
 }

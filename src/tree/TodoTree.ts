@@ -1,8 +1,8 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import { date, transceiver } from "../../tool";
+import { Time, Transceiver } from "../Tool";
 
-export namespace todo_tree {
+export namespace TodoTree {
 	let view: Tree;
 	let tree_type: boolean;
 	let tree_data: { list: List[], list_item: any, item_entry: any };
@@ -10,18 +10,18 @@ export namespace todo_tree {
 	/**
 	 * 建立视图
 	 */
-	export function initialize(): void {
+	export function Initialize(): void {
 		view = new Tree();
 		vscode.window.createTreeView("todo_tree", { showCollapseAll: true, treeDataProvider: view });
-		transceiver.send("view.todo");
+		Transceiver.Send("view.todo");
 	}
 
 	/**
 	 * 解析数据并刷新视图
-	 * @param todo_data 原始数据
+	 * @param data 原始数据
 	 * @param profile 配置数据
 	 */
-	export function parseData(todo_data: any, profile: any) {
+	export function ParseData(data: any, profile: any): void {
 		tree_type = profile.tree_type;
 		tree_data = { list: [], list_item: undefined, item_entry: undefined };
 
@@ -37,8 +37,8 @@ export namespace todo_tree {
 
 		// 排序事项并装入相应清单
 		tree_data.item_entry = {};
-		for (let item_id in todo_data) {
-			let item_data = todo_data[item_id];
+		for (let item_id in data) {
+			let item_data = data[item_id];
 
 			let item_list: any;
 			if (tree_type) {
@@ -50,7 +50,7 @@ export namespace todo_tree {
 			// 事项排序
 			let index: number = item_list.length;
 			while (index > 0) {
-				let pointer_item = todo_data[item_list[index - 1].id];
+				let pointer_item = data[item_list[index - 1].id];
 
 				if (item_data.cycle == "secular" && pointer_item.cycle == "secular") {
 					if (item_data.priority == pointer_item.priority) {
@@ -118,7 +118,7 @@ export namespace todo_tree {
 			this.id = id;
 			this.collapsibleState = entry ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None;
 
-			let time_text = date.textualize(time);
+			let time_text = Time.Textualize(time);
 			switch (cycle) {
 				case "secular":
 					this.tooltip = "修改时间: " + time_text;
@@ -128,7 +128,7 @@ export namespace todo_tree {
 				default:
 					this.tooltip = "截止时间: " + time_text;
 
-					if (date.isRecent(time_text)) {
+					if (Time.In24(time_text)) {
 						this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
 						this.description = time_text.substring(11, 16);
 					} else {
