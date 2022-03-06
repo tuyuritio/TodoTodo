@@ -8,7 +8,6 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 src/**
-!src/view/**
 TodoTodoData/**
 !TodoTodoData/.keep
 PersonalAccessToken.ini

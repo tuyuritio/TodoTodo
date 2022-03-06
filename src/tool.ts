@@ -96,15 +96,17 @@ export namespace Inputer {
 	 * @param placeholder 占位符
 	 * @param total_step 总步骤
 	 * @param step 当前步骤
+	 * @param match 匹配描述 - **默认:** false
 	 * @returns 选择框
 	 */
-	export function Pick(title: string, value: string, placeholder: string, total_step?: number, step?: number): vscode.QuickPick<PickItem>{
+	export function Pick(title: string, value: string, placeholder: string, total_step?: number, step?: number, match: boolean = false): vscode.QuickPick<PickItem> {
 		let box = vscode.window.createQuickPick<PickItem>();
 		box.title = title;
 		box.totalSteps = total_step;
 		box.step = step;
 		box.value = value;
 		box.placeholder = placeholder;
+		box.matchOnDescription = match;
 		box.onDidHide(() => box.dispose());
 		return box;
 	}

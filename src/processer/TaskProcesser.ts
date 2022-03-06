@@ -1,5 +1,5 @@
 /* 模块调用 */
-import { Time, Message, Transceiver } from "../Tool";
+import { Time, Message, Transceiver, Code } from "../Tool";
 import { Data } from "../DataCenter";
 
 export namespace TaskProcesser {
@@ -52,14 +52,45 @@ export namespace TaskProcesser {
 	 * @param task 任务对象
 	 */
 	export async function Terminate(task: any): Promise<void> {
-		let if_delete: boolean = true;
-		if (await Message.Show("information", "确认终止任务 \"" + task.label + "\" 吗？", "确认", "取消") == "取消") {
-			if_delete = false;
-		}
-
-		if (if_delete) {
+		if (await Message.Show("information", "确认终止任务 \"" + task.label + "\" 吗？", "确认", "取消") == "确认") {
 			delete Data.Task.task[task.id];
 			Transceiver.Send("view.task");
+		}
+	}
+
+	/**
+	 * 归档任务
+	 * @param task 任务对象
+	 */
+	export async function Archive(task: any) {
+		if (await Message.Show("information", "确认归档任务 \"" + task.label + "\" 吗？", "确认", "取消") == "确认") {
+			let data = Data.Task.task[task.id];
+
+			let archive: any = {
+				label: data.label,
+				type: "__untitled",
+				priority: 0,
+				entry: {},
+				time: Time.Parse(new Date())
+			}
+
+			archive.entry[Code.Generate(8)] = {
+				label: "开始时间",
+				content: data.start,
+				done: true
+			};
+
+			archive.entry[Code.Generate(8)] = {
+				label: "连续打卡",
+				content: data.duration + 1,
+				done: true
+			};
+
+			Data.List.done[Code.Generate(8)] = archive;
+
+			delete Data.Task.task[task.id];
+			Transceiver.Send("view.task");
+			Transceiver.Send("view.done");
 		}
 	}
 

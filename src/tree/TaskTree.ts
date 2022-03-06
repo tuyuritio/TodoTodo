@@ -1,6 +1,6 @@
 /* 模块调用 */
 import * as vscode from "vscode";
-import { Transceiver } from "../Tool";
+import { Time, Transceiver } from "../Tool";
 
 export namespace TaskTree {
 	let view: Tree;
@@ -29,14 +29,27 @@ export namespace TaskTree {
 				tree_data[index] = tree_data[index - 1];
 				index--;
 			}
-			tree_data[index] = new Task(id, task_item.label, task_item.today, task_item.duration);
+
+			const Period = (start: string, duration: number) => {
+				let date = new Date(start);
+				date.setDate(date.getDate() + duration);
+				return start + "~" + Time.Textualize(date, "date");
+			};
+
+			let histories: string[] = [];
+			if (task_item.duration != -1) histories.push(Period(task_item.start, task_item.duration));
+			for (let index = task_item.history.length - 1; index >= 0; index--) {
+				let days = task_item.history[index];
+				histories.push(Period(days.substring(0, 10), Number(days.substring(11))));
+			}
+			tree_data[index] = new Task(id, task_item.label, task_item.today, task_item.duration, histories);
 		}
 
 		view.event_emitter.fire();
 	}
 
 	class Task extends vscode.TreeItem {
-		constructor(id: string, label: string, today: boolean, duration: number) {
+		constructor(id: string, label: string, today: boolean, duration: number, history: string[]) {
 			super(label);
 			this.id = id;
 			this.contextValue = "task_item";
@@ -53,9 +66,16 @@ export namespace TaskTree {
 			}
 
 			if (duration != -1) {
-				this.tooltip = "已连续打卡" + (duration + 1) + "天！";
+				this.description = "已打卡" + (duration + 1) + "天";
 			} else {
-				this.tooltip = "暂未开始打卡。";
+				this.description = "暂未打卡";
+			}
+
+			if (history.length) {
+				this.tooltip = "历史打卡 :";
+				for (let index = 0; index < history.length; index++) {
+					this.tooltip += "\n" + history[index];
+				}
 			}
 		}
 	};

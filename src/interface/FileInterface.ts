@@ -1,5 +1,5 @@
 /* 模块调用 */
-import { Code, Command, Time, Message, Path } from "../Tool";
+import { Command, Message, Path } from "../Tool";
 import { Data } from "../DataCenter";
 
 export namespace FileInterface {
@@ -29,114 +29,6 @@ export namespace FileInterface {
 			for (let file_name of ["task", "todo", "done", "fail", "profile"]) {
 				if (Path.Exist(Path.Link(data_path, file_name + ".json"))) {
 					local_data[file_name] = Path.ReadJSON(Path.Link(data_path, file_name + ".json"));
-				}
-			}
-		}
-
-		{	// 兼容2.1.0
-			if (local_data.profile) {
-				if (local_data.profile.list_priority) {
-					local_data.profile.list = { __untitled: { label: "暂存清单", priority: -1 } };
-
-					for (let label in local_data.profile.list_priority) {
-						local_data.profile.list[Code.Generate(8)] = {
-							label: label,
-							priority: local_data.profile.list_priority[label]
-						}
-					}
-
-					delete local_data.profile.list_priority;
-
-					for (let list in local_data.profile.list) {
-						for (let id in local_data.todo) {
-							if (local_data.todo[id].type == local_data.profile.list[list].label) {
-								local_data.todo[id].type = list;
-							}
-						}
-					}
-
-					for (let list in local_data.profile.list) {
-						for (let id in local_data.done) {
-							if (local_data.done[id].type == local_data.profile.list[list].label) {
-								local_data.done[id].type = list;
-							}
-						}
-					}
-
-					for (let list in local_data.profile.list) {
-						for (let id in local_data.fail) {
-							if (local_data.fail[id].type == local_data.profile.list[list].label) {
-								local_data.fail[id].type = list;
-							}
-						}
-					}
-				}
-
-				if (!local_data.profile.empty_list) {
-					local_data.profile.empty_list = false;
-				}
-			}
-
-			for (let id in local_data.todo) {
-				let item = local_data.todo[id];
-				item.time = Time.Parse(item.time ? item.time : new Date());
-				delete item.id;
-
-				for (let id in item.entry) {
-					if (item.entry[id].label.substring(0, 7) == "__entry") {
-						item.entry[id].label = "";
-					}
-				}
-			}
-
-			for (let id in local_data.done) {
-				let item = local_data.done[id];
-				item.time = Time.Parse(item.time ? item.time : "2020/01/01-00:00");
-				delete item.cycle;
-				delete item.gaze;
-				delete item.id;
-
-				if (item.entry) {
-					for (let id in item.entry) {
-						delete item.entry[id].id;
-						if (!item.entry[id].label) {
-							if (id.substring(0, 7) == "__entry") {
-								item.entry[id].label = "";
-							} else {
-								item.entry[id].label = id;
-							}
-							item.entry[Code.Generate(8)] = Data.Copy(item.entry[id]);
-							delete item.entry[id];
-						}
-					}
-				} else {
-					item.entry = {};
-				}
-			}
-
-			for (let id in local_data.fail) {
-				let item = local_data.fail[id];
-				item.time = Time.Parse(item.time ? item.time : "2020/01/01-00:00");
-				delete item.cycle;
-				delete item.gaze;
-				delete item.id;
-
-				if (item.entry) {
-					for (let id in item.entry) {
-						delete item.entry[id].id;
-						if (!item.entry[id].label) {
-							if (id.substring(0, 7) == "__entry") {
-								item.entry[id].label = "";
-							} else {
-								item.entry[id].label = id;
-							}
-							item.entry[Code.Generate(8)] = Data.Copy(item.entry[id]);
-							delete item.entry[id];
-
-						}
-					}
-				} else {
-					item.entry = {};
 				}
 			}
 		}

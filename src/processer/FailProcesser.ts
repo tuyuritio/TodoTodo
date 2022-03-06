@@ -35,7 +35,7 @@ export namespace FailProcesser {
 	 * @param item 事项对象
 	 */
 	export async function Delete(item: any): Promise<void> {
-		if (await Message.Show("information", "确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消") == "确定") {
+		if (await Message.Show("warning", "确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消") == "确认") {
 			delete Data.List.fail[item.id];
 			Transceiver.Send("view.fail");
 		}

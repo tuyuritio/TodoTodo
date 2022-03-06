@@ -165,8 +165,16 @@ export namespace ItemInputer {
 	function EditWeekday(): void {
 		let weekday: string[] = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
-		let box = Inputer.Pick(title, weekday[new Date(item_time).getDay()], "截止周次", total_option, 4);
-		box.items = [new Inputer.PickItem("周日"), new Inputer.PickItem("周一"), new Inputer.PickItem("周二"), new Inputer.PickItem("周三"), new Inputer.PickItem("周四"), new Inputer.PickItem("周五"), new Inputer.PickItem("周六")];
+		let box = Inputer.Pick(title, weekday[new Date(item_time).getDay()], "截止周次", total_option, 4, true);
+		box.items = [
+			new Inputer.PickItem("周日", undefined, "7"),
+			new Inputer.PickItem("周一", undefined, "1"),
+			new Inputer.PickItem("周二", undefined, "2"),
+			new Inputer.PickItem("周三", undefined, "3"),
+			new Inputer.PickItem("周四", undefined, "4"),
+			new Inputer.PickItem("周五", undefined, "5"),
+			new Inputer.PickItem("周六", undefined, "6")
+		];
 
 		box.onDidChangeSelection(item => {
 			let time: Date = new Date();

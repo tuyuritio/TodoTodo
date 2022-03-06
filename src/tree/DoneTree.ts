@@ -23,19 +23,28 @@ export namespace DoneTree {
 		tree_data = [];
 		for (let id in data) {
 			let item_data = data[id];
-			tree_data.unshift(new Item(id, item_data.label, Time.Textualize(item_data.time)));
+			let entries: string[] = [];
+			for (let id in item_data.entry) {
+				let entry = item_data.entry[id];
+				entries.push(entry.label == "" ? entry.content : entry.label + " : " + entry.content);
+			}
+
+			tree_data.unshift(new Item(id, item_data.label, Time.Textualize(item_data.time), entries));
 		}
 
 		view.event_emitter.fire();
 	}
 
 	class Item extends vscode.TreeItem {
-		constructor(id: string, label: string, time: string) {
+		constructor(id: string, label: string, time: string, entries: string[]) {
 			super(label);
 			this.id = id;
 			this.contextValue = "done_item";
-			this.tooltip = "完成时间: " + time;
 			this.iconPath = new vscode.ThemeIcon("note");
+			this.tooltip = "完成时间: " + time;
+			for (let index = 0; index < entries.length; index++) {
+				this.tooltip += "\n" + entries[index];
+			}
 		}
 	};
 

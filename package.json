@@ -132,6 +132,11 @@
 				"icon": "$(trash)"
 			},
 			{
+				"command": "todotodo.task.archive",
+				"title": "归档任务",
+				"icon":"$(archive)"
+			},
+			{
 				"command": "todotodo.task.change_all",
 				"title": "变更所有任务状态",
 				"icon": "$(check-all)"
@@ -261,6 +266,10 @@
 					"when": "viewItem == task_item"
 				},
 				{
+					"command": "todotodo.task.archive",
+					"when": "viewItem == task_item"
+				},
+				{
 					"command": "todotodo.list.load",
 					"when": "viewItem == todo_list"
 				},
@@ -341,11 +350,6 @@
 				"key": "f5",
 				"command": "todotodo.file.read",
 				"when": "focusedView == todo_tree || focusedView == done_tree || focusedView == fail_tree || focusedView == task_tree"
-			},
-			{
-				"key": "f2",
-				"command": "todotodo.list.load",
-				"when": "viewItem == todo_list"
 			}
 		]
 	},

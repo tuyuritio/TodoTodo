@@ -37,7 +37,7 @@ export namespace ListProcesser {
 	 * @param list 清单对象
 	 */
 	export async function Remove(list: any): Promise<void> {
-		if (await Message.Show("information", "确认移除清单 \"" + list.label + "\" 吗？", "确认", "取消") == "确认") {
+		if (await Message.Show("warning", "确认移除清单 \"" + list.label + "\" 吗？", "确认", "取消") == "确认") {
 			let todo = Data.List.todo;
 			for (let id in todo) {
 				if (todo[id].type == list.id) delete todo[id];

@@ -83,6 +83,7 @@ namespace Communicator {
 		Transceiver.Register("task.adjust", Task.Adjust);
 		Transceiver.Register("task.terminate", Task.Terminate, true);
 		Transceiver.Register("task.change", Task.Change, true);
+		Transceiver.Register("task.archive", Task.Archive, true);
 		Transceiver.Register("task.change_all", Task.ChangeAll, true);
 
 		// 注册list命令

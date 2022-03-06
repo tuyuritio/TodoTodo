@@ -37,7 +37,7 @@ export namespace TodoProcesser {
 	 * @param item 事项对象
 	 */
 	export async function Delete(item: any): Promise<void> {
-		if (await Message.Show("information", "确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消") == "确认") {
+		if (await Message.Show("warning", "确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消") == "确认") {
 			delete Data.List.todo[item.id];
 			Transceiver.Send("view.todo");
 		}
