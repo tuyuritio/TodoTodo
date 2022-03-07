@@ -19,7 +19,7 @@ export namespace WorkspaceInterface {
 	export function Update(): void {
 		workspace.onDidChangeConfiguration(() => {
 			Load();
-			Transceiver.Send("file.read");
+			Transceiver.Send("file.read");			// 因为这一行所以引入了事件驱动框架
 		});
 	}
 }

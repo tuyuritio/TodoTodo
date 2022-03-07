@@ -3,11 +3,9 @@ import { Code, Inputer, Transceiver } from "../Tool";
 
 export namespace EntryInputer {
 	let title: string;
-	let total_option: number = 2;
 
 	let entry_root: string;
 	let entry_id: string;
-	let entry_label: string;
 	let entry_content: string;
 
 	/**
@@ -22,37 +20,21 @@ export namespace EntryInputer {
 		if (id) {
 			title = "编辑条目";
 			entry_id = id;
-			entry_label = entry.label;
 			entry_content = entry.content;
 		} else {
 			title = "新建条目";
 			entry_id = Code.Generate(8);
-			entry_label = "";
 			entry_content = "";
 		}
 
-		EditLabel();
-	}
-
-	/**
-	 * 编辑条目名称
-	 */
-	function EditLabel(): void {
-		let box = Inputer.Text(title, entry_label, "条目名称", "请输入条目名称", total_option, 1);
-
-		box.onDidAccept(() => {
-			entry_label = box.value;
-			EditContent();
-		});
-
-		box.show();
+		EditContent();
 	}
 
 	/**
 	 * 编辑条目内容
 	 */
 	function EditContent(): void {
-		let box = Inputer.Text(title, entry_content, "条目内容(必填)", "请输入条目内容", total_option, 2);
+		let box = Inputer.Text(title, entry_content, "条目内容", "请输入条目内容");
 
 		box.onDidAccept(() => {
 			entry_content = box.value;
@@ -72,8 +54,8 @@ export namespace EntryInputer {
 	 */
 	function Consolidate(): void {
 		let data = {
-			label: entry_label,
-			content: entry_content
+			content: entry_content,
+			done: false
 		}
 
 		Transceiver.Send("entry.edit", entry_root, entry_id, data);

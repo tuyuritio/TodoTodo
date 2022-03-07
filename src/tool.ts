@@ -240,6 +240,18 @@ export namespace Time {
 
 		return Parse(time) < Parse(expected_time);
 	}
+
+	/**
+	 * 生成时段文本
+	 * @param start 开始日期
+	 * @param duration 持续日数
+	 * @returns 时段文本
+	 */
+	export function Period(start: string, duration: number): string {
+		let date = new Date(start);
+		date.setDate(date.getDate() + duration);
+		return start + " ~ " + Time.Textualize(date, "date");
+	};
 }
 
 export namespace Path {

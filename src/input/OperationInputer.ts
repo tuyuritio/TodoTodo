@@ -15,13 +15,13 @@ export namespace OperationInputer {
 		operation.push(new Inputer.PickItem("建立任务", "task.load"));
 		operation.push(new Inputer.PickItem("创建清单", "list.load"));
 
-		if (empty_list) {
-			operation.push(new Inputer.PickItem("隐藏空清单", "list.empty"));
-		} else {
-			operation.push(new Inputer.PickItem("显示空清单", "list.empty"));
-		}
-
 		if (tree_type) {
+			if (empty_list) {
+				operation.push(new Inputer.PickItem("隐藏空清单", "list.empty"));
+			} else {
+				operation.push(new Inputer.PickItem("显示空清单", "list.empty"));
+			}
+
 			operation.push(new Inputer.PickItem("以列表显示待办事项", "view.change"));
 		} else {
 			operation.push(new Inputer.PickItem("以清单划分待办事项", "view.change"));

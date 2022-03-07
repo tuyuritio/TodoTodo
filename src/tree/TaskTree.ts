@@ -30,17 +30,11 @@ export namespace TaskTree {
 				index--;
 			}
 
-			const Period = (start: string, duration: number) => {
-				let date = new Date(start);
-				date.setDate(date.getDate() + duration);
-				return start + "~" + Time.Textualize(date, "date");
-			};
-
 			let histories: string[] = [];
-			if (task_item.duration != -1) histories.push(Period(task_item.start, task_item.duration));
+			if (task_item.duration != -1) histories.push(Time.Period(task_item.start, task_item.duration));
 			for (let index = task_item.history.length - 1; index >= 0; index--) {
 				let days = task_item.history[index];
-				histories.push(Period(days.substring(0, 10), Number(days.substring(11))));
+				histories.push(Time.Period(days.substring(0, 10), Number(days.substring(11))));
 			}
 			tree_data[index] = new Task(id, task_item.label, task_item.today, task_item.duration, histories);
 		}

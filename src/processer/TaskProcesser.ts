@@ -3,8 +3,6 @@ import { Time, Message, Transceiver, Code } from "../Tool";
 import { Data } from "../DataCenter";
 
 export namespace TaskProcesser {
-	let default_all_state: boolean = false;
-
 	/**
 	 * 准备调整任务
 	 * @param task 任务对象
@@ -74,17 +72,20 @@ export namespace TaskProcesser {
 				time: Time.Parse(new Date())
 			}
 
-			archive.entry[Code.Generate(8)] = {
-				label: "开始时间",
-				content: data.start,
-				done: true
-			};
+			let histories: string[] = [];
+			if (data.duration != -1) histories.push(Time.Period(data.start, data.duration));
+			for (let index = data.history.length - 1; index >= 0; index--) {
+				let days = data.history[index];
+				histories.push(Time.Period(days.substring(0, 10), Number(days.substring(11))));
+			}
 
-			archive.entry[Code.Generate(8)] = {
-				label: "连续打卡",
-				content: data.duration + 1,
-				done: true
-			};
+			if (histories.length) {
+				let history = { content: "历史打卡 : ", done: true };
+				for (let index = 0; index < histories.length; index++) {
+					history.content += "\n" + histories[index];
+				}
+				archive.entry[Code.Generate(8)] = history;
+			}
 
 			Data.List.done[Code.Generate(8)] = archive;
 
@@ -105,7 +106,9 @@ export namespace TaskProcesser {
 
 		let gap_day: number = (Time.Parse(new Date()) - Time.Parse(start)) / (24 * 60 * 60 * 1000);
 
-		if (gap_day > 2 && task.duration != -1) {	// 昨日未打卡
+		if (task.duration == -1) {								// 未开始打卡
+			task.start = Time.Textualize(new Date(), "date");
+		} else if (gap_day > 2) {								// 昨日未打卡
 			task.history.push(task.start + "+" + task.duration);
 			task.start = Time.Textualize(new Date(), "date");
 			task.duration = -1;
@@ -152,30 +155,5 @@ export namespace TaskProcesser {
 		}
 
 		Transceiver.Send("view.task");
-	}
-
-	/**
-	 * 变更全部任务状态
-	 */
-	export function ChangeAll(): void {
-		default_all_state = !default_all_state;
-
-		let if_changed: boolean = false;
-		for (let id in Data.Task.task) {
-			let task_data = Data.Task.task[id];
-			if (!Check(task_data) && default_all_state) {
-				task_data.duration++;
-				task_data.today = true;
-
-				if_changed = true;
-			} else if (Check(task_data) && !default_all_state) {
-				task_data.duration--;
-				task_data.today = false;
-
-				if_changed = true;
-			}
-		}
-
-		if (if_changed) Transceiver.Send("view.task");
 	}
 }

@@ -25,7 +25,11 @@
 		"url": "https://gitee.com/tatsukana/todo-todo/issues"
 	},
 	"activationEvents": [
-		"*"
+		"onStartupFinished",
+		"onView: task_tree",
+		"onView: todo_tree",
+		"onView: done_tree",
+		"onView: fail_tree"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -94,7 +98,7 @@
 			},
 			{
 				"view": "todo_tree",
-				"contents": "当前暂无待办事项。\n[$(add) 新建待办事项](command:todotodo.todo.add)"
+				"contents": "当前暂无待办事项。"
 			},
 			{
 				"view": "done_tree",
@@ -135,11 +139,6 @@
 				"command": "todotodo.task.archive",
 				"title": "归档任务",
 				"icon": "$(archive)"
-			},
-			{
-				"command": "todotodo.task.change_all",
-				"title": "变更所有任务状态",
-				"icon": "$(check-all)"
 			},
 			{
 				"command": "todotodo.list.load",
@@ -215,11 +214,6 @@
 				"command": "todotodo.fail.restart",
 				"title": "重启事项",
 				"icon": "$(reply)"
-			},
-			{
-				"command": "todotodo.fail.restart_all",
-				"title": "重启全部未办事项",
-				"icon": "$(clock)"
 			}
 		],
 		"menus": {
@@ -240,19 +234,9 @@
 					"when": "view == todo_tree"
 				},
 				{
-					"command": "todotodo.task.change_all",
-					"group": "navigation",
-					"when": "view == task_tree"
-				},
-				{
 					"command": "todotodo.done.clear",
 					"group": "navigation",
 					"when": "view == done_tree"
-				},
-				{
-					"command": "todotodo.fail.restart_all",
-					"group": "navigation",
-					"when": "view == fail_tree"
 				}
 			],
 			"view/item/context": [

@@ -31,6 +31,20 @@ export namespace FileInterface {
 					local_data[file_name] = Path.ReadJSON(Path.Link(data_path, file_name + ".json"));
 				}
 			}
+
+			{	// 兼容3.2.0
+				for (let state of ["todo", "done", "fail"]) {
+					for (let item_id in local_data[state]) {
+						for (let entry_id in local_data[state][item_id].entry) {
+							let entry = local_data[state][item_id].entry[entry_id];
+							if (entry.label) {
+								entry.content = entry.label + " : " + entry.content;
+							}
+							delete entry.label;
+						}
+					}
+				}
+			}
 		}
 
 		if (local_data.profile) {

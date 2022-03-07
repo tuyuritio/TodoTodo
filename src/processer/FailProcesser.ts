@@ -22,15 +22,6 @@ export namespace FailProcesser {
 	}
 
 	/**
-	 * 重启所有事项
-	 */
-	export async function RestartAll(): Promise<void> {
-		if (await Message.Show("information", "确认重启全部失效事项吗？", "确认", "取消") == "确认") {
-			for (let id in Data.List.fail) Restart({ id: id });
-		}
-	}
-
-	/**
 	 * 删除事项
 	 * @param item 事项对象
 	 */

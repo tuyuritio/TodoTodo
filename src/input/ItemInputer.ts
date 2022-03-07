@@ -46,7 +46,7 @@ export namespace ItemInputer {
 			item_type = "";
 			item_priority = "";
 			item_cycle = "";
-			item_time = Time.Parse(new Date());			// 用于时间输入的默认填充
+			item_time = 0;
 			item_entry = {};
 		}
 
@@ -124,17 +124,16 @@ export namespace ItemInputer {
 	function EditCycle(): void {
 		let cycles: any = { secular: "长期", once: "单次", daily: "每日", weekly: "每周" }
 
-		let box = Inputer.Pick(title, cycles[item_cycle], "事项周期", total_option, 4);
+		let box = Inputer.Pick(title, item_time ? cycles[item_cycle] : "", "事项周期", total_option, 4);
 		box.items = [new Inputer.PickItem("长期"), new Inputer.PickItem("单次"), new Inputer.PickItem("每日"), new Inputer.PickItem("每周")];
 
 		box.onDidChangeSelection(item => {
 			let time: Date = new Date();
-			edit_date = Time.Textualize(time, "date");
-			edit_time = Time.Textualize(time).substring(11, 16);
 
 			switch (item[0].label) {
 				case "长期":
 					item_cycle = "secular";
+					item_time = Time.Parse(time);
 					box.hide();
 					Consolidate();
 					break;
@@ -146,6 +145,7 @@ export namespace ItemInputer {
 
 				case "每日":
 					item_cycle = "daily";
+					edit_date = Time.Textualize(time, "date");
 					EditTime();
 					break;
 
@@ -234,6 +234,7 @@ export namespace ItemInputer {
 				}
 
 				if (time > new Date()) {
+					item_time = Time.Parse(edit_date + "-" + edit_time);
 					box.hide();
 					Consolidate();
 				} else {
@@ -256,7 +257,7 @@ export namespace ItemInputer {
 			type: item_type,
 			priority: item_priority,
 			cycle: item_cycle,
-			time: Time.Parse(edit_date + "-" + edit_time),
+			time: item_time,
 			entry: item_entry,
 			gaze: false
 		}

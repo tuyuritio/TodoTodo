@@ -25,8 +25,7 @@ export namespace DoneTree {
 			let item_data = data[id];
 			let entries: string[] = [];
 			for (let id in item_data.entry) {
-				let entry = item_data.entry[id];
-				entries.push(entry.label == "" ? entry.content : entry.label + " : " + entry.content);
+				entries.push(item_data.entry[id].content);
 			}
 
 			tree_data.unshift(new Item(id, item_data.label, Time.Textualize(item_data.time), entries));

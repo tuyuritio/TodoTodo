@@ -111,6 +111,7 @@ export namespace TodoProcesser {
 				break;
 		}
 		cycle_item.time = Time.Parse(cycle_time);
+		cycle_item.gaze = false;
 
 		for (let id in cycle_item.entry) {
 			cycle_item.entry[id].done = false;
@@ -138,7 +139,7 @@ export namespace EntryProcesser {
 	 * 准备编辑条目
 	 * @param element 条目对象
 	 */
-	export function Load(element: any) {
+	export function Load(element: any): void {
 		if (element.root) {
 			Transceiver.Send("input.entry", element.root, element.id, Data.List.todo[element.root].entry[element.id]);
 		} else {
@@ -154,9 +155,8 @@ export namespace EntryProcesser {
 	 */
 	export function Edit(root: string, id: string, entry: any): void {
 		Data.List.todo[root].entry[id] = {
-			label: entry.label,
 			content: entry.content,
-			done: false
+			done: entry.done
 		}
 		Transceiver.Send("view.todo");
 	}
@@ -165,7 +165,7 @@ export namespace EntryProcesser {
 	 * 删除条目
 	 * @param entry 条目对象
 	 */
-	export function Delete(entry: any) {
+	export function Delete(entry: any): void {
 		delete Data.List.todo[entry.root].entry[entry.id];
 		Transceiver.Send("view.todo");
 	}

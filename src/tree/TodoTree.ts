@@ -78,9 +78,7 @@ export namespace TodoTree {
 			let entry_item = tree_data.item_entry[item_id];
 			for (let entry_id in item_data.entry) {
 				let entry_data = item_data.entry[entry_id];
-
-				let entry_label = entry_data.label == "" ? entry_data.content : entry_data.label + " : " + entry_data.content;
-				entry_item.push(new Entry(entry_id, entry_label, item_id, entry_data.done));
+				entry_item.push(new Entry(item_id, entry_id, entry_data.content, entry_data.done));
 			}
 		}
 
@@ -103,12 +101,13 @@ export namespace TodoTree {
 	}
 
 	class List extends vscode.TreeItem {
-		constructor(id: string, label: string, item: boolean) {
+		constructor(id: string, label: string, size: number) {
 			super(label);
 			this.id = id;
 			this.contextValue = id == "__untitled" ? "untitled_list" : "todo_list";
 			this.iconPath = new vscode.ThemeIcon("list-unordered");
-			this.collapsibleState = item ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None;
+			this.collapsibleState = size ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None;
+			this.description = "( " + size + " )";
 		}
 	}
 
@@ -150,7 +149,7 @@ export namespace TodoTree {
 	class Entry extends vscode.TreeItem {
 		readonly root: string;
 
-		constructor(id: string, label: string, root: string, is_done: boolean) {
+		constructor(root: string, id: string, label: string, is_done: boolean) {
 			super(label);
 			this.id = id;
 			this.root = root;
