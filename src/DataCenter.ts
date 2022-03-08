@@ -14,6 +14,7 @@ export namespace Data {
 	}
 
 	export namespace Profile {
+		export let data_version: string;
 		export let list: any;
 		export let tree_type: boolean;
 		export let empty_list: boolean;

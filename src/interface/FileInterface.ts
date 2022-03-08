@@ -23,62 +23,30 @@ export namespace FileInterface {
 	 * 读取本地数据
 	 */
 	export function Read(): void {
-		let local_data: any = {};
-		let data_path = CheckPath(Data.Configuration.path);
+		let data_version: string = "3.4.0";		// 最新数据版本
+
+		// 数据初始化
+		Data.Profile = { data_version: data_version, list: {}, tree_type: true, empty_list: false };
+		Data.Task.task = {};
+		Data.List = { todo: {}, done: {}, fail: {} };
+
+		let data_path: string | undefined = CheckPath(Data.Configuration.path);
 		if (data_path) {
-			for (let file_name of ["task", "todo", "done", "fail", "profile"]) {
-				if (Path.Exist(Path.Link(data_path, file_name + ".json"))) {
-					local_data[file_name] = Path.ReadJSON(Path.Link(data_path, file_name + ".json"));
+			let local_data: any = {};
+			for (let data_type of ["task", "todo", "done", "fail", "profile"]) {
+				let file_path = Path.Link(data_path, data_type + ".json");
+				if (Path.Exist(file_path)) {
+					local_data[data_type] = Path.ReadJSON(file_path);
 				}
 			}
 
-			{	// 兼容3.2.0
-				for (let state of ["todo", "done", "fail"]) {
-					for (let item_id in local_data[state]) {
-						for (let entry_id in local_data[state][item_id].entry) {
-							let entry = local_data[state][item_id].entry[entry_id];
-							if (entry.label) {
-								entry.content = entry.label + " : " + entry.content;
-							}
-							delete entry.label;
-						}
-					}
-				}
-			}
-		}
+			Compatible(local_data, data_version);
 
-		if (local_data.profile) {
-			Data.Profile.list = local_data.profile.list;
-			Data.Profile.tree_type = local_data.profile.tree_type;
-			Data.Profile.empty_list = local_data.profile.empty_list;
-		} else {
-			Data.Profile.list = {};
-			Data.Profile.tree_type = true;
-			Data.Profile.empty_list = false;
-		}
-
-		if (local_data.task) {
-			Data.Task.task = local_data.task;
-		} else {
-			Data.Task.task = {};
-		}
-
-		if (local_data.todo) {
-			Data.List.todo = local_data.todo;
-		} else {
-			Data.List.todo = {};
-		}
-
-		if (local_data.done) {
-			Data.List.done = local_data.done;
-		} else {
-			Data.List.done = {};
-		}
-
-		if (local_data.fail) {
-			Data.List.fail = local_data.fail;
-		} else {
-			Data.List.fail = {};
+			if (local_data.profile) Data.Profile = local_data.profile;
+			if (local_data.task) Data.Task.task = local_data.task;
+			if (local_data.todo) Data.List.todo = local_data.todo;
+			if (local_data.done) Data.List.done = local_data.done;
+			if (local_data.fail) Data.List.fail = local_data.fail;
 		}
 	}
 
@@ -87,11 +55,7 @@ export namespace FileInterface {
 	 */
 	export function Write(): void {
 		let written_data: any = {
-			profile: {
-				list: Data.Profile.list,
-				tree_type: Data.Profile.tree_type,
-				empty_list: Data.Profile.empty_list
-			},
+			profile: Data.Profile,
 			task: Data.Task.task,
 			todo: Data.List.todo,
 			done: Data.List.done,
@@ -113,6 +77,20 @@ export namespace FileInterface {
 	async function SetPath(): Promise<void> {
 		if (await Message.Show("error", "自定义文件目录路径无效，请检查！", "前往设置") == "前往设置") {
 			Command.Execute("workbench.action.openSettings", "todotodo.path");
+		}
+	}
+
+	/**
+	 * 数据兼容性调整
+	 * @param data 前版本数据
+	 * @param data_version 现版本号
+	 */
+	function Compatible(data: any, data_version: string) {
+		if (data && data.profile.data_version != data_version) {
+			// 数据版本更新
+			data.profile.data_version = data_version;
+
+			// 数据兼容语句
 		}
 	}
 }
