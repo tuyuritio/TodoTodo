@@ -25,11 +25,7 @@
 		"url": "https://gitee.com/tatsukana/todo-todo/issues"
 	},
 	"activationEvents": [
-		"onStartupFinished",
-		"onView: task_tree",
-		"onView: todo_tree",
-		"onView: done_tree",
-		"onView: fail_tree"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
