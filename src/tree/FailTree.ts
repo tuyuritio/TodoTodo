@@ -21,10 +21,10 @@ export namespace FailTree {
 	 */
 	export function ParseData(data: any): void {
 		tree_data = [];
-		for (let id in data) {
-			let item_data = data[id];
+		for (const id in data) {
+			const item_data = data[id];
 			let entries: string[] = [];
-			for (let id in item_data.entry) {
+			for (const id in item_data.entry) {
 				entries.push(item_data.entry[id].content);
 			}
 

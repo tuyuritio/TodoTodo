@@ -10,8 +10,8 @@ export namespace TodoProcesser {
 	export function Load(item?: any): void {
 		let maximum_priority: number = 0;
 
-		for (let id in Data.List.todo) {
-			let item_data = Data.List.todo[id];
+		for (const id in Data.List.todo) {
+			const item_data = Data.List.todo[id];
 			if (item_data.priority > maximum_priority) maximum_priority = item_data.priority;
 		}
 
@@ -94,7 +94,7 @@ export namespace TodoProcesser {
 	export function Append(cycle_item: any): void {
 		cycle_item = Data.Copy(cycle_item);
 
-		let current_time: Date = new Date();
+		const current_time: Date = new Date();
 		let cycle_time: Date = new Date(cycle_item.time);
 
 		switch (cycle_item.cycle) {
@@ -113,7 +113,7 @@ export namespace TodoProcesser {
 		cycle_item.time = Time.Parse(cycle_time);
 		cycle_item.gaze = false;
 
-		for (let id in cycle_item.entry) {
+		for (const id in cycle_item.entry) {
 			cycle_item.entry[id].done = false;
 			cycle_item.entry[Code.Generate(8)] = cycle_item.entry[id];
 			delete cycle_item.entry[id];

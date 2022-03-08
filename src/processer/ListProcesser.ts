@@ -10,8 +10,8 @@ export namespace ListProcesser {
 	export function Load(list?: any): void {
 		let maximum_priority: number = 0;
 
-		for (let id in Data.Profile.list) {
-			let list_data = Data.Profile.list[id];
+		for (const id in Data.Profile.list) {
+			const list_data = Data.Profile.list[id];
 			if (list_data.priority > maximum_priority) maximum_priority = list_data.priority;
 		}
 
@@ -38,8 +38,8 @@ export namespace ListProcesser {
 	 */
 	export async function Remove(list: any): Promise<void> {
 		if (await Message.Show("warning", "确认移除清单 \"" + list.label + "\" 吗？", "确认", "取消") == "确认") {
-			let todo = Data.List.todo;
-			for (let id in todo) {
+			const todo = Data.List.todo;
+			for (const id in todo) {
 				if (todo[id].type == list.id) delete todo[id];
 			}
 
@@ -52,7 +52,7 @@ export namespace ListProcesser {
 	 * 清理逾期事项
 	 */
 	export function ShutOverdue(): void {
-		let current_date: string = Time.Textualize(new Date(), "date");
+		const current_date: string = Time.Textualize(new Date(), "date");
 		let remind_gap = Time.Parse(current_date + "-" + Data.Configuration.shut_ahead) - Time.Parse(current_date);
 		remind_gap = remind_gap < 20 * 60 * 60 * 1000 ? remind_gap / 1000 : 60 * 60;
 
@@ -61,9 +61,9 @@ export namespace ListProcesser {
 		remind_start.setSeconds(remind_start.getSeconds() + remind_gap);
 		remind_end.setSeconds(remind_end.getSeconds() + remind_gap + 1);
 
-		let current_time: Date = new Date();
-		for (let id in Data.List.todo) {
-			let item_data = Data.List.todo[id];
+		const current_time: Date = new Date();
+		for (const id in Data.List.todo) {
+			const item_data = Data.List.todo[id];
 			if (item_data.cycle != "secular") {
 				if (item_data.time < Time.Parse(current_time)) {
 					if (item_data.gaze) {

@@ -23,7 +23,7 @@ export namespace Code {
 	 * @returns 随机码
 	 */
 	export function Generate(length: number): string {
-		let character_table: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefgijklmnopqrstuvwxyz";
+		const character_table: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefgijklmnopqrstuvwxyz";
 
 		let code_text = "";
 		for (let index = 0; index < length; index++) {
@@ -77,7 +77,7 @@ export namespace Inputer {
 	 * @returns 输入框
 	 */
 	export function Text(title: string, value: string, placeholder: string, prompt?: string, total_step?: number, step?: number): vscode.InputBox {
-		let box = vscode.window.createInputBox();
+		const box = vscode.window.createInputBox();
 		box.title = title;
 		box.totalSteps = total_step;
 		box.step = step;
@@ -100,7 +100,7 @@ export namespace Inputer {
 	 * @returns 选择框
 	 */
 	export function Pick(title: string, value: string, placeholder: string, total_step?: number, step?: number, match: boolean = false): vscode.QuickPick<PickItem> {
-		let box = vscode.window.createQuickPick<PickItem>();
+		const box = vscode.window.createQuickPick<PickItem>();
 		box.title = title;
 		box.totalSteps = total_step;
 		box.step = step;
@@ -237,7 +237,6 @@ export namespace Time {
 	export function In24(time: string): boolean {
 		let expected_time = new Date();
 		expected_time.setHours(expected_time.getHours() + 24);
-
 		return Parse(time) < Parse(expected_time);
 	}
 

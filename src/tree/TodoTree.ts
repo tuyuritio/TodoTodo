@@ -28,7 +28,7 @@ export namespace TodoTree {
 		// 生成清单事项框架
 		if (tree_type) {
 			tree_data.list_item = {};
-			for (let id in profile.list) {
+			for (const id in profile.list) {
 				tree_data.list_item[id] = [];
 			}
 		} else {
@@ -37,8 +37,8 @@ export namespace TodoTree {
 
 		// 排序事项并装入相应清单
 		tree_data.item_entry = {};
-		for (let item_id in data) {
-			let item_data = data[item_id];
+		for (const item_id in data) {
+			const item_data = data[item_id];
 
 			let item_list: any;
 			if (tree_type) {
@@ -50,7 +50,7 @@ export namespace TodoTree {
 			// 事项排序
 			let index: number = item_list.length;
 			while (index > 0) {
-				let pointer_item = data[item_list[index - 1].id];
+				const pointer_item = data[item_list[index - 1].id];
 
 				if (item_data.cycle == "secular" && pointer_item.cycle == "secular") {
 					if (item_data.priority == pointer_item.priority) {
@@ -75,19 +75,19 @@ export namespace TodoTree {
 
 			// 生成条目
 			tree_data.item_entry[item_id] = [];
-			let entry_item = tree_data.item_entry[item_id];
-			for (let entry_id in item_data.entry) {
-				let entry_data = item_data.entry[entry_id];
+			const entry_item = tree_data.item_entry[item_id];
+			for (const entry_id in item_data.entry) {
+				const entry_data = item_data.entry[entry_id];
 				entry_item.push(new Entry(item_id, entry_id, entry_data.content, entry_data.done));
 			}
 		}
 
 		if (tree_type) {
-			for (let id in profile.list) {
+			for (const id in profile.list) {
 				// 清单排序
 				let index: number = tree_data.list.length;
 				if (tree_data.list_item[id].length || profile.empty_list) {			// 去除空清单
-					let list_data = profile.list[id];
+					const list_data = profile.list[id];
 					while (index > 0 && list_data.priority > profile.list[String(tree_data.list[index - 1].id)].priority) {
 						tree_data.list[index] = tree_data.list[index - 1];
 						index--;
@@ -117,7 +117,7 @@ export namespace TodoTree {
 			this.id = id;
 			this.collapsibleState = entry ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None;
 
-			let time_text = Time.Textualize(time);
+			const time_text = Time.Textualize(time);
 			switch (cycle) {
 				case "secular":
 					this.tooltip = "修改时间: " + time_text;

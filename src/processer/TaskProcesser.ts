@@ -10,8 +10,8 @@ export namespace TaskProcesser {
 	export function Load(task?: any): void {
 		let maximum_priority: number = 0;
 
-		for (let id in Data.Task.task) {
-			let task_data = Data.Task.task[id];
+		for (const id in Data.Task.task) {
+			const task_data = Data.Task.task[id];
 			if (task_data.priority > maximum_priority) maximum_priority = task_data.priority;
 		}
 
@@ -62,7 +62,7 @@ export namespace TaskProcesser {
 	 */
 	export async function Archive(task: any) {
 		if (await Message.Show("information", "确认归档任务 \"" + task.label + "\" 吗？", "确认", "取消") == "确认") {
-			let data = Data.Task.task[task.id];
+			const data = Data.Task.task[task.id];
 
 			let archive: any = {
 				label: data.label,
@@ -75,7 +75,7 @@ export namespace TaskProcesser {
 			let histories: string[] = [];
 			if (data.duration != -1) histories.push(Time.Period(data.start, data.duration));
 			for (let index = data.history.length - 1; index >= 0; index--) {
-				let days = data.history[index];
+				const days = data.history[index];
 				histories.push(Time.Period(days.substring(0, 10), Number(days.substring(11))));
 			}
 
@@ -127,10 +127,10 @@ export namespace TaskProcesser {
 	export function CheckAll(): void {
 		let if_change: boolean = false;
 
-		let task_data = Data.Task.task;
-		for (let id in task_data) {
-			let task = task_data[id];
-			let today: boolean = Data.Copy(task.today);
+		const task_data = Data.Task.task;
+		for (const id in task_data) {
+			const task = task_data[id];
+			const today: boolean = Data.Copy(task.today);
 
 			task.today = Check(task);
 			if (today != task.today) if_change = true;
@@ -144,7 +144,7 @@ export namespace TaskProcesser {
 	 * @param task 任务对象
 	 */
 	export function Change(task: any): void {
-		let task_data = Data.Task.task[task.id];
+		const task_data = Data.Task.task[task.id];
 
 		if (Check(task_data)) {
 			task_data.duration--;

@@ -34,7 +34,7 @@ export namespace EntryInputer {
 	 * 编辑条目内容
 	 */
 	function EditContent(): void {
-		let box = Inputer.Text(title, entry_content, "条目内容", "请输入条目内容");
+		const box = Inputer.Text(title, entry_content, "条目内容", "请输入条目内容");
 
 		box.onDidAccept(() => {
 			entry_content = box.value;

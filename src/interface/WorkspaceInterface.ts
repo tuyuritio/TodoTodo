@@ -8,7 +8,7 @@ export namespace WorkspaceInterface {
 	 * 载入工作区数据
 	 */
 	export function Load(): void {
-		let workspace_data = workspace.getConfiguration("todotodo");
+		const workspace_data = workspace.getConfiguration("todotodo");
 		Data.Configuration.path = workspace_data.path;
 		Data.Configuration.shut_ahead = workspace_data.list.todo.shut.remind.ahead;
 	}

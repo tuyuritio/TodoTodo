@@ -25,10 +25,7 @@ export namespace DoneProcesser {
 	 * 清空已办事项
 	 */
 	export async function Clear(): Promise<void> {
-		let if_clear: boolean = false;
-		if (await Message.Show("information", "确认清空已办事项吗？", "确认", "取消") == "确认") if_clear = true;
-
-		if (if_clear) {
+		if (await Message.Show("information", "确认清空已办事项吗？", "确认", "取消") == "确认") {
 			Data.List.done = {};
 			Transceiver.Send("view.done");
 		}

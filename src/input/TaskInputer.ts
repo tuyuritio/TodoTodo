@@ -39,7 +39,7 @@ export namespace TaskInputer {
 	 * 编辑任务名称
 	 */
 	function EditLabel(): void {
-		let box = Inputer.Text(title, task_label, "任务名称", "请输入任务名称", total_option, 1);
+		const box = Inputer.Text(title, task_label, "任务名称", "请输入任务名称", total_option, 1);
 
 		box.onDidAccept(() => {
 			task_label = box.value;
@@ -58,7 +58,7 @@ export namespace TaskInputer {
 	 * 编辑优先层级
 	 */
 	function EditPriority(): void {
-		let box = Inputer.Pick(title, String(task_priority), "优先层级", total_option, 3);
+		const box = Inputer.Pick(title, String(task_priority), "优先层级", total_option, 3);
 
 		let priorities: Inputer.PickItem[] = [];
 		for (let index = 0; index <= maximum_priority + 1; index++) {

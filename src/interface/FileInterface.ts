@@ -23,18 +23,18 @@ export namespace FileInterface {
 	 * 读取本地数据
 	 */
 	export function Read(): void {
-		let data_version: string = "3.4.0";		// 最新数据版本
+		const data_version: string = "3.4.0";		// 最新数据版本
 
 		// 数据初始化
 		Data.Profile = { data_version: data_version, list: {}, tree_type: true, empty_list: false };
 		Data.Task.task = {};
 		Data.List = { todo: {}, done: {}, fail: {} };
 
-		let data_path: string | undefined = CheckPath(Data.Configuration.path);
+		const data_path: string | undefined = CheckPath(Data.Configuration.path);
 		if (data_path) {
 			let local_data: any = {};
-			for (let data_type of ["task", "todo", "done", "fail", "profile"]) {
-				let file_path = Path.Link(data_path, data_type + ".json");
+			for (const data_type of ["task", "todo", "done", "fail", "profile"]) {
+				const file_path = Path.Link(data_path, data_type + ".json");
 				if (Path.Exist(file_path)) {
 					local_data[data_type] = Path.ReadJSON(file_path);
 				}
@@ -63,7 +63,7 @@ export namespace FileInterface {
 		};
 
 		if (CheckPath(Data.Configuration.path)) {
-			for (let file_name in written_data) {
+			for (const file_name in written_data) {
 				Path.WriteJSON(Path.Link(Data.Configuration.path, file_name + ".json"), written_data[file_name]);
 			}
 		} else {
@@ -85,7 +85,7 @@ export namespace FileInterface {
 	 * @param data 前版本数据
 	 * @param data_version 现版本号
 	 */
-	function Compatible(data: any, data_version: string) {
+	function Compatible(data: any, data_version: string): void {
 		if (data && data.profile.data_version != data_version) {
 			// 数据版本更新
 			data.profile.data_version = data_version;

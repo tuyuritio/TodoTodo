@@ -39,7 +39,7 @@ export namespace ListInputer {
 	 * 编辑清单名称
 	 */
 	function EditLabel(): void {
-		let box = Inputer.Text(title, list_label, "清单名称", "请输入清单名称", total_option, 1);
+		const box = Inputer.Text(title, list_label, "清单名称", "请输入清单名称", total_option, 1);
 
 		box.onDidAccept(() => {
 			list_label = box.value;
@@ -58,9 +58,9 @@ export namespace ListInputer {
 	 * 编辑清单优先层级
 	 */
 	function EditPriority(): void {
-		let box = Inputer.Pick(title, String(list_priority), "优先层级", total_option, 3);
+		const box = Inputer.Pick(title, String(list_priority), "优先层级", total_option, 3);
 
-		let priorities: Inputer.PickItem[] = [];
+		const priorities: Inputer.PickItem[] = [];
 		for (let index = 0; index <= maximum_priority + 1; index++) {
 			priorities.push(new Inputer.PickItem(String(index)));
 		}

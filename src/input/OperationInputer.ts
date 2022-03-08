@@ -7,8 +7,8 @@ export namespace OperationInputer {
 	 * @param empty_list 是否显示空清单
 	 */
 	export function Start(todo_data: any, empty_list: boolean, tree_type: boolean) {
-		let quantity = Object.keys(todo_data).length;
-		let box = Inputer.Pick("清单操作面板", "", quantity ? "剩余待办 : " + quantity + "件" : "已完成所有事项！");
+		const quantity = Object.keys(todo_data).length;
+		const box = Inputer.Pick("清单操作面板", "", quantity ? "剩余待办 : " + quantity + "件" : "已完成所有事项！");
 
 		let operation: Inputer.PickItem[] = [];
 		operation.push(new Inputer.PickItem("新增事项", "todo.load"));

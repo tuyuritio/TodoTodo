@@ -21,8 +21,8 @@ export namespace TaskTree {
 	 */
 	export function ParseData(data: any): void {
 		tree_data = [];
-		for (let id in data) {
-			let task_item = data[id];
+		for (const id in data) {
+			const task_item = data[id];
 
 			let index = tree_data.length;
 			while (index > 0 && task_item.priority > data[String(tree_data[index - 1].id)].priority) {
@@ -33,7 +33,7 @@ export namespace TaskTree {
 			let histories: string[] = [];
 			if (task_item.duration != -1) histories.push(Time.Period(task_item.start, task_item.duration));
 			for (let index = task_item.history.length - 1; index >= 0; index--) {
-				let days = task_item.history[index];
+				const days = task_item.history[index];
 				histories.push(Time.Period(days.substring(0, 10), Number(days.substring(11))));
 			}
 			tree_data[index] = new Task(id, task_item.label, task_item.today, task_item.duration, histories);
