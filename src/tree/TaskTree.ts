@@ -61,8 +61,6 @@ export namespace TaskTree {
 
 			if (duration != -1) {
 				this.description = "已打卡" + (duration + 1) + "天";
-			} else {
-				this.description = "暂未打卡";
 			}
 
 			if (history.length) {

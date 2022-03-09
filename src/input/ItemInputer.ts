@@ -160,12 +160,12 @@ export namespace ItemInputer {
 	}
 
 	/**
-	 * 编辑截止周次
+	 * 编辑截止星期
 	 */
 	function EditWeekday(): void {
 		const weekday: string[] = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
-		const box = Inputer.Pick(title, weekday[new Date(item_time).getDay()], "截止周次", total_option, 4, true);
+		const box = Inputer.Pick(title, weekday[new Date(item_time).getDay()], "截止星期", total_option, 4, true);
 		box.items = [
 			new Inputer.PickItem("周日", undefined, "7"),
 			new Inputer.PickItem("周一", undefined, "1"),

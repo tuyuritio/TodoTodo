@@ -53,11 +53,7 @@ export namespace TodoTree {
 				const pointer_item = data[item_list[index - 1].id];
 
 				if (item_data.cycle == "secular" && pointer_item.cycle == "secular") {
-					if (item_data.priority == pointer_item.priority) {
-						if (item_data.time > pointer_item.time) break;
-					} else if (item_data.priority < pointer_item.priority) {
-						break;
-					}
+					if (item_data.priority < pointer_item.priority) break;
 				} else if (item_data.cycle != "secular" && pointer_item.cycle != "secular") {
 					if (item_data.time == pointer_item.time) {
 						if (item_data.priority < pointer_item.priority) break;
