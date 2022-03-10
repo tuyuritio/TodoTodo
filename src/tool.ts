@@ -115,9 +115,9 @@ export namespace Inputer {
 		label: string;
 		detail?: string;
 		description?: string;
-		information?: string;
+		information?: any;
 
-		constructor(label: string, information?: string, description?: string, detail?: string) {
+		constructor(label: string, information?: any, description?: string, detail?: string) {
 			this.label = label;
 			this.detail = detail;
 			this.description = description;

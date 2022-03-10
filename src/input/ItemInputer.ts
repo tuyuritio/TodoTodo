@@ -3,7 +3,8 @@ import { Code, Time, Inputer, Transceiver } from "../Tool";
 
 export namespace ItemInputer {
 	let title: string;
-	let total_option: number = 4;
+	let total_option_1: number = 4;
+	let total_option_2: number = 7;
 
 	let type_list: any;
 	let maximum_priority: number;
@@ -11,8 +12,8 @@ export namespace ItemInputer {
 	let item_id: string;
 	let item_label: string;
 	let item_type: string;
-	let item_priority: number | string;
-	let item_cycle: string;
+	let item_priority: number;
+	let item_cycle: number;
 	let item_time: number;
 	let item_entry: any;
 
@@ -44,9 +45,9 @@ export namespace ItemInputer {
 			item_id = Code.Generate(8);
 			item_label = "";
 			item_type = "";
-			item_priority = "";
-			item_cycle = "";
-			item_time = 0;
+			item_priority = -1;
+			item_cycle = -1;
+			item_time = -1;
 			item_entry = {};
 		}
 
@@ -57,7 +58,7 @@ export namespace ItemInputer {
 	 * 编辑事项名称
 	 */
 	function EditLabel(): void {
-		const box = Inputer.Text(title, item_label, "事项名称", "请输入事项名称", total_option, 1);
+		const box = Inputer.Text(title, item_label, "事项名称", "请输入事项名称", total_option_1, 1);
 
 		box.onDidAccept(() => {
 			item_label = box.value;
@@ -76,7 +77,7 @@ export namespace ItemInputer {
 	 * 编辑事项类别
 	 */
 	function EditType(): void {
-		const box = Inputer.Pick(title, item_type != "" ? type_list[item_type].label : "", "事项类别", total_option, 2);
+		const box = Inputer.Pick(title, item_type != "" ? type_list[item_type].label : "", "事项类别", total_option_1, 2);
 
 		let list: Inputer.PickItem[] = [];
 		for (const id in type_list) {
@@ -102,7 +103,7 @@ export namespace ItemInputer {
 	 * 编辑优先层级
 	 */
 	function EditPriority(): void {
-		const box = Inputer.Pick(title, String(item_priority), "优先层级", total_option, 3);
+		const box = Inputer.Pick(title, String(item_priority + 1 ? item_priority : ""), "优先层级", total_option_1, 3);
 
 		let priorities: Inputer.PickItem[] = [];
 		for (let index = 0; index <= maximum_priority + 1; index++) {
@@ -112,77 +113,36 @@ export namespace ItemInputer {
 
 		box.onDidChangeSelection(item => {
 			item_priority = Number(item[0].label);
-			EditCycle();
+			ChooseProperty();
 		});
 
 		box.show();
 	}
 
 	/**
-	 * 编辑事项周期
+	 * 选择事项性质
 	 */
-	function EditCycle(): void {
-		const cycles: any = { secular: "长期", once: "单次", daily: "每日", weekly: "每周" }
+	function ChooseProperty(): void {
+		const box = Inputer.Pick(title, "", "事项性质", total_option_1, 4);
 
-		const box = Inputer.Pick(title, item_time ? cycles[item_cycle] : "", "事项周期", total_option, 4);
-		box.items = [new Inputer.PickItem("长期"), new Inputer.PickItem("单次"), new Inputer.PickItem("每日"), new Inputer.PickItem("每周")];
+		box.items = [new Inputer.PickItem("长期事项"), new Inputer.PickItem("单次事项"), new Inputer.PickItem("周期事项")];
 
-		box.onDidChangeSelection(item => {
-			const time: Date = new Date();
-
+		box.onDidChangeSelection((item) => {
 			switch (item[0].label) {
-				case "长期":
-					item_cycle = "secular";
-					item_time = Time.Parse(time);
+				case "长期事项":
+					item_cycle = -1;
+
 					box.hide();
 					Consolidate();
 					break;
 
-				case "单次":
-					item_cycle = "once";
+				case "单次事项":
+					item_cycle = 0;
+
+				case "周期事项":
 					EditDate();
 					break;
-
-				case "每日":
-					item_cycle = "daily";
-					edit_date = Time.Textualize(time, "date");
-					EditTime();
-					break;
-
-				case "每周":
-					item_cycle = "weekly";
-					EditWeekday();
-					break;
 			}
-		});
-
-		box.show();
-	}
-
-	/**
-	 * 编辑截止星期
-	 */
-	function EditWeekday(): void {
-		const weekday: string[] = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
-
-		const box = Inputer.Pick(title, weekday[new Date(item_time).getDay()], "截止星期", total_option, 4, true);
-		box.items = [
-			new Inputer.PickItem("周日", undefined, "7"),
-			new Inputer.PickItem("周一", undefined, "1"),
-			new Inputer.PickItem("周二", undefined, "2"),
-			new Inputer.PickItem("周三", undefined, "3"),
-			new Inputer.PickItem("周四", undefined, "4"),
-			new Inputer.PickItem("周五", undefined, "5"),
-			new Inputer.PickItem("周六", undefined, "6")
-		];
-
-		box.onDidChangeSelection(item => {
-			let time: Date = new Date();
-			time.setDate(time.getDate() - time.getDay() + weekday.indexOf(item[0].label));
-			if (time < new Date()) time.setDate(time.getDate() + 7);
-
-			edit_date = Time.Textualize(time, "date");
-			EditTime();
 		});
 
 		box.show();
@@ -192,7 +152,8 @@ export namespace ItemInputer {
 	 * 编辑截止日期
 	 */
 	function EditDate(): void {
-		const box = Inputer.Text(title, Time.Textualize(item_time, "date"), "截止日期", "请输入截止日期(格式: YYYY/MM/DD)", total_option, 4);
+		if (item_time == -1) item_time = Time.Parse(new Date());
+		const box = Inputer.Text(title, Time.Textualize(item_time, "date"), "截止日期", "请输入截止日期(格式: YYYY/MM/DD)", total_option_2, 5);
 
 		box.onDidAccept(() => {
 			edit_date = box.value;
@@ -219,7 +180,7 @@ export namespace ItemInputer {
 	 * 编辑截止时间
 	 */
 	function EditTime(): void {
-		const box = Inputer.Text(title, Time.Textualize(item_time).substring(11, 16), "截止时间", "请输入截止时间(格式: HH:MM)", total_option, 4);
+		const box = Inputer.Text(title, Time.Textualize(item_time).substring(11, 16), "截止时间", "请输入截止时间(格式: HH:MM)", total_option_2, 6);
 
 		box.onDidAccept(() => {
 			edit_time = box.value;
@@ -228,20 +189,40 @@ export namespace ItemInputer {
 			if (check.length == 2 && Number(check[0]) != NaN && Number(check[1]) != NaN && Time.Parse(edit_date + "-" + edit_time)) {
 				let time: Date = new Date(edit_date + "-" + edit_time);
 
-				if (item_cycle == "daily" && time < new Date()) {
-					time.setDate(time.getDate() + 1);
-					edit_date = Time.Textualize(time, "date");
-				}
-
 				if (time > new Date()) {
 					item_time = Time.Parse(edit_date + "-" + edit_time);
-					box.hide();
-					Consolidate();
+
+					if (item_cycle) {
+						EditCycle();
+					} else {
+						box.hide();
+						Consolidate();
+					}
 				} else {
 					box.validationMessage = "时间已过！";
 				}
 			} else {
 				box.validationMessage = "时间格式错误！";
+			}
+		});
+
+		box.show();
+	}
+
+	/**
+	 * 编辑事项周期
+	 */
+	function EditCycle(): void {
+		const box = Inputer.Pick(title, String(item_cycle + 1 ? item_cycle : ""), "事项周期", total_option_2, 7);
+
+		box.items = [new Inputer.PickItem("单位: 日"), new Inputer.PickItem("周期为 0 表示事项为单次事项")];
+
+		box.onDidAccept(() => {
+			item_cycle = Number(box.value);
+
+			if (item_cycle) {
+				box.hide();
+				Consolidate();
 			}
 		});
 

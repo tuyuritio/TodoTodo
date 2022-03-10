@@ -28,7 +28,7 @@ export namespace TodoTree {
 		// 生成清单事项框架
 		if (tree_type) {
 			tree_data.list_item = {};
-			for (const id in profile.list) {
+			for (const id in data.type) {
 				tree_data.list_item[id] = [];
 			}
 		} else {
@@ -37,8 +37,8 @@ export namespace TodoTree {
 
 		// 排序事项并装入相应清单
 		tree_data.item_entry = {};
-		for (const item_id in data) {
-			const item_data = data[item_id];
+		for (const item_id in data.todo) {
+			const item_data = data.todo[item_id];
 
 			let item_list: any;
 			if (tree_type) {
@@ -50,17 +50,17 @@ export namespace TodoTree {
 			// 事项排序
 			let index: number = item_list.length;
 			while (index > 0) {
-				const pointer_item = data[item_list[index - 1].id];
+				const pointer_item = data.todo[item_list[index - 1].id];
 
-				if (item_data.cycle == "secular" && pointer_item.cycle == "secular") {
-					if (item_data.priority < pointer_item.priority) break;
-				} else if (item_data.cycle != "secular" && pointer_item.cycle != "secular") {
+				if (item_data.cycle == -1 && pointer_item.cycle == -1) {
+					if (item_data.priority <= pointer_item.priority) break;
+				} else if (item_data.cycle != -1 && pointer_item.cycle != -1) {
 					if (item_data.time == pointer_item.time) {
-						if (item_data.priority < pointer_item.priority) break;
+						if (item_data.priority <= pointer_item.priority) break;
 					} else if (item_data.time > pointer_item.time) {
 						break;
 					}
-				} else if (item_data.cycle != "secular" && pointer_item.cycle == "secular") {
+				} else if (item_data.cycle != -1 && pointer_item.cycle == -1) {
 					break;
 				}
 
@@ -79,12 +79,12 @@ export namespace TodoTree {
 		}
 
 		if (tree_type) {
-			for (const id in profile.list) {
+			for (const id in data.type) {
 				// 清单排序
 				let index: number = tree_data.list.length;
 				if (tree_data.list_item[id].length || profile.empty_list) {			// 去除空清单
-					const list_data = profile.list[id];
-					while (index > 0 && list_data.priority > profile.list[String(tree_data.list[index - 1].id)].priority) {
+					const list_data = data.type[id];
+					while (index > 0 && list_data.priority > data.type[String(tree_data.list[index - 1].id)].priority) {
 						tree_data.list[index] = tree_data.list[index - 1];
 						index--;
 					}
@@ -114,23 +114,19 @@ export namespace TodoTree {
 			this.collapsibleState = entry ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None;
 
 			const time_text = Time.Textualize(time);
-			switch (cycle) {
-				case "secular":
-					this.tooltip = "修改时间: " + time_text;
-					this.iconPath = new vscode.ThemeIcon("info");
-					break;
+			if (cycle + 1) {
+				this.tooltip = "截止时间: " + time_text;
 
-				default:
-					this.tooltip = "截止时间: " + time_text;
-
-					if (Time.In24(time_text)) {
-						this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
-						this.description = time_text.substring(11, 16);
-					} else {
-						this.iconPath = new vscode.ThemeIcon("note");
-						this.description = time_text.substring(0, 10);
-					}
-					break;
+				if (Time.In24(time_text)) {
+					this.iconPath = new vscode.ThemeIcon("bell", new vscode.ThemeColor("list.warningForeground"));
+					this.description = time_text.substring(11, 16);
+				} else {
+					this.iconPath = new vscode.ThemeIcon("note");
+					this.description = time_text.substring(0, 10);
+				}
+			} else {
+				this.tooltip = "修改时间: " + time_text;
+				this.iconPath = new vscode.ThemeIcon("info");
 			}
 
 			if (gaze) {

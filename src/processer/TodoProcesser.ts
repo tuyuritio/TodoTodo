@@ -16,9 +16,9 @@ export namespace TodoProcesser {
 		}
 
 		if (item) {
-			Transceiver.Send("input.item", Data.Profile.list, maximum_priority, item.id, Data.List.todo[item.id]);
+			Transceiver.Send("input.item", Data.List.type, maximum_priority, item.id, Data.List.todo[item.id]);
 		} else {
-			Transceiver.Send("input.item", Data.Profile.list, maximum_priority);
+			Transceiver.Send("input.item", Data.List.type, maximum_priority);
 		}
 	}
 
@@ -50,7 +50,7 @@ export namespace TodoProcesser {
 	export function Accomplish(item: any): void {
 		let item_data = Data.Copy(Data.List.todo[item.id]);
 
-		if (item_data.cycle == "daily" || item_data.cycle == "weekly") {
+		if (item_data.cycle > 0) {
 			Append(item_data);
 		}
 
@@ -72,7 +72,7 @@ export namespace TodoProcesser {
 	export function Shut(item: any): void {
 		let item_data = Data.Copy(Data.List.todo[item.id]);
 
-		if (item_data.cycle == "daily" || item_data.cycle == "weekly") {
+		if (item_data.cycle > 0) {
 			Append(item_data);
 		}
 
@@ -97,19 +97,10 @@ export namespace TodoProcesser {
 		const current_time: Date = new Date();
 		let cycle_time: Date = new Date(cycle_item.time);
 
-		switch (cycle_item.cycle) {
-			case "daily":
-				do {
-					cycle_time.setDate(cycle_time.getDate() + 1);
-				} while (Time.Parse(cycle_time) < Time.Parse(current_time));
-				break;
+		do {
+			cycle_time.setDate(cycle_time.getDate() + cycle_item.cycle);
+		} while (Time.Parse(cycle_time) < Time.Parse(current_time));
 
-			case "weekly":
-				do {
-					cycle_time.setDate(cycle_time.getDate() + 7);
-				} while (Time.Parse(cycle_time) < Time.Parse(current_time));
-				break;
-		}
 		cycle_item.time = Time.Parse(cycle_time);
 		cycle_item.gaze = false;
 

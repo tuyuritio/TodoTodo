@@ -66,7 +66,7 @@ namespace Communicator {
 
 		// 注册view命令
 		Transceiver.Register("view.task", () => TaskTree.ParseData(Data.Task.task));
-		Transceiver.Register("view.todo", () => TodoTree.ParseData(Data.List.todo, Data.Profile));
+		Transceiver.Register("view.todo", () => TodoTree.ParseData(Data.List, Data.Profile));
 		Transceiver.Register("view.done", () => DoneTree.ParseData(Data.List.done));
 		Transceiver.Register("view.fail", () => FailTree.ParseData(Data.List.fail));
 		Transceiver.Register("view.change", Profile.ChangeTree);

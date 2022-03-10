@@ -10,13 +10,13 @@ export namespace ListProcesser {
 	export function Load(list?: any): void {
 		let maximum_priority: number = 0;
 
-		for (const id in Data.Profile.list) {
-			const list_data = Data.Profile.list[id];
+		for (const id in Data.List.type) {
+			const list_data = Data.List.type[id];
 			if (list_data.priority > maximum_priority) maximum_priority = list_data.priority;
 		}
 
 		if (list) {
-			Transceiver.Send("input.list", maximum_priority, list.id, Data.Profile.list[list.id]);
+			Transceiver.Send("input.list", maximum_priority, list.id, Data.List.type[list.id]);
 		} else {
 			Transceiver.Send("input.list", maximum_priority);
 		}
@@ -28,7 +28,7 @@ export namespace ListProcesser {
 	 * @param list 清单对象
 	 */
 	export function Alter(id: string, list: any): void {
-		Data.Profile.list[id] = list;
+		Data.List.type[id] = list;
 		Transceiver.Send("view.todo");
 	}
 
@@ -43,7 +43,7 @@ export namespace ListProcesser {
 				if (todo[id].type == list.id) delete todo[id];
 			}
 
-			delete Data.Profile.list[list.id];
+			delete Data.List.type[list.id];
 			Transceiver.Send("view.todo");
 		}
 	}
@@ -64,7 +64,7 @@ export namespace ListProcesser {
 		const current_time: Date = new Date();
 		for (const id in Data.List.todo) {
 			const item_data = Data.List.todo[id];
-			if (item_data.cycle != "secular") {
+			if (item_data.cycle + 1) {
 				if (item_data.time < Time.Parse(current_time)) {
 					if (item_data.gaze) {
 						Transceiver.Send("todo.accomplish", { id: id });

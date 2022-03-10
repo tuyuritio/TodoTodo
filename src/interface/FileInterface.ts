@@ -23,31 +23,25 @@ export namespace FileInterface {
 	 * 读取本地数据
 	 */
 	export function Read(): void {
-		const data_version: string = "3.4.0";		// 最新数据版本
-
-		// 数据初始化
-		Data.Profile = { data_version: data_version, list: {}, tree_type: true, empty_list: false };
-		Data.Task.task = {};
-		Data.List = { todo: {}, done: {}, fail: {} };
-
 		const data_path: string | undefined = CheckPath(Data.Configuration.path);
+		let local_data: any = {};
 		if (data_path) {
-			let local_data: any = {};
-			for (const data_type of ["task", "todo", "done", "fail", "profile"]) {
+			for (const data_type of ["task", "list", "todo", "done", "fail", "profile"]) {
 				const file_path = Path.Link(data_path, data_type + ".json");
 				if (Path.Exist(file_path)) {
 					local_data[data_type] = Path.ReadJSON(file_path);
 				}
 			}
 
-			Compatible(local_data, data_version);
-
-			if (local_data.profile) Data.Profile = local_data.profile;
-			if (local_data.task) Data.Task.task = local_data.task;
-			if (local_data.todo) Data.List.todo = local_data.todo;
-			if (local_data.done) Data.List.done = local_data.done;
-			if (local_data.fail) Data.List.fail = local_data.fail;
+			Compatible(local_data, data_path);
 		}
+
+		Data.Profile = local_data.profile ? local_data.profile : { data_version: "__EMPTY__", tree_type: true, empty_list: false };
+		Data.Task.task = local_data.task ? local_data.task : {};
+		Data.List.type = local_data.list ? local_data.list : { __untitled: { "label": "暂存清单", "priority": -1 } };
+		Data.List.todo = local_data.todo ? local_data.todo : {};
+		Data.List.done = local_data.done ? local_data.done : {};
+		Data.List.fail = local_data.fail ? local_data.fail : {};
 	}
 
 	/**
@@ -57,6 +51,7 @@ export namespace FileInterface {
 		let written_data: any = {
 			profile: Data.Profile,
 			task: Data.Task.task,
+			list: Data.List.type,
 			todo: Data.List.todo,
 			done: Data.List.done,
 			fail: Data.List.fail
@@ -83,14 +78,41 @@ export namespace FileInterface {
 	/**
 	 * 数据兼容性调整
 	 * @param data 前版本数据
-	 * @param data_version 现版本号
+	 * @param path 文件路径
 	 */
-	function Compatible(data: any, data_version: string): void {
-		if (data && data.profile.data_version != data_version) {
+	function Compatible(data: any, path: string): void {
+		const data_version: string = "3.4.0";		// 最新数据版本
+
+		if (!data.profile) data.profile = { data_version: data_version, tree_type: true, empty_list: false };
+
+		if (data.profile.data_version != data_version) {
 			// 数据版本更新
 			data.profile.data_version = data_version;
 
 			// 数据兼容语句
+			data.list = data.profile.list;
+			delete data.profile.list;
+
+			for (let id in data.todo) {
+				let item = data.todo[id];
+				switch (item.cycle) {
+					case "secular":
+						item.cycle = -1;
+						break;
+
+					case "once":
+						item.cycle = 0;
+						break;
+
+					case "daily":
+						item.cycle = 1;
+						break;
+
+					case "weekly":
+						item.cycle = 7;
+						break;
+				}
+			}
 		}
 	}
 }

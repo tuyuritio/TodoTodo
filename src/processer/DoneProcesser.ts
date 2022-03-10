@@ -10,9 +10,9 @@ export namespace DoneProcesser {
 	export function Redo(item: any): void {
 		let item_data = Data.Copy(Data.List.done[item.id]);
 		item_data.time = Time.Parse(new Date());
-		item_data.cycle = "secular";
+		item_data.cycle = -1;
 		item_data.gaze = false;
-		if (!(item_data.type in Data.Profile.list)) item_data.type = "__untitled";
+		if (!(item_data.type in Data.List.type)) item_data.type = "__untitled";
 		Data.List.todo[item.id] = item_data;
 
 		delete Data.List.done[item.id];
