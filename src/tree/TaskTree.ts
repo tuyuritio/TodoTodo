@@ -30,13 +30,15 @@ export namespace TaskTree {
 				index--;
 			}
 
-			let histories: string[] = [];
-			if (task_item.duration != -1) histories.push(Time.Period(task_item.start, task_item.duration));
-			for (let index = task_item.history.length - 1; index >= 0; index--) {
-				const days = task_item.history[index];
-				histories.push(Time.Period(days.substring(0, 10), Number(days.substring(11))));
+			let history: string[] = [];
+			for (let index = task_item.period.length - 1; index >= 0; index--) {
+				const days = task_item.period[index];
+
+				if (!index && days.substring(10) == "-1") continue;
+				history.push(Time.Period(days.substring(0, 10), Number(days.substring(11))));
 			}
-			tree_data[index] = new Task(id, task_item.label, task_item.today, task_item.duration, histories);
+
+			tree_data[index] = new Task(id, task_item.label, task_item.today, Number(task_item.period[0].substring(11)), history);
 		}
 
 		view.event_emitter.fire();
@@ -64,7 +66,7 @@ export namespace TaskTree {
 			}
 
 			if (history.length) {
-				this.tooltip = "历史打卡 :";
+				this.tooltip = "打卡记录 :";
 				for (let index = 0; index < history.length; index++) {
 					this.tooltip += "\n" + history[index];
 				}

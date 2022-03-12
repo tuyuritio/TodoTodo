@@ -36,9 +36,7 @@ export namespace TaskProcesser {
 				label: task.label,
 				priority: task.priority,
 				today: false,
-				start: Time.Textualize(new Date(), "date"),
-				duration: -1,
-				history: []
+				period: [Time.Textualize(new Date(), "date") + "-1"]
 			};
 		}
 
@@ -57,6 +55,80 @@ export namespace TaskProcesser {
 	}
 
 	/**
+	 * 准备补签任务
+	 * @param task 任务对象
+	 */
+	export function LoadRefill(task: any): void {
+		const data = Data.Task.task[task.id];
+
+		if (data.history.length) {
+			let days: string[] = [];
+
+			let start: number = Time.Parse(data.start);
+			for (let index = 0; index < data.history.length; index++) {
+				let period: string = data.history[index];
+				let past: Date = new Date(period.substring(0, 10));
+				past.setDate(past.getDate() + Number(period.substring(11)));
+
+				let gap: number = Time.GapDay(start, past);
+				for (let day = 1; day < gap; day++) {
+					past.setDate(past.getDate() + 1);
+					days.push(Time.Textualize(past, "date"));
+				}
+			}
+
+			Transceiver.Send("input.task.refill", task.id, days);
+		}
+	}
+
+	/**
+	 * 补签任务
+	 * @param id 任务ID
+	 * @param days 补签日期
+	 */
+	export function Refill(id: string, days: string[]): void {
+		const data = Data.Task.task[id];
+
+		let filled: string[] = [];
+		for (let index = data.history.length - 1; index >= 0; index--) {
+			const text: string = data.history.length[index];
+
+			let start: Date = new Date(text.substring(0, 10));
+			let duration = Number(text.substring(11));
+			for (let index = 0; index < duration; index++) {
+				filled.unshift(Time.Textualize(start, "date"));
+
+				start.setDate(start.getDate() + 1);
+			}
+		}
+
+		for (let index = 0; index < days.length; index++) {
+			filled.splice(filled.indexOf(days[index], 1));
+		}
+
+		let history: string[] = [];
+		for (let i = filled.length - 1; i >= 0; i--) {
+			let append: boolean = false;
+
+			for (let j = 0; j < history.length; j++) {
+				let start: Date = new Date(history[j].substring(0, 10));
+				let end: Date = new Date(start);
+				let duration: number = Number(history[j].substring(11));
+				end.setDate(end.getDate() + duration + 1);
+
+				if (Time.Parse(end) == Time.Parse(filled[i])) {
+					append = true;
+					history[i] = Time.Textualize(start, "date") + "+" + (++duration);
+				}
+			}
+
+			if (!append) {
+				history.unshift();
+			}
+		}
+	}
+
+	/**
 	 * 归档任务
 	 * @param task 任务对象
 	 */
@@ -64,7 +136,7 @@ export namespace TaskProcesser {
 		if (await Message.Show("information", "确认归档任务 \"" + task.label + "\" 吗？", "确认", "取消") == "确认") {
 			const data = Data.Task.task[task.id];
 
-			let archive: any = {
+			let archive_done: any = {
 				label: data.label,
 				type: "__untitled",
 				priority: 0,
@@ -72,22 +144,23 @@ export namespace TaskProcesser {
 				time: Time.Parse(new Date())
 			}
 
-			let histories: string[] = [];
-			if (data.duration != -1) histories.push(Time.Period(data.start, data.duration));
-			for (let index = data.history.length - 1; index >= 0; index--) {
-				const days = data.history[index];
-				histories.push(Time.Period(days.substring(0, 10), Number(days.substring(11))));
+			let history: string[] = [];
+			for (let index = data.period.length - 1; index >= 0; index--) {
+				const days: string = data.period[index];
+
+				if (!index && days.substring(10) == "-1") continue;
+				history.push(Time.Period(days.substring(0, 10), Number(days.substring(11))));
 			}
 
-			if (histories.length) {
-				let history = { content: "历史打卡 : ", done: true };
-				for (let index = 0; index < histories.length; index++) {
-					history.content += "\n" + histories[index];
+			if (history.length) {
+				let days = { content: "打卡记录 : ", done: true };
+				for (let index = 0; index < history.length; index++) {
+					days.content += "\n" + history[index];
 				}
-				archive.entry[Code.Generate(8)] = history;
+				archive_done.entry[Code.Generate(8)] = days;
 			}
 
-			Data.List.done[Code.Generate(8)] = archive;
+			Data.List.done[Code.Generate(8)] = archive_done;
 
 			delete Data.Task.task[task.id];
 			Transceiver.Send("view.task");
@@ -97,24 +170,38 @@ export namespace TaskProcesser {
 
 	/**
 	 * 检查任务数据
-	 * @param task 任务数据
+	 * @param task 任务对象
 	 * @returns 今日是否打卡
 	 */
 	function Check(task: any): boolean {
-		let start: Date = new Date(task.start);
-		start.setDate(start.getDate() + task.duration);			// 最后一个打卡日的00:00
+		let period: string = task.period[0];
 
-		let gap_day: number = (Time.Parse(new Date()) - Time.Parse(start)) / (24 * 60 * 60 * 1000);
+		let start: Date = new Date(period.substring(0, 10));
+		let duration: number = Number(period.substring(11));
 
+
+
+		if (period.charAt(10) == "-") {
+			period
+		}
+
+
+
+
+
+
+		start.setDate(start.getDate() + Number(period.substring(11)));			// 最后一个打卡日的00:00
+
+		let gap: number = Time.GapDay(start, new Date());
 		if (task.duration == -1) {								// 未开始打卡
 			task.start = Time.Textualize(new Date(), "date");
-		} else if (gap_day > 2) {								// 昨日未打卡
+		} else if (gap > 2) {								// 昨日未打卡
 			task.history.push(task.start + "+" + task.duration);
 			task.start = Time.Textualize(new Date(), "date");
 			task.duration = -1;
 		}
 
-		if (gap_day <= 1) {	// 今日已打卡
+		if (gap <= 1) {		// 今日已打卡
 			return true;
 		} else {			// 昨日已打卡、今日未打卡
 			return false;

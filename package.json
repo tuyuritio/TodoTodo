@@ -132,6 +132,11 @@
 				"icon": "$(trash)"
 			},
 			{
+				"command": "todotodo.task.refill",
+				"title": "补签任务",
+				"icon": "$(debug-restart)"
+			},
+			{
 				"command": "todotodo.task.archive",
 				"title": "归档任务",
 				"icon": "$(archive)"
@@ -243,6 +248,10 @@
 				},
 				{
 					"command": "todotodo.task.terminate",
+					"when": "viewItem == task_item"
+				},
+				{
+					"command": "todotodo.task.refill",
 					"when": "viewItem == task_item"
 				},
 				{

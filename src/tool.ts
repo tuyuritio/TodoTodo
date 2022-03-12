@@ -99,7 +99,7 @@ export namespace Inputer {
 	 * @param match 匹配描述 - **默认:** false
 	 * @returns 选择框
 	 */
-	export function Pick(title: string, value: string, placeholder: string, total_step?: number, step?: number, match: boolean = false): vscode.QuickPick<PickItem> {
+	export function Pick(title: string, value: string, placeholder: string, total_step?: number, step?: number, match: boolean = false, many: boolean = false): vscode.QuickPick<PickItem> {
 		const box = vscode.window.createQuickPick<PickItem>();
 		box.title = title;
 		box.totalSteps = total_step;
@@ -107,6 +107,7 @@ export namespace Inputer {
 		box.value = value;
 		box.placeholder = placeholder;
 		box.matchOnDescription = match;
+		box.canSelectMany = many;
 		box.onDidHide(() => box.dispose());
 		return box;
 	}
@@ -227,6 +228,19 @@ export namespace Time {
 		}
 
 		return time_text;
+	}
+
+	/**
+	 * 计算间隔天数
+	 * @param end 截止日期
+	 * @param start 起始日期
+	 * @returns 间隔天数
+	 */
+	export function GapDay(end: Date | string | number, start: Date | string | number): number {
+		let end_date: Date = new Date(end);
+		let start_date: Date = new Date(start);
+
+		return (end_date.getTime() - start_date.getTime()) / (24 * 60 * 60 * 1000);
 	}
 
 	/**

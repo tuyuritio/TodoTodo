@@ -10,6 +10,7 @@ import { DoneProcesser as Done } from "./processer/DoneProcesser";
 import { FailProcesser as Fail } from "./processer/FailProcesser";
 import { OperationInputer } from "./input/OperationInputer";
 import { TaskInputer } from "./input/TaskInputer";
+import { TaskRefiller } from "./input/TaskRefiller";
 import { ListInputer } from "./input/ListInputer";
 import { ItemInputer } from "./input/ItemInputer";
 import { EntryInputer } from "./input/EntryInputer";
@@ -74,6 +75,7 @@ namespace Communicator {
 		// 注册input命令
 		Transceiver.Register("input.panel", () => OperationInputer.Start(Data.List.todo, Data.Profile.empty_list, Data.Profile.tree_type), true);
 		Transceiver.Register("input.task", TaskInputer.Start);
+		Transceiver.Register("input.task.refill", TaskRefiller.Start);
 		Transceiver.Register("input.list", ListInputer.Start);
 		Transceiver.Register("input.item", ItemInputer.Start);
 		Transceiver.Register("input.entry", EntryInputer.Start);
@@ -83,6 +85,8 @@ namespace Communicator {
 		Transceiver.Register("task.adjust", Task.Adjust);
 		Transceiver.Register("task.terminate", Task.Terminate, true);
 		Transceiver.Register("task.change", Task.Change, true);
+		Transceiver.Register("task.refill", Task.LoadRefill, true);
+		Transceiver.Register("task.refill-recieve", Task.Refill);
 		Transceiver.Register("task.archive", Task.Archive, true);
 
 		// 注册list命令

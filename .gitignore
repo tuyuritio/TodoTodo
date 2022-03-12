@@ -4,6 +4,6 @@ node_modules
 .vscode-test/
 *.vsix
 TodoTodoData/**
-!TodoTodoData/log.json
+!TodoTodoData/.keep
 PersonalAccessToken.ini
 css_configuration.json

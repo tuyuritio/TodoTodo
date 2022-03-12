@@ -57,9 +57,11 @@ export namespace FileInterface {
 			fail: Data.List.fail
 		};
 
-		if (CheckPath(Data.Configuration.path)) {
+		let data_path: string | undefined = CheckPath(Data.Configuration.path);
+
+		if (data_path) {
 			for (const file_name in written_data) {
-				Path.WriteJSON(Path.Link(Data.Configuration.path, file_name + ".json"), written_data[file_name]);
+				Path.WriteJSON(Path.Link(data_path, file_name + ".json"), written_data[file_name]);
 			}
 		} else {
 			SetPath();
@@ -81,7 +83,7 @@ export namespace FileInterface {
 	 * @param path 文件路径
 	 */
 	function Compatible(data: any, path: string): void {
-		const data_version: string = "3.4.0";		// 最新数据版本
+		const data_version: string = "3.5.0";		// 最新数据版本
 
 		if (!data.profile) data.profile = { data_version: data_version, tree_type: true, empty_list: false };
 
@@ -90,28 +92,27 @@ export namespace FileInterface {
 			data.profile.data_version = data_version;
 
 			// 数据兼容语句
-			data.list = data.profile.list;
-			delete data.profile.list;
+			for (let id in data.task) {
+				let task = data.task[id];
 
-			for (let id in data.todo) {
-				let item = data.todo[id];
-				switch (item.cycle) {
-					case "secular":
-						item.cycle = -1;
-						break;
-
-					case "once":
-						item.cycle = 0;
-						break;
-
-					case "daily":
-						item.cycle = 1;
-						break;
-
-					case "weekly":
-						item.cycle = 7;
-						break;
+				let period: string[] = [];
+				period.push(task.start);
+				
+				if (task.duration == -1) {
+					period[0] += "-1";
+				} else {
+					period[0] += "+" + task.duration;
 				}
+				
+				for (let index = 0; index < task.history.length; index++) {
+					period.push(task.history[index]);
+				}
+				
+				delete task.history;
+				delete task.start;
+				delete task.duration;
+
+				task.period = period;
 			}
 		}
 	}
