@@ -12,8 +12,8 @@ export namespace OperationInputer {
 
 		let operation: Inputer.PickItem[] = [];
 		operation.push(new Inputer.PickItem("新增事项", "todo.load"));
-		operation.push(new Inputer.PickItem("建立任务", "task.load"));
 		operation.push(new Inputer.PickItem("创建清单", "list.load"));
+		operation.push(new Inputer.PickItem("建立任务", "task.load"));
 
 		if (tree_type) {
 			if (empty_list) {
