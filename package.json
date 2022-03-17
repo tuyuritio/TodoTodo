@@ -9,7 +9,7 @@
 		"待办事项"
 	],
 	"icon": "resources/icon/icon.png",
-	"version": "3.4.0",
+	"version": "3.5.0",
 	"engines": {
 		"vscode": "^1.61.0"
 	},
