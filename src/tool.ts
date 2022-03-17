@@ -265,6 +265,18 @@ export namespace Time {
 		date.setDate(date.getDate() + duration);
 		return start + " ~ " + Time.Textualize(date, "date");
 	};
+
+	/**
+	 * 获取结束日期
+	 * @param start 开始日期
+	 * @param duration 持续日数
+	 * @returns 结束日期
+	 */
+	export function EndDate(start: string | Date, duration: number): Date {
+		let date = new Date(start);
+		date.setDate(date.getDate() + duration);
+		return date;
+	}
 }
 
 export namespace Path {

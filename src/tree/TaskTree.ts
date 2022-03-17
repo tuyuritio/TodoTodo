@@ -24,21 +24,22 @@ export namespace TaskTree {
 		for (const id in data) {
 			const task_item = data[id];
 
+			let duration: number = task_item.period[0].charAt(10) ? Number(task_item.period[0].substring(11)) : -1;
+
+			let history: string[] = [];
+			for (let index = task_item.period.length - 1; index >= 0; index--) {
+				const days: string = task_item.period[index];
+
+				if (!index && !days.charAt(10)) continue;
+				history.unshift(Time.Period(days.substring(0, 10), Number(days.substring(11))));
+			}
+
 			let index = tree_data.length;
 			while (index > 0 && task_item.priority > data[String(tree_data[index - 1].id)].priority) {
 				tree_data[index] = tree_data[index - 1];
 				index--;
 			}
-
-			let history: string[] = [];
-			for (let index = task_item.period.length - 1; index >= 0; index--) {
-				const days = task_item.period[index];
-
-				if (!index && days.substring(10) == "-1") continue;
-				history.push(Time.Period(days.substring(0, 10), Number(days.substring(11))));
-			}
-
-			tree_data[index] = new Task(id, task_item.label, task_item.today, Number(task_item.period[0].substring(11)), history);
+			tree_data[index] = new Task(id, task_item.label, task_item.today, duration, history);
 		}
 
 		view.event_emitter.fire();

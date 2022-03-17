@@ -1,5 +1,5 @@
 /* 模块调用 */
-import { Code, Inputer, Transceiver } from "../Tool";
+import { Inputer, Transceiver } from "../Tool";
 
 export namespace TaskRefiller {
 	const title: string = "补签任务";
@@ -28,18 +28,28 @@ export namespace TaskRefiller {
 
 		let day_item: Inputer.PickItem[] = [];
 		for (let index = 0; index < task_days.length; index++) {
-			day_item.unshift(new Inputer.PickItem(task_days[index]));
+			day_item.push(new Inputer.PickItem(task_days[index]));
 		}
-		box.items = day_item;
+
+		if (!day_item.length) {
+			box.items = [new Inputer.PickItem("暂无需要补签的日期。")];
+		} else {
+			box.items = day_item;
+		}
 
 		box.onDidChangeSelection((items) => {
 			filled = [];
-			for (let index = 0; index < items.length; index++) {
-				filled.push(items[index].label);
+			if (items[0].label != "暂无需要补签的日期。") {
+				for (let index = 0; index < items.length; index++) {
+					filled.push(items[index].label);
+				}
 			}
 		});
 
-		box.onDidAccept(Consolidate);
+		box.onDidAccept(() => {
+			Consolidate();
+			box.hide();
+		});
 
 		box.show();
 	}

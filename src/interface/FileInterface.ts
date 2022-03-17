@@ -97,17 +97,16 @@ export namespace FileInterface {
 
 				let period: string[] = [];
 				period.push(task.start);
-				
-				if (task.duration == -1) {
-					period[0] += "-1";
-				} else {
+
+				if (task.duration != -1) {
 					period[0] += "+" + task.duration;
 				}
-				
+
+				task.history.reverse();
 				for (let index = 0; index < task.history.length; index++) {
 					period.push(task.history[index]);
 				}
-				
+
 				delete task.history;
 				delete task.start;
 				delete task.duration;
