@@ -8,17 +8,21 @@ export namespace DoneProcesser {
 	 * @param item 事项对象
 	 */
 	export function Redo(item: any): void {
-		let item_data = Data.Copy(Data.List.done[item.id]);
-		item_data.time = Time.Parse(new Date());
-		item_data.cycle = -1;
-		item_data.gaze = false;
-		if (!(item_data.type in Data.List.type)) item_data.type = "__untitled";
-		Data.List.todo[item.id] = item_data;
+		let item_data = item ? Data.Copy(Data.List.done[item.id]) : undefined;
 
-		delete Data.List.done[item.id];
+		if (item_data) {
+			item_data.time = Time.Parse(new Date());
+			item_data.cycle = -1;
+			item_data.gaze = false;
+			if (!(item_data.type in Data.List.type)) item_data.type = "__untitled";
+			Data.List.todo[item.id] = item_data;
 
-		Transceiver.Send("view.todo");
-		Transceiver.Send("view.done");
+			delete Data.List.done[item.id];
+
+			Transceiver.Send("view.todo");
+			Transceiver.Send("view.done");
+			Transceiver.Send("file.write");
+		}
 	}
 
 	/**
@@ -28,6 +32,7 @@ export namespace DoneProcesser {
 		if (await Message.Show("information", "确认清空已办事项吗？", "确认", "取消") == "确认") {
 			Data.List.done = {};
 			Transceiver.Send("view.done");
+			Transceiver.Send("file.write");
 		}
 	}
 }

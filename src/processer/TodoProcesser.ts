@@ -30,6 +30,7 @@ export namespace TodoProcesser {
 	export function Edit(id: string, item: any): void {
 		Data.List.todo[id] = item;
 		Transceiver.Send("view.todo");
+		Transceiver.Send("file.write");
 	}
 
 	/**
@@ -40,6 +41,7 @@ export namespace TodoProcesser {
 		if (await Message.Show("warning", "确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消") == "确认") {
 			delete Data.List.todo[item.id];
 			Transceiver.Send("view.todo");
+			Transceiver.Send("file.write");
 		}
 	}
 
@@ -48,21 +50,22 @@ export namespace TodoProcesser {
 	 * @param item 事项对象
 	 */
 	export function Accomplish(item: any): void {
-		let item_data = Data.Copy(Data.List.todo[item.id]);
+		let item_data = item ? Data.Copy(Data.List.todo[item.id]) : undefined;
 
-		if (item_data.cycle > 0) {
-			Append(item_data);
+		if (item_data) {
+			if (item_data.cycle > 0) Append(item_data);
+
+			item_data.time = Time.Parse(new Date());
+			delete item_data.cycle;
+			delete item_data.gaze;
+			Data.List.done[item.id] = item_data;
+
+			delete Data.List.todo[item.id];
+
+			Transceiver.Send("view.todo");
+			Transceiver.Send("view.done");
+			Transceiver.Send("file.write");
 		}
-
-		item_data.time = Time.Parse(new Date());
-		delete item_data.cycle;
-		delete item_data.gaze;
-		Data.List.done[item.id] = item_data;
-
-		delete Data.List.todo[item.id];
-
-		Transceiver.Send("view.todo");
-		Transceiver.Send("view.done");
 	}
 
 	/**
@@ -70,21 +73,24 @@ export namespace TodoProcesser {
 	 * @param item 事项对象
 	 */
 	export function Shut(item: any): void {
-		let item_data = Data.Copy(Data.List.todo[item.id]);
+		let item_data = item ? Data.Copy(Data.List.todo[item.id]) : undefined;
 
-		if (item_data.cycle > 0) {
-			Append(item_data);
+		if (item_data) {
+			if (item_data.cycle > 0) {
+				Append(item_data);
+			}
+
+			item_data.time = Time.Parse(new Date());
+			delete item_data.cycle;
+			delete item_data.gaze;
+			Data.List.fail[item.id] = item_data;
+
+			delete Data.List.todo[item.id];
+
+			Transceiver.Send("view.todo");
+			Transceiver.Send("view.fail");
+			Transceiver.Send("file.write");
 		}
-
-		item_data.time = Time.Parse(new Date());
-		delete item_data.cycle;
-		delete item_data.gaze;
-		Data.List.fail[item.id] = item_data;
-
-		delete Data.List.todo[item.id];
-
-		Transceiver.Send("view.todo");
-		Transceiver.Send("view.fail");
 	}
 
 	/**
@@ -122,6 +128,7 @@ export namespace TodoProcesser {
 		item_data.gaze = !item_data.gaze;
 
 		Transceiver.Send("view.todo");
+		Transceiver.Send("file.write");
 	}
 }
 
@@ -150,6 +157,7 @@ export namespace EntryProcesser {
 			done: entry.done
 		}
 		Transceiver.Send("view.todo");
+		Transceiver.Send("file.write");
 	}
 
 	/**
@@ -159,6 +167,7 @@ export namespace EntryProcesser {
 	export function Delete(entry: any): void {
 		delete Data.List.todo[entry.root].entry[entry.id];
 		Transceiver.Send("view.todo");
+		Transceiver.Send("file.write");
 	}
 
 	/**
@@ -169,5 +178,6 @@ export namespace EntryProcesser {
 		let entry_data = Data.List.todo[entry.root].entry[entry.id];
 		entry_data.done = !entry_data.done;
 		Transceiver.Send("view.todo");
+		Transceiver.Send("file.write");
 	}
 }

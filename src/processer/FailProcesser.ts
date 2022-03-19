@@ -8,17 +8,21 @@ export namespace FailProcesser {
 	 * @param item 事项对象
 	 */
 	export function Restart(item: any): void {
-		let item_data = Data.Copy(Data.List.fail[item.id]);
-		item_data.time = Time.Parse(new Date());
-		item_data.cycle = -1;
-		item_data.gaze = false;
-		if (!(item_data.type in Data.List.type)) item_data.type = "__untitled";
-		Data.List.todo[item.id] = item_data;
+		let item_data = item ? Data.Copy(Data.List.fail[item.id]) : undefined;
 
-		delete Data.List.fail[item.id];
+		if (item_data) {
+			item_data.time = Time.Parse(new Date());
+			item_data.cycle = -1;
+			item_data.gaze = false;
+			if (!(item_data.type in Data.List.type)) item_data.type = "__untitled";
+			Data.List.todo[item.id] = item_data;
 
-		Transceiver.Send("view.todo");
-		Transceiver.Send("view.fail");
+			delete Data.List.fail[item.id];
+
+			Transceiver.Send("view.todo");
+			Transceiver.Send("view.fail");
+			Transceiver.Send("file.write");
+		}
 	}
 
 	/**
@@ -29,6 +33,7 @@ export namespace FailProcesser {
 		if (await Message.Show("warning", "确认删除事项 \"" + item.label + "\" 吗？", "确认", "取消") == "确认") {
 			delete Data.List.fail[item.id];
 			Transceiver.Send("view.fail");
+			Transceiver.Send("file.write");
 		}
 	}
 }

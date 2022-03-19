@@ -41,6 +41,7 @@ export namespace TaskProcesser {
 		}
 
 		Transceiver.Send("view.task");
+		Transceiver.Send("file.write");
 	}
 
 	/**
@@ -51,6 +52,7 @@ export namespace TaskProcesser {
 		if (await Message.Show("information", "确认终止任务 \"" + task.label + "\" 吗？", "确认", "取消") == "确认") {
 			delete Data.Task.task[task.id];
 			Transceiver.Send("view.task");
+			Transceiver.Send("file.write");
 		}
 	}
 
@@ -125,6 +127,7 @@ export namespace TaskProcesser {
 		Check(data);		// 填补最近打卡信息
 
 		Transceiver.Send("view.task");
+		Transceiver.Send("file.write");
 	}
 
 	/**
@@ -164,6 +167,7 @@ export namespace TaskProcesser {
 			delete Data.Task.task[task.id];
 			Transceiver.Send("view.task");
 			Transceiver.Send("view.done");
+			Transceiver.Send("file.write");
 		}
 	}
 
@@ -183,6 +187,7 @@ export namespace TaskProcesser {
 		}
 
 		Transceiver.Send("view.task");
+		Transceiver.Send("file.write");
 	}
 
 	/**
@@ -245,6 +250,9 @@ export namespace TaskProcesser {
 			if (today != task.today) if_change = true;
 		}
 
-		if (if_change) Transceiver.Send("view.task");
+		if (if_change) {
+			Transceiver.Send("view.task");
+			Transceiver.Send("file.write");
+		}
 	}
 }

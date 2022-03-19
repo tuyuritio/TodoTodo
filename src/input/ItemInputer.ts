@@ -46,7 +46,7 @@ export namespace ItemInputer {
 			item_label = "";
 			item_type = "";
 			item_priority = -1;
-			item_cycle = -1;
+			item_cycle = -2;
 			item_time = -1;
 			item_entry = {};
 		}
@@ -123,7 +123,26 @@ export namespace ItemInputer {
 	 * 选择事项性质
 	 */
 	function ChooseProperty(): void {
-		const box = Inputer.Pick(title, "", "事项性质", total_option_1, 4);
+		let property: string;
+		switch (item_cycle) {
+			case -2:
+				property = "";
+				break;
+
+			case -1:
+				property = "长期事项";
+				break;
+
+			case 0:
+				property = "单次事项";
+				break;
+
+			default:
+				property = "周期事项";
+				break;
+		}
+
+		const box = Inputer.Pick(title, property, "事项性质", total_option_1, 4);
 
 		box.items = [new Inputer.PickItem("长期事项"), new Inputer.PickItem("单次事项"), new Inputer.PickItem("周期事项")];
 
@@ -131,6 +150,7 @@ export namespace ItemInputer {
 			switch (item[0].label) {
 				case "长期事项":
 					item_cycle = -1;
+					item_time = Time.Parse(new Date());
 
 					box.hide();
 					Consolidate();

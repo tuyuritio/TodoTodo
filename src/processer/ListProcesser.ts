@@ -30,6 +30,7 @@ export namespace ListProcesser {
 	export function Alter(id: string, list: any): void {
 		Data.List.type[id] = list;
 		Transceiver.Send("view.todo");
+		Transceiver.Send("file.write");
 	}
 
 	/**
@@ -45,6 +46,7 @@ export namespace ListProcesser {
 
 			delete Data.List.type[list.id];
 			Transceiver.Send("view.todo");
+			Transceiver.Send("file.write");
 		}
 	}
 

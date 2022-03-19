@@ -9,6 +9,7 @@ export namespace ProfileProcesser {
 	export function ChangeTree(): void {
 		Data.Profile.tree_type = !Data.Profile.tree_type;
 		Transceiver.Send("view.todo");
+		Transceiver.Send("file.write");
 	}
 
 	/**
@@ -17,5 +18,6 @@ export namespace ProfileProcesser {
 	export function ChangeEmpty(): void {
 		Data.Profile.empty_list = !Data.Profile.empty_list;
 		Transceiver.Send("view.todo");
+		Transceiver.Send("file.write");
 	}
 }
