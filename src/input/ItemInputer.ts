@@ -173,7 +173,7 @@ export namespace ItemInputer {
 	 */
 	function EditDate(): void {
 		if (item_time == -1) item_time = Time.Parse(new Date());
-		const box = Inputer.Text(title, Time.Textualize(item_time, "date"), "截止日期", "请输入截止日期(格式: YYYY/MM/DD)", total_option_2, 5);
+		const box = Inputer.Text(title, Time.Textualize(item_time, "date"), "截止日期(格式 : YYYY/MM/DD)", "请输入截止日期", total_option_2, 5);
 
 		box.onDidAccept(() => {
 			edit_date = box.value;
@@ -200,7 +200,7 @@ export namespace ItemInputer {
 	 * 编辑截止时间
 	 */
 	function EditTime(): void {
-		const box = Inputer.Text(title, Time.Textualize(item_time).substring(11, 16), "截止时间", "请输入截止时间(格式: HH:MM)", total_option_2, 6);
+		const box = Inputer.Text(title, Time.Textualize(item_time).substring(11, 16), "截止时间(格式 : HH:MM)", "请输入截止时间", total_option_2, 6);
 
 		box.onDidAccept(() => {
 			edit_time = box.value;
@@ -233,16 +233,16 @@ export namespace ItemInputer {
 	 * 编辑事项周期
 	 */
 	function EditCycle(): void {
-		const box = Inputer.Pick(title, String(item_cycle + 1 ? item_cycle : ""), "事项周期", total_option_2, 7);
-
-		box.items = [new Inputer.PickItem("单位: 日"), new Inputer.PickItem("周期为 0 表示事项为单次事项")];
+		const box = Inputer.Text(title, item_cycle + 2 ? String(item_cycle) : "", "单位 : 日", "请输入周期", total_option_2, 7);
 
 		box.onDidAccept(() => {
 			item_cycle = Number(box.value);
 
-			if (item_cycle) {
+			if (item_cycle > 0) {
 				box.hide();
 				Consolidate();
+			} else {
+				box.validationMessage = "周期必须大于0！";
 			}
 		});
 

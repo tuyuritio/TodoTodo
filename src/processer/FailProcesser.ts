@@ -26,6 +26,27 @@ export namespace FailProcesser {
 	}
 
 	/**
+	 * 完成事项
+	 * @param item 事项对象
+	 */
+	export function Accomplish(item: any): void {
+		let item_data = item ? Data.Copy(Data.List.fail[item.id]) : undefined;
+
+		if (item_data) {
+			item_data.time = Time.Parse(new Date());
+			delete item_data.cycle;
+			delete item_data.gaze;
+			Data.List.done[item.id] = item_data;
+
+			delete Data.List.todo[item.id];
+
+			Transceiver.Send("view.fail");
+			Transceiver.Send("view.done");
+			Transceiver.Send("file.write");
+		}
+	}
+
+	/**
 	 * 删除事项
 	 * @param item 事项对象
 	 */

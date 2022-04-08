@@ -172,6 +172,11 @@
 				"icon": "$(error)"
 			},
 			{
+				"command": "todotodo.todo.skip",
+				"title": "跳过事项",
+				"icon": "$(pulse)"
+			},
+			{
 				"command": "todotodo.todo.gaze",
 				"title": "事项专注",
 				"icon": "$(play)"
@@ -268,16 +273,20 @@
 				},
 				{
 					"command": "todotodo.todo.load",
-					"when": "viewItem == todo_item"
+					"when": "viewItem == todo_item || viewItem == cycle_item"
 				},
 				{
 					"command": "todotodo.todo.delete",
-					"when": "viewItem == todo_item"
+					"when": "viewItem == todo_item || viewItem == cycle_item"
+				},
+				{
+					"command": "todotodo.todo.skip",
+					"when": "viewItem == cycle_item"
 				},
 				{
 					"command": "todotodo.todo.gaze",
 					"group": "inline",
-					"when": "viewItem == todo_item && config.todotodo.list.todo.gaze.enable"
+					"when": "viewItem == todo_item || viewItem == cycle_item && config.todotodo.list.todo.gaze.enable"
 				},
 				{
 					"command": "todotodo.todo.undo",
@@ -287,16 +296,16 @@
 				{
 					"command": "todotodo.todo.accomplish",
 					"group": "inline",
-					"when": "viewItem == todo_item || viewItem == gaze_item"
+					"when": "viewItem == todo_item || viewItem == cycle_item || viewItem == gaze_item"
 				},
 				{
 					"command": "todotodo.todo.shut",
 					"group": "inline",
-					"when": "viewItem == todo_item"
+					"when": "viewItem == todo_item || viewItem == cycle_item"
 				},
 				{
 					"command": "todotodo.entry.add",
-					"when": "viewItem == todo_item"
+					"when": "viewItem == todo_item || viewItem == cycle_item"
 				},
 				{
 					"command": "todotodo.entry.load",

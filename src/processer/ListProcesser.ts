@@ -72,7 +72,9 @@ export namespace ListProcesser {
 						Transceiver.Send("todo.accomplish", { id: id });
 					} else {
 						Transceiver.Send("todo.shut", { id: id });
-						Message.Show("warning", "事项 \"" + item_data.label + "\" 已逾期！");
+						Message.Show("warning", "事项 \"" + item_data.label + "\" 已逾期！", "确认", "转为已办").then((result) => {
+							if (result == "转为已办") Transceiver.Send("fail.accomplish", { id: id });
+						});
 					}
 				} else if (Time.Parse(remind_start) < Time.Parse(item_data.time) && Time.Parse(item_data.time) <= Time.Parse(remind_end)) {
 					Message.Show("warning", "事项 \"" + item_data.label + "\" 即将逾期！");

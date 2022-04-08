@@ -108,7 +108,7 @@ export namespace TodoTree {
 	}
 
 	class Item extends vscode.TreeItem {
-		constructor(id: string, label: string, cycle: string, time: number, entry: number, gaze: boolean) {
+		constructor(id: string, label: string, cycle: number, time: number, entry: number, gaze: boolean) {
 			super(label);
 			this.id = id;
 			this.collapsibleState = entry ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None;
@@ -124,17 +124,25 @@ export namespace TodoTree {
 					this.iconPath = new vscode.ThemeIcon("note");
 					this.description = time_text.substring(0, 10);
 				}
+
+				if (cycle > 0) {
+					this.contextValue = "cycle_item";
+				} else {
+					this.contextValue = "todo_item";
+				}
 			} else {
 				this.tooltip = "修改时间: " + time_text;
 				this.iconPath = new vscode.ThemeIcon("info");
+				this.contextValue = "todo_item";
 			}
 
 			if (gaze) {
 				this.contextValue = "gaze_item";
 				this.iconPath = new vscode.ThemeIcon(this.iconPath.id, new vscode.ThemeColor("list.highlightForeground"));
-			} else {
-				this.contextValue = "todo_item";
 			}
+			// else {
+			// 	this.contextValue = "todo_item";
+			// }
 		}
 	}
 

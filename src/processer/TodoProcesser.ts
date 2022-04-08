@@ -76,9 +76,7 @@ export namespace TodoProcesser {
 		let item_data = item ? Data.Copy(Data.List.todo[item.id]) : undefined;
 
 		if (item_data) {
-			if (item_data.cycle > 0) {
-				Append(item_data);
-			}
+			if (item_data.cycle > 0) Append(item_data);
 
 			item_data.time = Time.Parse(new Date());
 			delete item_data.cycle;
@@ -117,6 +115,24 @@ export namespace TodoProcesser {
 		}
 
 		Data.List.todo[Code.Generate(8)] = cycle_item;
+	}
+
+	/**
+	 * 跳过事项
+	 * @param item 事项对象
+	 */
+	export async function Skip(item: any): Promise<void> {
+		let item_data = item ? Data.Copy(Data.List.todo[item.id]) : undefined;
+
+		if (item_data) {
+			if (await Message.Show("information", "确认在本周期内跳过事项 \"" + item.label + "\" 吗？", "确认", "取消") == "确认") {
+				delete Data.List.todo[item.id];
+				if (item_data.cycle > 0) Append(item_data);
+
+				Transceiver.Send("view.todo");
+				Transceiver.Send("file.write");
+			}
+		}
 	}
 
 	/**

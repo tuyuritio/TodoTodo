@@ -101,6 +101,7 @@ namespace Communicator {
 		Transceiver.Register("todo.delete", Todo.Delete, true);
 		Transceiver.Register("todo.accomplish", Todo.Accomplish, true);
 		Transceiver.Register("todo.shut", Todo.Shut, true);
+		Transceiver.Register("todo.skip", Todo.Skip, true);
 		Transceiver.Register("todo.gaze", Todo.Gaze, true);
 		Transceiver.Register("todo.undo", Todo.Gaze, true);
 
@@ -117,6 +118,7 @@ namespace Communicator {
 
 		// 注册fail命令
 		Transceiver.Register("fail.restart", Fail.Restart, true);
+		Transceiver.Register("fail.accomplish", Fail.Accomplish);
 		Transceiver.Register("fail.delete", Fail.Delete, true);
 	}
 }
